@@ -1084,6 +1084,13 @@ function fmtMin(m){ m=Math.round(m||0); if(m<60) return m+'m'; const h=Math.floo
 function daysBetween(k1,k2){ return Math.round((fromKey(k2)-fromKey(k1))/86400000); }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 const attr = esc;
+/* Render an item's badge safely. `v` may be (a) a raw ic() SVG string (seeded data),
+   (b) a real emoji/char a user typed, or (c) empty. Never HTML-escape an SVG — that
+   prints literal <svg…> text. Returns raw HTML ready to drop into a template. */
+function isSvgStr(v){ return typeof v==='string' && v.trim().slice(0,4)==='<svg'; }
+function emojiIcon(v, fbName){ if(isSvgStr(v)) return v; if(v && String(v).trim()) return esc(v); return ic(fbName||'dot'); }
+/* Value for a maxlength-2 emoji <input>: show a user-typed char, never a raw SVG. */
+function emojiInputVal(v){ return isSvgStr(v)? '' : esc(v||''); }
 function journeyDay(){ const s=fromKey(state.profile.startDate); const n=new Date(); n.setHours(0,0,0,0); if(n<s) return 0; return Math.floor((n-s)/86400000)+1; }
 function effStart(){ const t=new Date(); t.setHours(0,0,0,0); let e=fromKey(state.profile.startDate); if(e>t) e=t; const fk=Object.keys(state.days).sort()[0]; if(fk && fromKey(fk)<e) e=fromKey(fk); return e; }
 
@@ -1517,7 +1524,7 @@ VIEWS.dashboard = function(){
     <div class="card">
       <div class="card-head"><h3>Habits today</h3><button class="btn small" data-action="nav" data-view="habits">Manage</button></div>
       ${hs.length? `<div class="meter" style="margin-top:0"><div class="mrow"><span class="lab">Completed</span><span class="val">${habitsDone}/${hs.length}</span></div><div class="track"><i style="width:${hs.length?habitsDone/hs.length*100:0}%;background:var(--c-general)"></i></div></div>
-        <div style="margin-top:12px">${hs.slice(0,5).map(h=>`<div class="hb" style="padding:8px 11px;margin-bottom:6px"><span class="he">${esc(h.emoji||'•')}</span><div class="hinfo"><div class="hname" style="font-size:13px">${esc(h.name)}</div></div><span class="hstreak">${ic('flame')}${habitStreak(h)}</span><button class="check ${habitDone(h,tk)?'done':''}" data-action="habittoggle" data-id="${attr(h.id)}"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6"/></svg></button></div>`).join('')}</div>`
+        <div style="margin-top:12px">${hs.slice(0,5).map(h=>`<div class="hb" style="padding:8px 11px;margin-bottom:6px"><span class="he">${emojiIcon(h.emoji,'check')}</span><div class="hinfo"><div class="hname" style="font-size:13px">${esc(h.name)}</div></div><span class="hstreak">${ic('flame')}${habitStreak(h)}</span><button class="check ${habitDone(h,tk)?'done':''}" data-action="habittoggle" data-id="${attr(h.id)}"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6"/></svg></button></div>`).join('')}</div>`
         : `<div class="empty" style="padding:18px"><div>No habits yet. Build your daily routine.</div><button class="btn small primary" data-action="nav" data-view="habits" style="margin-top:10px">Add habits</button></div>`}
     </div>
     <div class="card">
@@ -1547,7 +1554,7 @@ VIEWS.dashboard = function(){
 function mini(emoji,label,val){ return `<div class="stat soft"><div class="k">${emoji} ${label}</div><div class="v" style="font-size:23px">${val}</div></div>`; }
 function goalsGlance(){
   if(!state.bigGoals.length) return `<div class="empty" style="padding:18px"><div>No long-term goals yet.</div><button class="btn small primary" data-action="nav" data-view="goals" style="margin-top:10px">Set your December goals</button></div>`;
-  return state.bigGoals.slice(0,4).map(g=>{ const p=goalProgress(g); return `<div class="meter" style="margin-top:0;margin-bottom:14px"><div class="mrow"><span class="lab">${esc(g.emoji||'')} ${esc(g.title)}</span><span class="val">${Math.round(p*100)}%</span></div><div class="track"><i style="width:${p*100}%;background:var(--accent)"></i></div></div>`; }).join('');
+  return state.bigGoals.slice(0,4).map(g=>{ const p=goalProgress(g); return `<div class="meter" style="margin-top:0;margin-bottom:14px"><div class="mrow"><span class="lab">${emojiIcon(g.emoji,'flag')} ${esc(g.title)}</span><span class="val">${Math.round(p*100)}%</span></div><div class="track"><i style="width:${p*100}%;background:var(--accent)"></i></div></div>`; }).join('');
 }
 
 /* ============================================================
@@ -1705,21 +1712,21 @@ VIEWS.habits = function(){
       ? `<div class="hb-count"><button data-action="habitminus" data-id="${attr(h.id)}">−</button><span class="qty">${habitVal(h,tk)}/${esc(h.target)} ${esc(h.unit||'')}</span><button data-action="habitplus" data-id="${attr(h.id)}">${ic('plus')}</button></div>`
       : `<button class="check ${done?'done':''}" data-action="habittoggle" data-id="${attr(h.id)}"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6"/></svg></button>`;
     return `<div class="hb ${done?'done':''}">
-      <span class="he">${esc(h.emoji||'•')}</span>
+      <span class="he">${emojiIcon(h.emoji,'check')}</span>
       <div class="hinfo"><div class="hname">${esc(h.name)}</div>
         <div class="hsub"><span>${h.type==='count'?`Target ${esc(h.target)} ${esc(h.unit||'')}/day`:'Daily'}</span><span>·</span><span>${cons}% this month</span></div>
         <div class="hb-week" style="margin-top:6px">${weekDots}</div>
       </div>
       <div style="text-align:right"><div class="hstreak">${ic('flame')} ${streak}</div><div style="font-size:10.5px;color:var(--muted);margin-top:2px">${wc}/${esc(h.perWeek||7)} wk</div></div>
       ${ctrl}
-      <button class="iconbtn" data-action="habitedit" data-id="${attr(h.id)}" style="width:30px;height:30px;font-size:13px">✎</button>
+      <button class="iconbtn" data-action="habitedit" data-id="${attr(h.id)}" style="width:30px;height:30px">${ic('edit')}</button>
     </div>`;
   }).join('');
 
   // habit x day grid (last 21 days)
   const gridDays = lastNKeys(21);
   const gridHead = gridDays.map(k=>`<th>${fromKey(k).getDate()}</th>`).join('');
-  const gridRows = hs.map(h=>`<tr><td class="hn">${esc(h.emoji||'•')} ${esc(h.name)}</td>${gridDays.map(k=>{ const done=habitDone(h,k); return `<td><span class="hc ${done?'on':''} ${isToday(k)?'today':''}" data-action="gridtoggle" data-id="${attr(h.id)}" data-k="${k}"></span></td>`; }).join('')}</tr>`).join('');
+  const gridRows = hs.map(h=>`<tr><td class="hn">${emojiIcon(h.emoji,'check')} ${esc(h.name)}</td>${gridDays.map(k=>{ const done=habitDone(h,k); return `<td><span class="hc ${done?'on':''} ${isToday(k)?'today':''}" data-action="gridtoggle" data-id="${attr(h.id)}" data-k="${k}"></span></td>`; }).join('')}</tr>`).join('');
 
   return `
   <div class="page-head"><div><h2>Habits</h2><div class="lede">Consistency beats intensity. Track streaks, not perfection.</div></div>
@@ -1832,7 +1839,7 @@ function goalCard(g){
   const p=goalProgress(g); const dlDays=g.deadline?daysBetween(todayKey(),g.deadline):null;
   const ms=g.milestones||[];
   return `<div class="goal-card">
-    <div class="goal-top"><div class="goal-emoji">${esc(g.emoji||ic('award'))}</div>
+    <div class="goal-top"><div class="goal-emoji">${emojiIcon(g.emoji,'flag')}</div>
       <div style="flex:1"><div class="goal-title">${esc(g.title)}</div><div class="goal-area">${g.area?CATS[g.area]?CATS[g.area].label:esc(g.area):''}${g.metric?` · target ${esc(g.target)} ${({gym:'gym days',study_hrs:'study hrs',focus_hrs:'focus hrs',tasks:'tasks'})[g.metric]||''}`:''}</div></div>
       <div class="goal-actions">${g.deadline?`<span class="deadline-badge ${dlDays<0?'over':dlDays<=14?'soon':''}">${dlDays<0?Math.abs(dlDays)+'d over':dlDays+'d left'}</span>`:''}<button class="iconbtn" data-action="goaledit" data-id="${attr(g.id)}" style="width:30px;height:30px;font-size:13px">✎</button></div>
     </div>
@@ -1902,7 +1909,7 @@ VIEWS.academics = function(){
   const subjRows=state.subjects.map(s=>{
     const done=(s.topics||[]).filter(t=>t.done).length, total=(s.topics||[]).length;
     const pct=total?Math.round(done/total*100):0;
-    return `<div class="subj"><div class="subj-top"><span style="font-size:20px">${esc(s.emoji||ic('book'))}</span><div style="flex:1"><div class="subj-name">${esc(s.name)}</div><div class="card-sub">${done}/${total} topics · ${pct}%</div></div>
+    return `<div class="subj"><div class="subj-top"><span style="font-size:20px">${emojiIcon(s.emoji,'book')}</span><div style="flex:1"><div class="subj-name">${esc(s.name)}</div><div class="card-sub">${done}/${total} topics · ${pct}%</div></div>
       <button class="btn small" data-action="addtopic" data-id="${attr(s.id)}">${ic('plus')}Topic</button><button class="iconbtn" data-action="delsubject" data-id="${attr(s.id)}" style="width:30px;height:30px;font-size:13px"></button></div>
       <div class="meter" style="margin:0 0 11px"><div class="track"><i style="width:${pct}%;background:var(--c-study)"></i></div></div>
       <div class="topics">${(s.topics||[]).map((t,i)=>`<span class="topic ${t.done?'done':''}" data-action="topictoggle" data-id="${attr(s.id)}" data-i="${i}">${esc(t.name)}</span>`).join('')||'<span class="card-sub">No topics yet</span>'}</div>
@@ -2363,7 +2370,7 @@ function importData(file){ const rd=new FileReader(); rd.onload=()=>{ try{ const
    MODALS
    ============================================================ */
 function openModal(html, onSubmit){ closeModal(); const ov=document.createElement('div'); ov.className='overlay'; ov.innerHTML=`<div class="modal" data-stop>${html}</div>`; document.body.appendChild(ov); window.__modalSubmit=onSubmit||null; const fi=ov.querySelector('input,textarea,select'); if(fi) setTimeout(()=>fi.focus(),40); }
-function closeModal(){ if(_recOn){ _recOn=false; try{ _rec&&_rec.stop(); }catch(e){} } document.querySelectorAll('.overlay').forEach(o=>o.remove()); window.__modalSubmit=null; }
+function closeModal(){ if(_recOn){ _recOn=false; clearTimeout(_recWatch); try{ _rec&&_rec.stop(); }catch(e){} } document.querySelectorAll('.overlay').forEach(o=>o.remove()); window.__modalSubmit=null; }
 
 function openTaskModal(id){
   const day=ensureDay(ui.curDay); const t=id?day.tasks.find(x=>x.id===id):null;
@@ -2402,7 +2409,7 @@ function openHabitModal(id){
   const h=id?state.habits.find(x=>x.id===id):null;
   openModal(`<h3>${h?'Edit habit':'New habit'}</h3>
     <label class="fld"><span>Name</span><input class="inp" id="h_name" value="${h?esc(h.name):''}" placeholder="e.g. Read, Gym, Drink water"></label>
-    <div class="form-row"><label class="fld"><span>Emoji</span><input class="inp" id="h_emoji" value="${h?esc(h.emoji||''):''}" placeholder="" maxlength="2"></label>
+    <div class="form-row"><label class="fld"><span>Emoji</span><input class="inp" id="h_emoji" value="${h?emojiInputVal(h.emoji):''}" placeholder="optional" maxlength="2"></label>
       <label class="fld"><span>Area</span><select class="inp" id="h_area">${CAT_ORDER.map(c=>`<option value="${c}" ${h&&h.area===c?'selected':''}>${CATS[c].emoji} ${CATS[c].short}</option>`).join('')}</select></label></div>
     <div class="form-row"><label class="fld"><span>Type</span><select class="inp" id="h_type"><option value="check" ${h&&h.type==='check'?'selected':''}>Simple check</option><option value="count" ${h&&h.type==='count'?'selected':''}>Count / amount</option></select></label>
       <label class="fld"><span>Target /day (count)</span><input class="inp" type="number" id="h_target" min="1" value="${esc(h&&h.target?h.target:'')}" placeholder="e.g. 8"></label></div>
@@ -2418,7 +2425,7 @@ function openGoalModal(id){
   const g=id?state.bigGoals.find(x=>x.id===id):null;
   openModal(`<h3>${g?'Edit goal':'New goal'}</h3><div class="msub">A big goal for your Sep→Dec run.</div>
     <label class="fld"><span>Goal</span><input class="inp" id="g_title" value="${g?esc(g.title):''}" placeholder="e.g. Get fitter, Learn AI"></label>
-    <div class="form-row"><label class="fld"><span>Emoji</span><input class="inp" id="g_emoji" value="${g?esc(g.emoji||''):''}" placeholder="" maxlength="2"></label>
+    <div class="form-row"><label class="fld"><span>Emoji</span><input class="inp" id="g_emoji" value="${g?emojiInputVal(g.emoji):''}" placeholder="optional" maxlength="2"></label>
       <label class="fld"><span>Area</span><select class="inp" id="g_area">${CAT_ORDER.map(c=>`<option value="${c}" ${g&&g.area===c?'selected':''}>${CATS[c].emoji} ${CATS[c].short}</option>`).join('')}</select></label></div>
     <div class="form-row"><label class="fld"><span>Auto-track (optional)</span><select class="inp" id="g_metric"><option value="">Milestones only</option><option value="gym" ${g&&g.metric==='gym'?'selected':''}>Gym days</option><option value="study_hrs" ${g&&g.metric==='study_hrs'?'selected':''}>Study hours</option><option value="focus_hrs" ${g&&g.metric==='focus_hrs'?'selected':''}>Focus hours</option><option value="tasks" ${g&&g.metric==='tasks'?'selected':''}>Tasks done</option></select></label>
       <label class="fld"><span>Target</span><input class="inp" type="number" id="g_target" value="${esc(g&&g.target?g.target:'')}" placeholder="e.g. 60"></label></div>
@@ -2606,31 +2613,42 @@ function scheduleRows(k){
 }
 
 /* ---- plan modal (voice + text) ---- */
-let _rec=null, _recOn=false, _recBase='';
+let _rec=null, _recOn=false, _recBase='', _recGotResult=false, _recWatch=null;
+/* Device-appropriate built-in dictation instructions (always works, no cloud needed). */
+function dictHelp(){ const ua=navigator.userAgent||'';
+  if(/Android/i.test(ua)) return 'tap the box above, then the <b>microphone key</b> on your keyboard';
+  if(/iPhone|iPad|iPod/i.test(ua)) return 'tap the box above, then the <b>microphone</b> on your keyboard';
+  if(/Windows|Win32|Win64/i.test(ua)) return 'click the box above and press <b>Win + H</b>';
+  if(/Mac/i.test(ua)) return 'click the box above and press <b>Fn</b> twice (macOS Dictation)';
+  return "use your device's built-in voice typing";
+}
 function micTip(html,warn){ const h=el('micHint'); if(h){ h.innerHTML=''+html; h.style.color=warn===false?'var(--accent)':'var(--warn)'; } }
 function setMicBtn(on){ const b=el('planMic'); if(b){ b.innerHTML=on?(ic('stop')+' Stop'):(ic('mic')+' Speak'); b.classList.toggle('primary',on); } }
 function toggleVoice(){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!SR){ micTip('This browser has no built-in voice. Click the box and press <b>Win + H</b> to use Windows voice typing.'); return; }
-  if(_recOn){ _recOn=false; try{ _rec&&_rec.stop(); }catch(e){} setMicBtn(false); micTip('Added. Tap <b>Preview →</b> to sort it into your day.',false); return; }
+  if(_recOn){ stopVoice(); micTip('Added. Tap <b>Preview →</b> to sort it into your day.',false); return; }
   const ta=el('planText'); if(!ta) return;
-  _recOn=true; _recBase=ta.value.trim(); setMicBtn(true);
+  _recOn=true; _recGotResult=false; _recBase=ta.value.trim(); setMicBtn(true);
   micTip('Listening… speak naturally — short pauses are fine. Tap <b>Stop</b> when done.',false);
+  // Watchdog: if the browser's speech service returns nothing, guide to reliable OS dictation.
+  clearTimeout(_recWatch); _recWatch=setTimeout(()=>{ if(_recOn && !_recGotResult){ micTip("I don't hear words coming through — this browser's speech service may be blocked here. For reliable dictation, "+dictHelp()+", then tap <b>Preview →</b>. (The typing box still works too.)"); } }, 6500);
   startRec(SR);
 }
+function stopVoice(){ _recOn=false; clearTimeout(_recWatch); try{ _rec&&_rec.stop(); }catch(e){} setMicBtn(false); }
 function startRec(SR){
   try{
     _rec=new SR(); _rec.lang='en-US'; _rec.interimResults=true; _rec.continuous=true; try{_rec.maxAlternatives=1;}catch(e){}
-    _rec.onresult=e=>{ const ta=el('planText'); if(!ta) return; let fin='',intr='';
+    _rec.onresult=e=>{ const ta=el('planText'); if(!ta) return; _recGotResult=true; clearTimeout(_recWatch); let fin='',intr='';
       for(let i=e.resultIndex;i<e.results.length;i++){ const r=e.results[i]; if(r.isFinal) fin+=r[0].transcript+' '; else intr+=r[0].transcript+' '; }
       if(fin) _recBase=(_recBase?_recBase+' ':'')+fin.trim();
       ta.value=(_recBase?_recBase+' ':'')+intr.trim();
     };
     _rec.onerror=ev=>{ const err=(ev&&ev.error)||'error';
       if(err==='no-speech'||err==='aborted') return;              // harmless — keep listening (onend restarts)
-      if(/not-allowed|service-not-allowed|denied/i.test(err)){ _recOn=false; setMicBtn(false); micTip("Chrome blocked the mic. Click the padlock in the address bar → set Microphone to <b>Allow</b>, reload, and try again. Or press <b>Win + H</b>."); }
-      else if(err==='network'){ micTip("Trouble reaching the speech service — retrying. If it keeps failing, press <b>Win + H</b> to dictate."); }
-      else micTip('Mic: '+err+'. You can press <b>Win + H</b> or type.');
+      if(/not-allowed|service-not-allowed|denied/i.test(err)){ stopVoice(); micTip("The browser blocked the mic. Click the padlock in the address bar → set Microphone to <b>Allow</b>, reload, and try again. Or "+dictHelp()+"."); }
+      else if(err==='network'){ clearTimeout(_recWatch); micTip("Can't reach this browser's speech service — retrying. If it keeps failing, "+dictHelp()+" to dictate reliably."); }
+      else micTip('Voice: '+err+'. You can '+dictHelp()+', or just type.');
     };
     _rec.onend=()=>{ // Chrome auto-ends on any pause — keep it alive until the user taps Stop
       if(_recOn){ const ta=el('planText'); if(ta) _recBase=ta.value.trim(); try{ _rec.start(); }catch(e){ setTimeout(()=>{ if(_recOn) startRec(SR); },300); } }
@@ -2650,12 +2668,12 @@ function openPlanModal(defDate){
     <div class="modal-foot"><button class="btn ghost" data-action="closemodal">Close</button><button class="btn primary" id="planAdd" data-stop style="display:none">${ic('plus')} Add to tracker</button></div>`);
   setTimeout(()=>{ const mic=el('planMic'); if(mic) mic.onclick=toggleVoice; const pr=el('planParse'); if(pr) pr.onclick=doPlanPreview; const ad=el('planAdd'); if(ad) ad.onclick=doPlanAdd; const ta=el('planText'); if(ta) ta.focus();
     const hint=el('micHint'); if(hint){ hint.innerHTML = (location.protocol==='file:')
-      ? '<b>Talk instead of type:</b> click in the box above, press <b>Win + H</b>, then just speak — Windows voice typing fills it in, then tap <b>Preview →</b>. <span style="color:var(--muted)">(Chrome blocks the in-app button on files opened directly — Win + H works everywhere.)</span>'
-      : 'Tap <b>Speak</b>, or click the box and press <b>Win + H</b> for Windows voice typing.'; }
+      ? '<b>Talk instead of type:</b> '+dictHelp()+', then just speak — your device fills it in, then tap <b>Preview →</b>. <span style="color:var(--muted)">(Browsers block the in-app Speak button on files opened directly; built-in dictation works everywhere.)</span>'
+      : 'Tap <b>Speak</b> to dictate in-app — or, for the most reliable results, '+dictHelp()+'.'; }
   },50);
 }
 function doPlanPreview(){
-  if(_recOn){ _recOn=false; setMicBtn(false); } if(_rec){ try{_rec.stop();}catch(e){} }
+  if(_recOn){ stopVoice(); } else if(_rec){ try{_rec.stop();}catch(e){} }
   const text=(el('planText').value||'').trim(); if(!text){ toast('Say or type something first'); return; }
   const {items}=parseBrainDump(text, el('plan_date').value||todayKey());
   window.__planItems=items;
@@ -2778,15 +2796,23 @@ function startFocus({min,type,label,taskId,ambient}){
   window.addEventListener('blur', onAway);
   window.addEventListener('focus', onBack);
   document.addEventListener('pagehide', onAway);
-  const ov=el('focusOverlay'); if(ov && ov.requestFullscreen) ov.requestFullscreen().catch(()=>{});
+  document.addEventListener('webkitvisibilitychange', onVisChange);
+  window.addEventListener('pageshow', onBack);
+  // Start the timer FIRST so nothing below can stop it running.
   F.timerId=setInterval(focusTick,250);
+  updateFocusUI();
+  // Fullscreen is a nice-to-have; on some browsers it returns no promise or
+  // throws (permissions policy), so it must never break the session.
+  goFullscreen(el('focusOverlay'));
 }
+function goFullscreen(ov){ try{ const fn=ov&&(ov.requestFullscreen||ov.webkitRequestFullscreen||ov.msRequestFullscreen); if(fn){ const p=fn.call(ov); if(p&&typeof p.catch==='function') p.catch(()=>{}); } }catch(e){} }
+function exitFullscreenSafe(){ try{ const el2=document.fullscreenElement||document.webkitFullscreenElement; if(el2){ const fn=document.exitFullscreen||document.webkitExitFullscreen||document.msExitFullscreen; if(fn){ const p=fn.call(document); if(p&&typeof p.catch==='function') p.catch(()=>{}); } } }catch(e){} }
 function focusTick(){ if(F.paused) return; F.remaining=Math.max(0, Math.round((F.endAt-Date.now())/1000)); updateFocusUI(); if(F.remaining<=0) completeFocus(); }
 function pauseFocus(){ if(!F.active) return; F.paused=true; updateFocusControls(); }
 function resumeFocus(){ if(!F.active) return; F.endAt=Date.now()+F.remaining*1000; F.paused=false; updateFocusControls(); }
 function onAway(){ if(!F.active||F.mode!=='focus'||F.paused||F._away) return; F._away=true; F.interruptions++; F.awayAt=Date.now(); markDistract(true); }
 function onBack(){ if(!F.active||!F._away) return; F._away=false; if(F.awayAt){ F.awayMs+=Date.now()-F.awayAt; F.awayAt=0; } markDistract(false); }
-function onVisChange(){ if(document.hidden) onAway(); else onBack(); }
+function onVisChange(){ const hidden = ('hidden' in document) ? document.hidden : document.webkitHidden; if(hidden) onAway(); else onBack(); }
 function markDistract(on){ const ov=el('focusOverlay'); if(!ov) return; ov.classList.toggle('distracted', on); updateFocusUI(); }
 function completeFocus(){
   const focusedMin=Math.round(F.total/60);
@@ -2807,7 +2833,7 @@ function tryEndFocus(){
  toast(F.mode==='focus'? ' Session ended' : 'Break ended');
 }
 function logFocusSession(completed, focusedMin){ state.focusSessions.push({id:genId(),date:F.startDay||todayKey(),type:F.type,label:F.label,plannedMin:Math.round(F.total/60),focusedMin,completed,interruptions:F.interruptions,taskId:F.taskId,start:F.startedAt,end:Date.now()}); }
-function cleanupFocus(){ if(F.timerId) clearInterval(F.timerId); F.timerId=null; F.active=false; F.paused=false; F._away=false; stopAmbient(); document.removeEventListener('visibilitychange',onVisChange); window.removeEventListener('blur',onAway); window.removeEventListener('focus',onBack); document.removeEventListener('pagehide',onAway); if(document.fullscreenElement) document.exitFullscreen().catch(()=>{}); }
+function cleanupFocus(){ if(F.timerId) clearInterval(F.timerId); F.timerId=null; F.active=false; F.paused=false; F._away=false; stopAmbient(); document.removeEventListener('visibilitychange',onVisChange); document.removeEventListener('webkitvisibilitychange',onVisChange); window.removeEventListener('blur',onAway); window.removeEventListener('focus',onBack); window.removeEventListener('pageshow',onBack); document.removeEventListener('pagehide',onAway); exitFullscreenSafe(); }
 function closeFocusOverlay(){ const ov=el('focusOverlay'); if(ov) ov.remove(); }
 function startBreak(){ closeFocusOverlay(); F.active=true; F.paused=false; F.mode='break'; F.total=state.settings.focus.breakMin*60; F.remaining=F.total; F.endAt=Date.now()+F.total*1000; F.label='Break'; F.interruptions=0; buildFocusOverlay(); F.timerId=setInterval(()=>{ F.remaining=Math.max(0,Math.round((F.endAt-Date.now())/1000)); updateFocusUI(); if(F.remaining<=0){ chime(); cleanupFocus(); closeFocusOverlay(); render(); toast('Break over — back to it '); } },250); }
 function toggleFocusTask(id){ const d=ensureDay(F.startDay||todayKey()); const t=d.tasks.find(x=>x.id===id); if(t){ t.done=!t.done; t.doneAt=t.done?Date.now():null; save(); updateFocusUI(); } }
