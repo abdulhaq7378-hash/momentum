@@ -806,6 +806,21 @@ details.dsec[open]>summary::after{transform:rotate(180deg)}
 .prow{display:flex;justify-content:space-between;gap:14px;margin-bottom:7px;font-size:13.5px;align-items:baseline}
 .prow>span:first-child{color:var(--text-2);flex:0 0 auto}
 .prow>span:last-child{font-weight:700;text-align:right}
+/* mini calendar (Home) */
+.mc-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.mc-dow{text-align:center;font-size:10px;color:var(--muted);font-weight:700;padding-bottom:2px}
+.mc-cell{aspect-ratio:1;border-radius:9px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12px;font-weight:600;cursor:pointer;background:var(--surface-2);border:1px solid transparent;transition:.12s}
+.mc-cell.blank{background:transparent;cursor:default}
+.mc-cell:not(.blank):hover{border-color:var(--border-strong)}
+.mc-cell.today{background:var(--accent);color:var(--accent-ink)}
+.mc-dots{display:flex;gap:2px;height:5px;align-items:center}
+.mc-dots i{width:4px;height:4px;border-radius:50%;display:block}
+.mc-uplist{margin-top:12px;border-top:1px solid var(--border);padding-top:8px;display:flex;flex-direction:column;gap:2px}
+.mc-up{display:flex;align-items:center;gap:9px;padding:6px 3px;font-size:12.5px;cursor:pointer;border-radius:8px}
+.mc-up:hover{background:var(--surface-2)}
+.mc-up .lp{width:8px;height:8px;border-radius:50%;flex:0 0 auto}
+.mc-up-t{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mc-up-d{font-weight:700;flex:0 0 auto}
 
 </style></head><body><div id="approot">
 <div class="app">
@@ -933,7 +948,11 @@ const ICONS = {
   lotus:'<path d="M12 21c-3.6 0-6.6-2.1-6.6-5.6 2.3 0 4.1 1 5.1 2.7"/><path d="M12 21c3.6 0 6.6-2.1 6.6-5.6-2.3 0-4.1 1-5.1 2.7"/><path d="M12 21c-2.1 0-3.7-2.4-3.7-5.3 0-2.8 1.6-4.9 3.7-6.4 2.1 1.5 3.7 3.6 3.7 6.4 0 2.9-1.6 5.3-3.7 5.3z"/>',
   starD:'<path d="M12 3l7 12H5zM12 21 5 9h14z"/>',
   hands:'<path d="M12 21c-3.6-2-6-5-6-9V7.5a1.5 1.5 0 0 1 3 0V11m0-3.5a1.5 1.5 0 0 1 3 0V11m0-2a1.5 1.5 0 0 1 3 0v3c0 4-2.4 7-6 9"/>',
+  heart:'<path d="M12 20.3 4.2 12.5a4.6 4.6 0 0 1 6.5-6.5l1.3 1.3 1.3-1.3a4.6 4.6 0 0 1 6.5 6.5z"/>',
+  users:'<circle cx="9" cy="8" r="3.2"/><path d="M3.5 20a5.5 5.5 0 0 1 11 0"/><path d="M16 5.2a3.2 3.2 0 0 1 0 6M17.5 20a5.5 5.5 0 0 0-3-4.9"/>',
 };
+/* one distinct icon per common area id (so Personal ≠ Health, etc.) */
+const AREA_ICON = { work:'briefcase', personal:'star', health:'heart', learning:'spark', academics:'book', fitness:'dumbbell', training:'dumbbell', business:'trend', home:'home', finance:'coin' };
 function ic(name, extra){ const p=ICONS[name]||ICONS.dot; return '<svg class="i'+(extra?' '+extra:'')+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+p+'</svg>'; }
 
 const CATS = {
@@ -1020,9 +1039,9 @@ const DEFAULT_STATE = {
     fitness:{enabled:false},
     areas:[
       {id:'work',     name:'Work',     icon:'briefcase', color:'#4a90d6', kind:'custom',  enabled:true},
-      {id:'personal', name:'Personal', icon:'spark',     color:'#8b6ff0', kind:'custom',  enabled:true},
-      {id:'health',   name:'Health',   icon:'spark',     color:'#2fae82', kind:'custom',  enabled:true},
-      {id:'learning', name:'Learning', icon:'book',      color:'#e0a02a', kind:'custom',  enabled:true},
+      {id:'personal', name:'Personal', icon:'star',      color:'#8b6ff0', kind:'custom',  enabled:true},
+      {id:'health',   name:'Health',   icon:'heart',     color:'#3aab77', kind:'custom',  enabled:true},
+      {id:'learning', name:'Learning', icon:'spark',     color:'#e0a02a', kind:'custom',  enabled:true},
       {id:'finance',  name:'Finances', icon:'coin',      color:'#e8734a', kind:'finance', enabled:true},
     ],
     location:{lat:13.3525, lng:74.7925, city:'Manipal, India', method:'Karachi', asr:'standard', autoTz:true, tz:5.5},
@@ -1347,6 +1366,16 @@ function upcomingDeadlines(limit){
   return limit? out.slice(0,limit): out;
 }
 function dlColor(days){ return days<0?'var(--bad)':days<=1?'var(--bad)':days<=4?'var(--warn)':'var(--good)'; }
+/* calendar event / deadline types — each its own colour + icon (Google-Calendar style) */
+const EVENT_TYPES = {
+  exam:      {label:'Exam',       icon:'fileText',  color:'#e0512e'},
+  assignment:{label:'Assignment', icon:'fileEdit',  color:'#4a90d6'},
+  meeting:   {label:'Meeting',    icon:'users',     color:'#8b6ff0'},
+  project:   {label:'Project',    icon:'briefcase', color:'#e0b200'},
+  deadline:  {label:'Deadline',   icon:'flag',      color:'#e8734a'},
+  event:     {label:'Event',      icon:'calendar',  color:'#3aab77'},
+};
+function evType(t){ return EVENT_TYPES[t] || EVENT_TYPES.event; }
 function dlText(deadline){ const d=daysBetween(todayKey(), deadline); if(d<0) return `${-d}d overdue`; if(d===0) return 'Today'; if(d===1) return 'Tomorrow'; return `${d} days`; }
 
 /* ---------------- range stats ---------------- */
@@ -1448,7 +1477,7 @@ function roleOptions(sel){ return ROLE_GROUPS.map(([g,items])=>`<optgroup label=
 function roleLabel(role){ for(const [,items] of ROLE_GROUPS){ const f=items.find(i=>i[0]===role); if(f) return f[1]; } return ''; }
 function applyRolePreset(role){
   const arche = ROLE_ARCHETYPES[ROLE_ARCHE[role]||'other'] || ROLE_ARCHETYPES.other;
-  const areas = arche.areas.map((a,i)=>({id:a[0], name:a[1], icon:a[2], color:AREA_COLORS[i%AREA_COLORS.length], kind:'custom', enabled:true}));
+  const areas = arche.areas.map((a,i)=>({id:a[0], name:a[1], icon:AREA_ICON[a[0]]||a[2], color:AREA_COLORS[i%AREA_COLORS.length], kind:'custom', enabled:true}));
   areas.push({id:'finance', name:'Finances', icon:'coin', color:'#e8734a', kind:'finance', enabled:true});   // finance always
   state.settings.areas = areas;
   state.settings.fitness = state.settings.fitness||{}; state.settings.fitness.enabled = !!arche.fitness;
@@ -1746,7 +1775,7 @@ VIEWS.home = function(){
 
   <div class="card" style="margin-top:14px"><div class="card-head"><h3>Today's tasks</h3><button class="btn small" data-action="newtask">${ic('plus')} Add</button></div>${list}</div>
 
-  ${dls.length?`<div class="card" style="margin-top:14px"><div class="card-head"><h3>Deadlines</h3><button class="btn small" data-action="nav" data-view="calendar">Calendar</button></div>${dls.map(d=>{const days=daysBetween(todayKey(),d.deadline);return `<div class="dl"><span class="lp" style="background:${dlColor(days)}"></span><span class="dtx">${esc(d.title)}${d.subj?` <span class="tag">${esc(d.subj)}</span>`:''}</span><span class="dwhen" style="color:${dlColor(days)}">${dlText(d.deadline)}</span></div>`;}).join('')}</div>`:''}
+  <div style="margin-top:14px">${miniCalendar()}</div>
   `;
 };
 
@@ -2420,18 +2449,37 @@ function computeRecords(){
    VIEW: CALENDAR (month + year heatmap)
    ============================================================ */
 VIEWS.calendar = function(){
-  return `<div class="page-head"><div><h2>Calendar</h2><div class="lede">Every square is a day. = exam, = assignment due.</div></div>
-    <div class="segmented"><button data-action="calmode" data-m="month" class="${ui.calMode==='month'?'active':''}">Month</button><button data-action="calmode" data-m="year" class="${ui.calMode==='year'?'active':''}">Journey</button></div></div>
+  return `<div class="page-head"><div><h2>Calendar</h2><div class="lede">Your tasks, exams, assignments, meetings & deadlines — colour-coded by type.</div></div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><button class="btn small primary" data-action="addevent" data-type="exam" data-date="${todayKey()}">${ic('plus')} Add event</button><div class="segmented"><button data-action="calmode" data-m="month" class="${ui.calMode==='month'?'active':''}">Month</button><button data-action="calmode" data-m="year" class="${ui.calMode==='year'?'active':''}">Journey</button></div></div></div>
     ${examsAssignmentsCard()}
     ${ui.calMode==='month'?calMonth():calYear()}`;
 };
+function eventRow(a){ const days=daysBetween(todayKey(),a.deadline); const et=evType(a.atype);
+  return `<div class="dl" data-action="editevent" data-id="${attr(a.id)}" style="cursor:pointer"><span class="lp" style="background:${et.color}"></span><span class="dtx">${ic(et.icon)} ${esc(a.title)} <span class="tag" style="background:${et.color}22;color:${et.color}">${et.label}</span>${a.time?` <span class="tag">${esc(a.time)}</span>`:''}</span><span class="dwhen" style="color:${dlColor(days)}">${fmtShortK(a.deadline)} · ${dlText(a.deadline)}</span><button class="iconbtn" data-action="assigndone" data-id="${attr(a.id)}" style="width:26px;height:26px" title="Mark done">${ic('check')}</button></div>`; }
+/* Compact month calendar for the Home page — dots = events (by type) / tasks. */
+function miniCalendar(){
+  const now=new Date(); const y=now.getFullYear(), m=now.getMonth();
+  const first=new Date(y,m,1); const off=(first.getDay()+6)%7; const days=new Date(y,m+1,0).getDate();
+  let cells=DOW.map(d=>`<div class="mc-dow">${d[0]}</div>`).join('');
+  for(let i=0;i<off;i++) cells+='<div class="mc-cell blank"></div>';
+  for(let d=1;d<=days;d++){ const k=keyOf(new Date(y,m,d)); const evs=deadlinesOn(k); const s=dayStats(k);
+    let dots=evs.slice(0,3).map(a=>`<i style="background:${evType(a.atype).color}"></i>`).join('');
+    if(!dots && s.planned>0) dots=`<i style="background:var(--muted)"></i>`;
+    cells+=`<div class="mc-cell ${isToday(k)?'today':''}" data-action="daymodal" data-key="${k}"><span>${d}</span><div class="mc-dots">${dots}</div></div>`; }
+  const up=state.assignments.filter(a=>!a.done && a.deadline && a.deadline>=todayKey()).sort((a,b)=>a.deadline<b.deadline?-1:1).slice(0,3);
+  const upList = up.length? up.map(a=>{ const days=daysBetween(todayKey(),a.deadline); const et=evType(a.atype); return `<div class="mc-up" data-action="editevent" data-id="${attr(a.id)}"><span class="lp" style="background:${et.color}"></span><span class="mc-up-t">${esc(a.title)}</span><span class="mc-up-d" style="color:${dlColor(days)}">${dlText(a.deadline)}</span></div>`; }).join('') : `<div class="mc-up" style="color:var(--muted);cursor:default">Nothing coming up — tap Add.</div>`;
+  return `<div class="card"><div class="card-head"><h3>${ic('calendar')} ${MON[m]} ${y}</h3><button class="btn small" data-action="nav" data-view="calendar">Full calendar</button></div>
+    <div class="mc-grid">${cells}</div>
+    <div class="mc-uplist">${upList}</div>
+    <button class="btn small primary" data-action="addevent" data-type="exam" data-date="${todayKey()}" style="margin-top:10px;width:100%">${ic('plus')} Add exam, assignment or meeting</button>
+  </div>`;
+}
 function examsAssignmentsCard(){
   const up=state.assignments.filter(a=>!a.done && a.deadline).sort((a,b)=>a.deadline<b.deadline?-1:1);
-  const exams=up.filter(a=>a.atype==='exam'), other=up.filter(a=>a.atype!=='exam');
-  const row=a=>{ const days=daysBetween(todayKey(),a.deadline); const subj=state.subjects.find(s=>s.id===a.subjectId); return `<div class="dl"><span class="lp" style="background:${dlColor(days)}"></span><span class="dtx">${a.atype==='exam'?ic('fileText'):ic('fileText')} ${esc(a.title)} ${subj?`<span class="tag">${esc(subj.name)}</span>`:''}</span><span class="dwhen" style="color:${dlColor(days)}">${fmtShortK(a.deadline)} · ${dlText(a.deadline)}</span><button class="iconbtn" data-action="assigndone" data-id="${a.id}" style="width:26px;height:26px;font-size:12px" title="Mark done">✓</button></div>`; };
+  const acad=up.filter(a=>a.atype==='exam'||a.atype==='assignment'); const work=up.filter(a=>a.atype!=='exam'&&a.atype!=='assignment');
   return `<div class="grid g2" style="margin-bottom:16px">
-    <div class="card"><div class="card-head"><h3>Upcoming exams</h3><button class="btn small" data-action="planday" data-date="${todayKey()}">Add</button></div>${exams.length?exams.map(row).join(''):`<div class="empty" style="padding:16px"><div>No exams added. Tap Add and say "economics exam on the 25th".</div></div>`}</div>
-    <div class="card"><div class="card-head"><h3>Assignments due</h3><button class="btn small" data-action="planday" data-date="${todayKey()}">Add</button></div>${other.length?other.map(row).join(''):`<div class="empty" style="padding:16px"><div>No assignments added. Say "physics assignment due Wednesday".</div></div>`}</div>
+    <div class="card"><div class="card-head"><h3>Exams & assignments</h3><button class="btn small" data-action="addevent" data-type="exam" data-date="${todayKey()}">${ic('plus')} Add</button></div>${acad.length?acad.map(eventRow).join(''):`<div class="empty" style="padding:16px"><div>Nothing yet. Tap Add to put an exam or assignment on your calendar.</div></div>`}</div>
+    <div class="card"><div class="card-head"><h3>Meetings & deadlines</h3><button class="btn small" data-action="addevent" data-type="meeting" data-date="${todayKey()}">${ic('plus')} Add</button></div>${work.length?work.map(eventRow).join(''):`<div class="empty" style="padding:16px"><div>Add meetings, projects or deadlines here — they'll show on the calendar.</div></div>`}</div>
   </div>`;
 }
 function calMonth(){
@@ -2440,16 +2488,18 @@ function calMonth(){
   let cells=DOW.map(d=>`<div class="heat-dow">${d}</div>`).join('');
   for(let i=0;i<off;i++) cells+=`<div class="heat-cell empty"></div>`;
   for(let d=1; d<=days; d++){ const k=keyOf(new Date(y,m,d)); const s=dayStats(k); const sc=dayScore(k); const fut=isFuture(k);
-    const marks=CAT_ORDER.filter(c=>s.byCat[c].completed>0).map(c=>`<i style="background:${CATS[c].color}"></i>`).join('');
-    const dls=deadlinesOn(k); const dlBadge=dls.length?`<div style="position:absolute;top:3px;right:4px;font-size:9px;line-height:1">${dls.some(a=>a.atype==='exam')?ic('fileText'):ic('fileText')}</div>`:'';
-    const dlTip=dls.length?`<div class='tr'><span>Due</span><b>${dls.map(a=>esc(a.title)).join(', ')}</b></div>`:'';
+    const dls=deadlinesOn(k);
+    const evDots=dls.slice(0,3).map(a=>`<i style="background:${evType(a.atype).color}"></i>`).join('');
+    const taskDots=CAT_ORDER.filter(c=>s.byCat[c]&&s.byCat[c].planned>0).slice(0, Math.max(0,3-dls.length)).map(c=>`<i style="background:${CATS[c].color}"></i>`).join('');
+    const marks=evDots+taskDots;
+    const dlTip=dls.length?`<div class='tr'><span>On this day</span><b>${dls.map(a=>esc(a.title)).join(', ')}</b></div>`:'';
     const bg = s.planned>0||focusMinutesOn(k)>0 ? `background:${heatColor(sc/100)};border-color:transparent` : '';
     const ink = sc>=55?'color:#fff':'';
     cells+=`<div class="heat-cell ${isToday(k)?'today':''} ${fut?'future':''}" data-action="daymodal" data-key="${k}" style="${bg}" data-tip="${esc((s.planned?`<div class='th'>${fmtLong(k)}</div><div class='tr'><span>Score</span><b>${sc}</b></div><div class='tr'><span>Tasks</span><b>${s.completed}/${s.planned}</b></div>`:`<div class='th'>${fmtLong(k)}</div>`)+dlTip)}">
-      ${dlBadge}<div class="hd" style="${ink}">${d}</div><div class="hm">${marks}</div><div class="hp" style="${ink}">${s.planned||focusMinutesOn(k)?sc:''}</div></div>`; }
+      <div class="hd" style="${ink}">${d}</div><div class="hm">${marks}</div><div class="hp" style="${ink}">${s.planned||focusMinutesOn(k)?sc:''}</div></div>`; }
   return `<div class="card"><div class="cal-head" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"><button class="iconbtn" data-action="calmove" data-dir="-1">‹</button><div style="font-size:17px;font-weight:750">${MON[m]} ${y}</div><button class="iconbtn" data-action="calmove" data-dir="1">›</button></div>
     <div class="heat-month">${cells}</div>
-    <div class="heat-legend"><span>Less</span><span class="sw" style="background:var(--surface-2)"></span><span class="sw" style="background:${heatColor(.25)}"></span><span class="sw" style="background:${heatColor(.5)}"></span><span class="sw" style="background:${heatColor(.75)}"></span><span class="sw" style="background:${heatColor(1)}"></span><span>More</span><span style="margin-left:auto">Dots = areas completed</span></div>
+    <div class="heat-legend"><span>Less</span><span class="sw" style="background:var(--surface-2)"></span><span class="sw" style="background:${heatColor(.25)}"></span><span class="sw" style="background:${heatColor(.5)}"></span><span class="sw" style="background:${heatColor(.75)}"></span><span class="sw" style="background:${heatColor(1)}"></span><span>More</span><span style="margin-left:auto">Dots = events & tasks (by colour)</span></div>
   </div>
   <div class="grid g4" style="margin-top:16px">${mini(ic('check'),'Tasks done',ms.completed)}${mini(ic('target'),'Focus',fmtMin(ms.focusMin))}${mini(ic('star'),'Perfect days',ms.perfect)}${mini(ic('bolt'),'Avg score',ms.avgScore)}</div>`;
 }
@@ -2849,7 +2899,10 @@ document.addEventListener('click',e=>{
     case 'addtopic': { const s=state.subjects.find(x=>x.id===t.dataset.id); const n=prompt('Topic name:'); if(n){ s.topics=s.topics||[]; s.topics.push({id:genId(),name:n.trim(),done:false}); save(); render(); } break; }
     case 'topictoggle': { const s=state.subjects.find(x=>x.id===t.dataset.id); const tp=s.topics[+t.dataset.i]; tp.done=!tp.done; save(); render(); break; }
     case 'addassign': openAssignModal(); break;
-    case 'assigndone': { const as=state.assignments.find(x=>x.id===t.dataset.id); as.done=true; save(); render(); toast('Marked done'); break; }
+    case 'assigndone': { const as=state.assignments.find(x=>x.id===t.dataset.id); if(as){as.done=true; save(); render(); toast('Marked done');} break; }
+    case 'addevent': openEventModal(null, t.dataset.date, t.dataset.type); break;
+    case 'editevent': openEventModal(t.dataset.id); break;
+    case 'delevent': { state.assignments=state.assignments.filter(x=>x.id!==t.dataset.id); save(); render(); break; }
     case 'logstudy': openLogStudyModal(); break;
     // review / calendar
     case 'revmode': ui.reviewMode=t.dataset.m; render(); break;
@@ -3014,10 +3067,10 @@ function openAssignModal(){ const subjOpt=state.subjects.map(s=>`<option value="
 function openLogStudyModal(){ const subjOpt=state.subjects.map(s=>`<option value="${attr(s.id)}">${esc(s.name)}</option>`).join(''); openModal(`<h3>Log study time</h3><div class="form-row"><label class="fld"><span>Date</span><input class="inp" type="date" id="ls_date" value="${todayKey()}"></label><label class="fld"><span>Minutes</span><input class="inp" type="number" id="ls_min" placeholder="60"></label></div><label class="fld"><span>Subject (optional)</span><select class="inp" id="ls_subj"><option value="">—</option>${subjOpt}</select></label><div class="modal-foot"><button class="btn ghost" data-action="closemodal">Cancel</button><button class="btn primary" data-action="modal-submit">Log</button></div>`, ()=>{ const min=parseInt(el('ls_min').value); if(!min){toast('Minutes?');return;} state.studyLog.push({id:genId(),date:el('ls_date').value||todayKey(),minutes:min,subjectId:el('ls_subj').value||null}); save(); closeModal(); render(); toast('Study logged'); }); }
 function openDayModal(k){ ui.curDay=k; const s=dayStats(k); const sc=dayScore(k);
   const dls=deadlinesOn(k);
-  const dlBody = dls.length? `<div style="font-size:12px;font-weight:700;color:var(--text-2);margin:4px 0 6px">Due this day</div>`+dls.map(a=>`<div class="mtask"><span>${ic('fileText')}</span> ${esc(a.title)}</div>`).join('') : '';
-  const body=s.planned? s.tasks.map(t=>`<div class="mtask ${t.done?'done':''}" data-action="taskedit" data-id="${attr(t.id)}" style="cursor:pointer"><span class="catdot" style="background:${CAT(t.category).color}"></span> <span style="flex:1">${esc(t.text)}</span>${t.startMin!=null?`<span class="tag">${fmtClock(t.startMin)}</span>`:''}${taskMinutes(t)?`<span class="tag">${fmtMin(taskMinutes(t))}</span>`:''}<span style="color:var(--muted)">${t.done?'✓':''}</span></div>`).join('') : `<div class="empty" style="padding:14px"><div>No tasks for this day yet.</div></div>`;
+  const dlBody = dls.length? `<div style="font-size:12px;font-weight:700;color:var(--text-2);margin:4px 0 6px">Events & deadlines</div>`+dls.map(a=>{ const et=evType(a.atype); return `<div class="mtask" data-action="editevent" data-id="${attr(a.id)}" style="cursor:pointer"><span class="catdot" style="background:${et.color}"></span> <span style="flex:1">${esc(a.title)} <span class="tag" style="background:${et.color}22;color:${et.color}">${et.label}</span></span>${a.time?`<span class="tag">${esc(a.time)}</span>`:''}</div>`; }).join('') : '';
+  const body=s.planned? `<div style="font-size:12px;font-weight:700;color:var(--text-2);margin:8px 0 6px">Tasks</div>`+s.tasks.map(t=>`<div class="mtask ${t.done?'done':''}" data-action="taskedit" data-id="${attr(t.id)}" style="cursor:pointer"><span class="catdot" style="background:${CAT(t.category).color}"></span> <span style="flex:1">${esc(t.text)}</span>${t.startMin!=null?`<span class="tag">${fmtClock(t.startMin)}</span>`:''}${taskMinutes(t)?`<span class="tag">${fmtMin(taskMinutes(t))}</span>`:''}<span style="color:var(--muted)">${t.done?'✓':''}</span></div>`).join('') : (dls.length?'':`<div class="empty" style="padding:14px"><div>Nothing on this day yet.</div></div>`);
   const fm=focusMinutesOn(k);
-  openModal(`<h3>${fmtLong(k)}</h3><div class="msub">${s.completed}/${s.planned} tasks done${s.planned?` · score ${sc}/100`:''}${fm?` · ${fmtMin(fm)} focus`:''} · tap a task to edit</div>${dlBody}${body}${s.note?`<div class="insight" style="margin-top:12px">${esc(s.note)}</div>`:''}<div class="modal-foot"><button class="btn ghost" data-action="closemodal">Close</button><button class="btn" data-action="editday" data-key="${k}">Open in Tasks</button><button class="btn primary" data-action="newtask">${ic('plus')} Add task</button></div>`);
+  openModal(`<h3>${fmtLong(k)}</h3><div class="msub">${s.completed}/${s.planned} tasks done${s.planned?` · score ${sc}/100`:''}${fm?` · ${fmtMin(fm)} focus`:''} · tap an item to edit</div>${dlBody}${body}${s.note?`<div class="insight" style="margin-top:12px">${esc(s.note)}</div>`:''}<div class="modal-foot"><button class="btn ghost" data-action="closemodal">Close</button><button class="btn" data-action="addevent" data-date="${k}" data-type="event">${ic('calendar')} Add event</button><button class="btn primary" data-action="newtask">${ic('plus')} Add task</button></div>`);
 }
 function openScoreModal(){ const sb=scoreBreakdown(todayKey());
   openModal(`<h3>How today's score works</h3><div class="msub">Score = weighted average of what you actually did. Creating tasks never helps — only completing them.</div>
@@ -3316,6 +3369,21 @@ function openTimeLog(){ openModal(`<h3>Log time</h3><div class="form-row"><label
   ()=>{ const min=parseInt(el('tl_min').value); if(!min){toast('Minutes?');return;} state.timeLog.push({id:genId(),date:el('tl_date').value||todayKey(),category:el('tl_cat').value,minutes:min}); save(); closeModal(); render(); toast('Time logged'); }); }
 function openExpenseModal(){ openModal(`<h3>Add expense</h3><div class="form-row"><label class="fld"><span>Category</span><select class="inp" id="ex_cat">${EXP_CATS.map(([c,e,l])=>`<option value="${c}">${e} ${l}</option>`).join('')}</select></label><label class="fld"><span>Amount</span><input class="inp" type="number" step="0.01" id="ex_amt" placeholder="0"></label></div><div class="form-row"><label class="fld"><span>Note</span><input class="inp" id="ex_note" placeholder="optional"></label><label class="fld"><span>Date</span><input class="inp" type="date" id="ex_date" value="${todayKey()}"></label></div><div class="modal-foot"><button class="btn ghost" data-action="closemodal">Cancel</button><button class="btn primary" data-action="modal-submit">Add</button></div>`,
   ()=>{ const amt=parseFloat(el('ex_amt').value); if(!amt){toast('Amount?');return;} state.expenses.push({id:genId(),date:el('ex_date').value||todayKey(),category:el('ex_cat').value,amount:amt,note:el('ex_note').value.trim()}); save(); closeModal(); render(); toast('Expense added'); }); }
+function openEventModal(id, defDate, defType){
+  const e = id ? state.assignments.find(x=>x.id===id) : null;
+  const type = e?e.atype:(defType||'exam');
+  openModal(`<h3>${e?'Edit event':'Add to calendar'}</h3><div class="msub">Exams, assignments, meetings, deadlines — they'll show on your calendar.</div>
+    <label class="fld"><span>Title</span><input class="inp" id="ev_title" value="${e?esc(e.title):''}" placeholder="e.g. Economics exam / Client meeting"></label>
+    <div class="form-row"><label class="fld"><span>Type</span><select class="inp" id="ev_type">${Object.keys(EVENT_TYPES).map(k=>`<option value="${k}" ${type===k?'selected':''}>${EVENT_TYPES[k].label}</option>`).join('')}</select></label>
+      <label class="fld"><span>Date</span><input class="inp" type="date" id="ev_date" value="${esc(e?e.deadline:(defDate||todayKey()))}"></label></div>
+    <label class="fld"><span>Time (optional)</span><input class="inp" type="time" id="ev_time" value="${esc(e&&e.time?e.time:'')}"></label>
+    <div class="modal-foot">${e?`<button class="btn" id="ev_del" style="margin-right:auto;color:var(--bad)">${ic('trash')} Delete</button>`:''}<button class="btn ghost" data-action="closemodal">Cancel</button><button class="btn primary" data-action="modal-submit">${e?'Save':'Add'}</button></div>`,
+  ()=>{ const title=el('ev_title').value.trim(); if(!title){ toast('Give it a title'); return; }
+    const obj={title, atype:el('ev_type').value, deadline:el('ev_date').value||todayKey(), time:el('ev_time').value||''};
+    if(e){ Object.assign(e,obj); } else { state.assignments.push({id:genId(), subjectId:null, done:false, ...obj}); }
+    save(); closeModal(); render(); toast(e?'Event saved':'Added to calendar'); });
+  if(e){ setTimeout(()=>{ const d=el('ev_del'); if(d) d.onclick=()=>{ if(confirm('Delete this event?')){ state.assignments=state.assignments.filter(x=>x.id!==id); save(); closeModal(); render(); } }; },50); }
+}
 function openFitProfile(){ const f=fit();
   openModal(`<h3>Body &amp; goal</h3><div class="msub">Used for BMI and your daily calorie needs. Private to this device.</div>
     <div class="form-row"><label class="fld"><span>Sex</span><select class="inp" id="ft_sex"><option value="">—</option><option value="male" ${f.sex==='male'?'selected':''}>Male</option><option value="female" ${f.sex==='female'?'selected':''}>Female</option></select></label>
@@ -3584,17 +3652,20 @@ function openOnboarding(){
       <label class="fld"><span>Start date</span><input class="inp" type="date" id="ob_start" value="${todayKey()}"></label></div>
     <label class="fld"><span>What are you right now?</span><select class="inp" id="ob_role">${roleOptions('student')}</select></label>
     <div class="msub" style="margin:-6px 0 14px;font-size:11.5px">I'll set up categories &amp; goals that fit — e.g. a student gets Academics, Fitness &amp; Learning; a doctor gets Clinical work, Learning &amp; Health. Fully editable, and Finances is always included.</div>
-    <label class="fld"><span>Faith / reflection (optional)</span><select class="inp" id="ob_religion">${religionOptions('secular')}</select></label>
+    <div class="form-row"><label class="fld"><span>Faith / reflection (optional)</span><select class="inp" id="ob_religion">${religionOptions('secular')}</select></label>
+      <label class="fld"><span>Theme</span><select class="inp" id="ob_theme"><option value="light" ${(state.settings.theme!=='dark')?'selected':''}>Light</option><option value="dark" ${state.settings.theme==='dark'?'selected':''}>Dark</option></select></label></div>
     <div class="msub" style="margin:-6px 0 14px;font-size:11.5px">Adds an optional daily reflection section. Muslims get accurate prayer times &amp; Quran; other faiths get an editable practice list; pick "Prefer not to say" to hide it. Always private, never scored — change it anytime in Settings.</div>
     <label class="fld" style="display:flex;align-items:center;gap:10px"><input type="checkbox" id="ob_seed" checked style="width:auto"><span style="margin:0">Add a few example categories &amp; habits to get me started (optional)</span></label>
     <div class="modal-foot"><button class="btn ghost" id="ob_skip">Skip</button><button class="btn primary" id="ob_go">Get started →</button></div>
   </div>`;
   document.body.appendChild(ov);
   const finish=(seed)=>{ state.profile.name=el('ob_name').value.trim(); state.profile.startDate=el('ob_start').value||todayKey();
+    state.settings.theme=el('ob_theme').value==='dark'?'dark':'light'; state.settings._themeUserSet=true;
     state.profile.role=el('ob_role').value||'other'; applyRolePreset(state.profile.role);
     state.profile.religion=el('ob_religion').value||'secular'; seedFaithPractices(state.profile.religion); state.profile.onboarded=true;
     if(seed && el('ob_seed').checked){ seedStarter(); } save(); syncAreas(); applyFaithNav(); ov.remove(); render(); toast("You're all set"); };
   el('ob_go').onclick=()=>finish(true); el('ob_skip').onclick=()=>{ state.profile.onboarded=true; save(); ov.remove(); render(); };
+  const tt=el('ob_theme'); if(tt) tt.onchange=()=>document.documentElement.setAttribute('data-theme', tt.value); // live preview
 }
 function seedStarter(){
   // generic, lifestyle-neutral starters mapped to the default categories — all editable/deletable
