@@ -868,6 +868,10 @@ const ICONS = {
   x:'<path d="M6 6l12 12M18 6 6 18"/>',
   coin:'<circle cx="12" cy="12" r="8.4"/><path d="M12 7.6v8.8M9.6 10.2h3.4a1.9 1.9 0 0 1 0 3.6H9.6"/>',
   leaf:'<path d="M5 19c0-8 6-13 14-13 0 8-6 13-14 13z"/><path d="M5 19c3-4 6-6 10-8"/>',
+  cross:'<path d="M12 3.4v17.2M7.6 8.6h8.8"/>',
+  lotus:'<path d="M12 21c-3.6 0-6.6-2.1-6.6-5.6 2.3 0 4.1 1 5.1 2.7"/><path d="M12 21c3.6 0 6.6-2.1 6.6-5.6-2.3 0-4.1 1-5.1 2.7"/><path d="M12 21c-2.1 0-3.7-2.4-3.7-5.3 0-2.8 1.6-4.9 3.7-6.4 2.1 1.5 3.7 3.6 3.7 6.4 0 2.9-1.6 5.3-3.7 5.3z"/>',
+  starD:'<path d="M12 3l7 12H5zM12 21 5 9h14z"/>',
+  hands:'<path d="M12 21c-3.6-2-6-5-6-9V7.5a1.5 1.5 0 0 1 3 0V11m0-3.5a1.5 1.5 0 0 1 3 0V11m0-2a1.5 1.5 0 0 1 3 0v3c0 4-2.4 7-6 9"/>',
 };
 function ic(name, extra){ const p=ICONS[name]||ICONS.dot; return '<svg class="i'+(extra?' '+extra:'')+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+p+'</svg>'; }
 
@@ -913,7 +917,7 @@ const LEVEL_TITLES = ['Rookie','Starter','Grinder','Consistent','Disciplined','F
 
 const DEFAULT_STATE = {
   version:2,
-  profile:{name:'', startDate:'2026-09-01', onboarded:false},
+  profile:{name:'', startDate:'2026-09-01', onboarded:false, religion:'islam'},
   settings:{
     theme:'light',
     weights:{tasks:25, big3:20, habits:15, gym:10, study:20, focus:10},
@@ -940,6 +944,7 @@ const DEFAULT_STATE = {
   timeLog:[],
   expenses:[],
   income:[],
+  faithPractices:[],
 };
 
 /* ---------------- state ---------------- */
@@ -965,7 +970,7 @@ function mergeState(p){
   const d = structuredClone(DEFAULT_STATE);
   const m = {
     ...d, ...p,
-    profile:{...d.profile, ...(p.profile||{})},
+    profile:{...d.profile, ...(p.profile||{}), religion:((p.profile||{}).religion)||'islam'},
     settings:{...d.settings, ...(p.settings||{}),
       weights:{...d.settings.weights, ...((p.settings||{}).weights||{})},
       focus:{...d.settings.focus, ...((p.settings||{}).focus||{})},
@@ -979,7 +984,7 @@ function mergeState(p){
     bigGoals:arr(p.bigGoals), decemberMe:{vision:(p.decemberMe&&p.decemberMe.vision)||'', targets:arr(p.decemberMe&&p.decemberMe.targets)},
     habits:arr(p.habits), habitLog:p.habitLog||{},
     days:p.days||{}, focusSessions:arr(p.focusSessions), workouts:arr(p.workouts),
-    subjects:arr(p.subjects), assignments:arr(p.assignments), studyLog:arr(p.studyLog), timeLog:arr(p.timeLog), expenses:arr(p.expenses), income:arr(p.income),
+    subjects:arr(p.subjects), assignments:arr(p.assignments), studyLog:arr(p.studyLog), timeLog:arr(p.timeLog), expenses:arr(p.expenses), income:arr(p.income), faithPractices:arr(p.faithPractices),
     __mst:true, _savedAt:p._savedAt||0,
   };
   // one-time migration to the new light default (respects an explicit user choice)
@@ -1277,6 +1282,61 @@ const PRAYER_METHODS = {
   Dubai:{name:'Dubai', fajr:18.2, isha:18.2},
 };
 const PRAYERS = [['fajr','Fajr'],['dhuhr','Dhuhr'],['asr','Asr'],['maghrib','Maghrib'],['isha','Isha']];
+
+/* ---------------- faith / reflection (religion-aware; always respectful, never scored) ----------------
+   Islam keeps the dedicated astronomical prayer-times + Quran engine. Every other faith gets an
+   editable "daily practices" module seeded from a respectful preset the user fully controls. */
+const FAITH_CONFIG = {
+  islam:        { special:true,  nav:'Prayers & Quran', title:'Faith & Routine',        icon:'crescent' },
+  hinduism:     { nav:'Puja & Practice',      title:'Puja & Practice',        icon:'lotus', lede:'Your daily practice, tracked with care.',
+    practices:[{name:'Morning Puja',time:'06:30'},{name:'Evening Aarti / Diya',time:'18:30'},{name:'Meditation / Dhyana',time:''},{name:'Scripture reading (Gita)',time:''}] },
+  christianity: { nav:'Prayer & Scripture',   title:'Prayer & Scripture',     icon:'cross', lede:'Your daily walk, tracked with care.',
+    practices:[{name:'Morning Prayer',time:'07:00'},{name:'Scripture / Devotional',time:''},{name:'Evening Prayer / Examen',time:'21:00'},{name:'Gratitude',time:''}] },
+  sikhism:      { nav:'Nitnem & Simran',      title:'Nitnem & Simran',        icon:'hands', lede:'Your daily discipline, tracked with care.',
+    practices:[{name:'Nitnem (morning Banis)',time:'05:30'},{name:'Simran / Naam Japna',time:''},{name:'Rehras Sahib (evening)',time:'18:30'},{name:'Kirtan / Scripture',time:''}] },
+  buddhism:     { nav:'Meditation & Dharma',  title:'Meditation & Dharma',    icon:'lotus', lede:'Your daily practice, tracked with care.',
+    practices:[{name:'Morning Meditation',time:'06:30'},{name:'Mindfulness through the day',time:''},{name:'Evening Meditation',time:'20:30'},{name:'Dharma reading',time:''}] },
+  judaism:      { nav:'Prayer & Torah',       title:'Prayer & Torah',         icon:'starD', lede:'Your daily practice, tracked with care.',
+    practices:[{name:'Shacharit (morning)',time:'07:00'},{name:'Mincha (afternoon)',time:'15:00'},{name:'Maariv (evening)',time:'20:00'},{name:'Torah study',time:''}] },
+  other:        { nav:'Faith & Practice',     title:'Faith & Practice',       icon:'sun',   lede:'Your daily practice, tracked with care.',
+    practices:[{name:'Morning practice',time:''},{name:'Reflection',time:''},{name:'Evening practice',time:''}] },
+  secular:      { nav:'Mindfulness',          title:'Mindfulness & Reflection', icon:'leaf', lede:'A calm daily reset — tracked with care, never scored.',
+    practices:[{name:'Meditation',time:''},{name:'Gratitude — 3 good things',time:''},{name:'Journaling / Reflection',time:''}] },
+  none:         { hidden:true,   nav:'Reflection', title:'Reflection', icon:'leaf' },
+};
+const RELIGIONS = [
+  ['islam','Islam — prayers & Quran'],
+  ['hinduism','Hinduism — puja & practice'],
+  ['christianity','Christianity — prayer & scripture'],
+  ['sikhism','Sikhism — Nitnem & Simran'],
+  ['buddhism','Buddhism — meditation & dharma'],
+  ['judaism','Judaism — prayer & Torah'],
+  ['other','Other faith — my own practices'],
+  ['secular','Secular — mindfulness & gratitude'],
+  ['none','Prefer not to say / hide this'],
+];
+function religionOptions(sel){ return RELIGIONS.map(([v,l])=>`<option value="${v}" ${v===sel?'selected':''}>${l}</option>`).join(''); }
+function religion(){ return (state.profile && state.profile.religion) || 'islam'; }
+function faithCfg(){ return FAITH_CONFIG[religion()] || FAITH_CONFIG.islam; }
+function isIslam(){ return religion()==='islam'; }
+function faithHidden(){ return religion()==='none'; }
+/* seed the editable practice list for a non-Islam faith (only if empty, so user edits are never lost) */
+function seedFaithPractices(rel, force){
+  const cfg=FAITH_CONFIG[rel]||{}; if(!cfg.practices) return;
+  if(force) state.faithPractices=[];
+  if(arr(state.faithPractices).length) return;
+  state.faithPractices=cfg.practices.map(p=>({id:genId(), name:p.name, time:p.time||'', note:'', createdAt:Date.now()}));
+}
+function activePractices(){ return arr(state.faithPractices); }
+function practicesDoneOn(k){ const pr=(getDay(k).practices)||{}; return activePractices().filter(p=>pr[p.id]).length; }
+function practiceStats(a,b){ let done=0,possible=0; const list=activePractices(); const n=list.length;
+  for(let d=new Date(a); d<=b; d=addDays(d,1)){ const k=keyOf(d); if(isFuture(k)) continue; possible+=n; const pr=(getDay(k).practices)||{}; done+=list.filter(p=>pr[p.id]).length; }
+  return {done, possible, pct: possible?done/possible:0};
+}
+function practiceStreak(){ // consecutive days with at least one practice done, ending today/yesterday
+  let d=new Date(); d.setHours(0,0,0,0); if(practicesDoneOn(keyOf(d))===0) d=addDays(d,-1);
+  let s=0; while(practicesDoneOn(keyOf(d))>0){ s++; d=addDays(d,-1); } return s;
+}
 const _dtr=d=>d*Math.PI/180, _rtd=r=>r*180/Math.PI;
 const _sin=d=>Math.sin(_dtr(d)), _cos=d=>Math.cos(_dtr(d)), _tan=d=>Math.tan(_dtr(d));
 const _asin=x=>_rtd(Math.asin(x)), _acos=x=>_rtd(Math.acos(x)), _atan2=(y,x)=>_rtd(Math.atan2(y,x)), _acot=x=>_rtd(Math.atan2(1,x));
@@ -1365,6 +1425,12 @@ function dayCompletionPct(k){
 }
 // REWARD: completing your day warms the whole UI toward gold. Finish everything → radiant (tier 3).
 function applyGlow(){ try{ const p=dayCompletionPct(todayKey()); const g = p>=0.999?3 : p>=0.66?2 : p>=0.34?1 : 0; document.documentElement.setAttribute('data-glow', g); }catch(e){} }
+const _FAITH_SHORT={islam:'Faith',hinduism:'Puja',christianity:'Prayer',sikhism:'Nitnem',buddhism:'Meditate',judaism:'Prayer',other:'Faith',secular:'Reflect',none:'Reflect'};
+function applyFaithNav(){ try{
+  const cfg=faithCfg(), hidden=faithHidden(), short=_FAITH_SHORT[religion()]||'Faith';
+  document.querySelectorAll('#nav [data-view="faith"]').forEach(b=>{ b.style.display=hidden?'none':''; b.innerHTML=`<span class="ico">${ic(cfg.icon)}</span> ${esc(cfg.nav)}`; const prev=b.previousElementSibling; if(prev&&prev.classList.contains('navlabel')) prev.style.display=hidden?'none':''; });
+  document.querySelectorAll('#mnav [data-view="faith"]').forEach(b=>{ b.style.display=hidden?'none':''; b.innerHTML=`<span class="ico">${ic(cfg.icon)}</span>${esc(short)}`; });
+}catch(e){} }
 
 const VIEWS = {}; // filled below
 
@@ -1372,6 +1438,7 @@ function render(){
   applyTheme();
   applyGlow();
   setActiveNav();
+  applyFaithNav();
   el('brandName').textContent = state.profile.name ? state.profile.name.split(' ')[0]+"'s Momentum" : 'Momentum';
   const li=levelInfo();
   el('levelWidget').innerHTML = `<div class="level">
@@ -1581,6 +1648,8 @@ function goalsGlance(){
    FAITH — prayers, Surah Al-Kahf, daily Quran (respectful, no XP)
    ============================================================ */
 function faithBlock(k){
+  if(faithHidden()) return '';
+  if(!isIslam()) return practiceBlock(k);
   const p=(getDay(k).prayers)||{}, done=PRAYERS.filter(([id])=>p[id]).length;
   const t=prayerTimesFor(fromKey(k)); const isFri=fromKey(k).getDay()===5; const dq=getDay(k).dailyQuran||{}; const np=nextPrayer();
   const st=faithStats(effStart(), new Date());
@@ -1596,7 +1665,22 @@ function faithBlock(k){
     </div>
   </div>`;
 }
+/* Non-Islam faith / reflection card — editable daily practices, never scored. */
+function practiceBlock(k){
+  const cfg=faithCfg(); const list=activePractices(); const pr=(getDay(k).practices)||{};
+  const done=list.filter(p=>pr[p.id]).length; const st=practiceStats(effStart(), new Date());
+  const rows=list.length ? list.map(p=>`<button class="prayer ${pr[p.id]?'done':''}" data-action="practice" data-id="${attr(p.id)}" data-k="${k}">
+     <span class="pchk">${pr[p.id]?'✓':''}</span><span class="pname">${esc(p.name)}</span><span class="ptime">${p.time?esc(p.time):''}</span></button>`).join('')
+    : `<div class="empty" style="padding:16px"><div>No practices yet.</div><button class="btn small primary" data-action="addpractice" style="margin-top:8px">${ic('plus')} Add a practice</button></div>`;
+  return `<div class="card faith">
+    <div class="card-head"><h3>${esc(cfg.title||'Daily Practice')}</h3><span class="faith-next">${isToday(k)?'Today':fmtLong(k)}</span></div>
+    <div class="prayers">${rows}</div>
+    ${list.length?`<div class="faith-foot"><span><b>${done}/${list.length}</b> completed today</span><span><b>${Math.round(st.pct*100)}%</b> consistency</span></div>`:''}
+  </div>`;
+}
 VIEWS.faith = function(){
+  if(faithHidden()) return faithHiddenView();
+  if(!isIslam()) return practiceView();
   const tk=todayKey(); const t=prayerTimesFor(new Date()); const np=nextPrayer();
   const st=faithStats(effStart(), new Date());
   const loc=state.settings.location;
@@ -1642,6 +1726,41 @@ VIEWS.faith = function(){
     </div>
   </div>`;
 };
+
+/* Non-Islam faith / reflection view — editable practices, consistency grid, manage list. */
+function practiceView(){
+  const cfg=faithCfg(); const tk=todayKey(); const list=activePractices();
+  const gd=lastNKeys(14); const gridHead=gd.map(k=>`<th>${fromKey(k).getDate()}</th>`).join('');
+  const gridRows=list.length ? list.map(p=>`<tr><td class="hn">${esc(p.name)}</td>${gd.map(k=>{ const on=((getDay(k).practices)||{})[p.id]; return `<td><span class="hc ${on?'on':''} ${isToday(k)?'today':''}" data-action="practice" data-id="${attr(p.id)}" data-k="${k}"></span></td>`; }).join('')}</tr>`).join('')
+    : `<tr><td colspan="15" style="padding:14px;color:var(--muted)">Add a practice to start tracking.</td></tr>`;
+  const wk=practiceStats(startOfWeek(new Date()), new Date());
+  const manageRows=list.map(p=>`<div class="hb" style="padding:9px 12px;margin-bottom:6px"><span class="he">${ic('leaf')}</span><div class="hinfo"><div class="hname" style="font-size:13px">${esc(p.name)}</div>${p.time?`<div class="hsub"><span>${esc(p.time)}</span></div>`:''}</div><button class="iconbtn" data-action="editpractice" data-id="${attr(p.id)}" style="width:30px;height:30px">${ic('edit')}</button></div>`).join('');
+  return `
+  <div class="page-head"><div><h2>${esc(cfg.title||'Faith & Reflection')}</h2><div class="lede">${esc(cfg.lede||'Tracked with care. Never gamified.')}</div></div>
+    <span class="chip" style="background:var(--faith-soft);color:var(--faith)">${practiceStreak()}-day streak</span></div>
+
+  ${practiceBlock(tk)}
+
+  <div class="grid g2" style="margin-top:16px">
+    <div class="card"><div class="card-head"><h3>Consistency</h3><span class="card-sub">Last 14 days · tap to fill</span></div>
+      <div class="hgrid"><table><thead><tr><th></th>${gridHead}</tr></thead><tbody>${gridRows}</tbody></table></div>
+      <div class="faith-foot" style="margin-top:12px"><span><b>${wk.done}/${wk.possible||0}</b> this week</span><span><b>${Math.round(practiceStats(effStart(),new Date()).pct*100)}%</b> overall</span></div>
+    </div>
+    <div class="card"><div class="card-head"><h3>Your practices</h3><button class="btn small" data-action="addpractice">${ic('plus')} Add</button></div>
+      ${manageRows||'<div class="empty" style="padding:16px"><div>No practices yet — add your daily rituals.</div></div>'}
+      <p style="color:var(--muted);font-size:12px;margin-top:12px">Fully yours to edit. These are never scored — skipping never counts against your day.</p>
+    </div>
+  </div>`;
+}
+function faithHiddenView(){
+  return `
+  <div class="page-head"><div><h2>Reflection</h2><div class="lede">This section is turned off.</div></div></div>
+  <div class="card"><div class="empty" style="padding:26px">
+    <div class="t">Faith / reflection is hidden</div>
+    <div>You chose to hide this section during setup. You can turn on a faith or a secular mindfulness module any time.</div>
+    <button class="btn primary" data-action="nav" data-view="settings" style="margin-top:14px">Open Settings</button>
+  </div></div>`;
+}
 
 /* ============================================================
    VIEW: TASKS
@@ -2215,7 +2334,13 @@ VIEWS.settings = function(){
     <div class="desc" style="margin-top:10px">The timer logs your real study/focus minutes each day so your weekly review shows how long you actually worked.</div>
   </div>
 
-  <div class="card" style="margin-top:16px"><div class="card-head"><h3>Faith & prayer times</h3><span class="card-sub">calculated locally · accurate & offline</span></div>
+  <div class="card" style="margin-top:16px"><div class="card-head"><h3>Faith / reflection</h3><span class="card-sub">private · never scored</span></div>
+    <div class="set-row"><div><div class="lab">Your faith</div><div class="desc">Muslims get accurate prayer times &amp; Quran; other faiths get an editable daily-practice list (puja, prayer, meditation…). "Prefer not to say" hides the section.</div></div>
+      <select class="inp" id="setReligion" style="max-width:250px">${religionOptions(religion())}</select></div>
+    <div style="margin-top:12px"><button class="btn primary" data-action="setreligion">Save faith</button>${!isIslam()&&!faithHidden()?` <button class="btn" data-action="nav" data-view="faith">Edit practices</button>`:''}</div>
+  </div>
+
+  ${isIslam()?`<div class="card" style="margin-top:16px"><div class="card-head"><h3>Faith & prayer times</h3><span class="card-sub">calculated locally · accurate & offline</span></div>
     <div class="set-row"><div><div class="lab">Location</div><div class="desc">Prayer times are computed from your coordinates — no fixed times.</div></div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><input class="inp" id="locCity" value="${esc(loc.city||'')}" placeholder="City" style="max-width:150px"><button class="btn small" data-action="detectloc">Detect</button></div></div>
     <div class="set-row"><div class="lab">Latitude / Longitude</div><div style="display:flex;gap:8px"><input class="inp numin" id="locLat" value="${esc(loc.lat)}" style="width:104px"><input class="inp numin" id="locLng" value="${esc(loc.lng)}" style="width:104px"></div></div>
@@ -2223,7 +2348,7 @@ VIEWS.settings = function(){
     <div class="set-row"><div><div class="lab">Asr calculation</div><div class="desc">Hanafi is later; Standard (Shafi/Maliki/Hanbali) is earlier.</div></div><div class="themetog"><button data-action="asr" data-v="standard" class="${loc.asr!=='hanafi'?'active':''}">Standard</button><button data-action="asr" data-v="hanafi" class="${loc.asr==='hanafi'?'active':''}">Hanafi</button></div></div>
     <div class="set-row"><div><div class="lab">Prayer reminders</div><div class="desc">In-app alert when a prayer time arrives — only while the app is open (a web app can't wake itself when closed).</div></div><label class="switch"><input type="checkbox" id="prayerNotify" ${state.settings.prayerNotify?'checked':''}><span class="sl"></span></label></div>
     <div style="margin-top:12px"><button class="btn primary" data-action="saveloc">Save location</button></div>
-  </div>
+  </div>`:''}
 
   <div class="card" style="margin-top:16px"><div class="card-head"><h3>Appearance</h3></div>
     <div class="set-row"><div class="lab">Theme</div><div class="themetog"><button data-action="theme" data-t="dark" class="${state.settings.theme==='dark'?'active':''}">${ic('moon')} Dark</button><button data-action="theme" data-t="light" class="${state.settings.theme==='light'?'active':''}">${ic('sun')} Light</button></div></div>
@@ -2280,6 +2405,9 @@ document.addEventListener('click',e=>{
     case 'dailyquran': { const d=ensureDay(t.dataset.k); d.dailyQuran=d.dailyQuran||{}; d.dailyQuran.done=!d.dailyQuran.done; save(); render(); break; }
     case 'alkahf': { const d=ensureDay(t.dataset.k); d.alKahf=!d.alKahf; save(); render(); break; }
     case 'quranlog': openQuranLog(); break;
+    case 'practice': { const d=ensureDay(t.dataset.k); d.practices=d.practices||{}; d.practices[t.dataset.id]=!d.practices[t.dataset.id]; save(); render(); break; }
+    case 'addpractice': openPracticeModal(null); break;
+    case 'editpractice': openPracticeModal(t.dataset.id); break;
     // time + money
     case 'logtime': openTimeLog(); break;
     case 'addexpense': openExpenseModal(); break;
@@ -2296,6 +2424,10 @@ document.addEventListener('click',e=>{
     case 'moveall': moveAllUnfinished(); break;
     case 'savetargets2': { state.settings.targets.gymPerWeek=parseInt(el('rs_gym').value)||4; state.settings.targets.studyHrsPerDay=parseFloat(el('rs_study').value)||2; save(); render(); toast('Targets saved'); break; }
     // faith settings
+    case 'setreligion': { const rel=el('setReligion').value||'islam'; const prev=religion(); state.profile.religion=rel;
+      if(rel!=='islam' && rel!=='none'){ if(!activePractices().length){ seedFaithPractices(rel); }
+        else if(prev!==rel && (FAITH_CONFIG[rel]||{}).practices && confirm('Load the default practices for this faith? This replaces your current practice list.')){ seedFaithPractices(rel, true); } }
+      save(); applyFaithNav(); go(rel==='none'?'dashboard':'faith'); toast('Faith updated'); break; }
     case 'detectloc': detectLocation(); break;
     case 'saveloc': saveLocationFromForm(); render(); toast('Location saved'); break;
     case 'asr': state.settings.location.asr=t.dataset.v; saveLocationFromForm(); render(); break;
@@ -2598,8 +2730,12 @@ function applyPlanItems(items){
 /* ---- day schedule generator (fits flexible tasks around prayers + fixed events) ---- */
 function buildDaySchedule(k){
   const day=getDay(k); const tasks=(day.tasks||[]).filter(t=>!t.done);
-  const pt=prayerTimesFor(fromKey(k));
-  const pinned=PRAYERS.map(([id,label])=>({startMin:Math.round(pt[id]*60), endMin:Math.round(pt[id]*60)+15, label:label, icon:ic('crescent'), type:'prayer'}));
+  let pinned=[];
+  if(isIslam()){ const pt=prayerTimesFor(fromKey(k));
+    pinned=PRAYERS.map(([id,label])=>({startMin:Math.round(pt[id]*60), endMin:Math.round(pt[id]*60)+15, label:label, icon:ic('crescent'), type:'prayer'}));
+  } else if(!faithHidden()){ const fic=ic(faithCfg().icon);
+    pinned=activePractices().filter(p=>/^\d{1,2}:\d{2}$/.test(p.time||'')).map(p=>{ const [h,m]=p.time.split(':').map(Number); const s=h*60+m; return {startMin:s, endMin:s+15, label:p.name, icon:fic, type:'prayer'}; });
+  }
   const flex=[];
   tasks.forEach(t=>{
     if(t.startMin!=null){ pinned.push({startMin:t.startMin, endMin:(t.endMin!=null?t.endMin:t.startMin+(t.estMin||60)), label:t.text, icon:catEmoji(t.category), type:'fixed'}); }
@@ -2724,6 +2860,19 @@ function openQuranLog(){ const d=getDay(todayKey()).dailyQuran||{}; openModal(`<
   <label class="fld"><span>Surah / portion</span><input class="inp" id="q_portion" value="${esc(d.portion||'')}" placeholder="e.g. Al-Baqarah 1–20"></label>
   <div class="modal-foot"><button class="btn ghost" data-action="closemodal">Cancel</button><button class="btn primary" data-action="modal-submit">Save</button></div>`,
   ()=>{ const dd=ensureDay(todayKey()); dd.dailyQuran={done:true, minutes:parseInt(el('q_min').value)||null, pages:parseInt(el('q_pages').value)||null, portion:el('q_portion').value.trim()||null}; save(); closeModal(); render(); }); }
+function openPracticeModal(id){
+  const p = id ? activePractices().find(x=>x.id===id) : null;
+  openModal(`<h3>${p?'Edit practice':'Add practice'}</h3><div class="msub">Your own daily ritual — tracked with care, never scored.</div>
+    <label class="fld"><span>Name</span><input class="inp" id="pr_name" value="${p?esc(p.name):''}" placeholder="e.g. Morning meditation"></label>
+    <div class="form-row"><label class="fld"><span>Time (optional)</span><input class="inp" type="time" id="pr_time" value="${p?esc(p.time||''):''}"></label>
+      <label class="fld"><span>Note (optional)</span><input class="inp" id="pr_note" value="${p?esc(p.note||''):''}" placeholder="optional"></label></div>
+    <div class="modal-foot">${p?`<button class="btn ghost" id="pr_del" style="margin-right:auto;color:var(--bad)">${ic('trash')} Delete</button>`:''}<button class="btn ghost" data-action="closemodal">Cancel</button><button class="btn primary" data-action="modal-submit">${p?'Save':'Add'}</button></div>`,
+  ()=>{ const name=el('pr_name').value.trim(); if(!name){ toast('Give it a name'); return; }
+    const obj={name, time:el('pr_time').value||'', note:el('pr_note').value.trim()};
+    if(p){ Object.assign(p, obj); } else { state.faithPractices.push({id:genId(), createdAt:Date.now(), ...obj}); }
+    save(); closeModal(); render(); });
+  if(p){ setTimeout(()=>{ const d=el('pr_del'); if(d) d.onclick=()=>{ if(confirm('Delete this practice?')){ state.faithPractices=activePractices().filter(x=>x.id!==id); save(); closeModal(); render(); } }; },50); }
+}
 function openTimeLog(){ openModal(`<h3>Log time</h3><div class="form-row"><label class="fld"><span>Category</span><select class="inp" id="tl_cat">${TIME_CATS.map(([c,e,l])=>`<option value="${c}">${e} ${l}</option>`).join('')}</select></label><label class="fld"><span>Minutes</span><input class="inp" type="number" id="tl_min" placeholder="e.g. 60"></label></div><label class="fld"><span>Date</span><input class="inp" type="date" id="tl_date" value="${todayKey()}"></label><div class="modal-foot"><button class="btn ghost" data-action="closemodal">Cancel</button><button class="btn primary" data-action="modal-submit">Log</button></div>`,
   ()=>{ const min=parseInt(el('tl_min').value); if(!min){toast('Minutes?');return;} state.timeLog.push({id:genId(),date:el('tl_date').value||todayKey(),category:el('tl_cat').value,minutes:min}); save(); closeModal(); render(); toast('Time logged'); }); }
 function openExpenseModal(){ openModal(`<h3>Add expense</h3><div class="form-row"><label class="fld"><span>Category</span><select class="inp" id="ex_cat">${EXP_CATS.map(([c,e,l])=>`<option value="${c}">${e} ${l}</option>`).join('')}</select></label><label class="fld"><span>Amount</span><input class="inp" type="number" step="0.01" id="ex_amt" placeholder="0"></label></div><div class="form-row"><label class="fld"><span>Note</span><input class="inp" id="ex_note" placeholder="optional"></label><label class="fld"><span>Date</span><input class="inp" type="date" id="ex_date" value="${todayKey()}"></label></div><div class="modal-foot"><button class="btn ghost" data-action="closemodal">Cancel</button><button class="btn primary" data-action="modal-submit">Add</button></div>`,
@@ -2763,7 +2912,14 @@ function decemberMePanel(){ const dm=state.decemberMe||{vision:'',targets:[]}; c
 }
 
 /* ---------------- review helpers: faith / difficulty / time / money / reset ---------------- */
-function faithSection(a,b){ const f=faithStats(a,b);
+function faithSection(a,b){
+  if(faithHidden()) return '';
+  if(!isIslam()){ const cfg=faithCfg(); const list=activePractices(); if(!list.length) return ''; const ps=practiceStats(a,b);
+    const cells=list.slice(0,3).map(p=>{ let done=0,poss=0; for(let d=new Date(a);d<=b;d=addDays(d,1)){ const k=keyOf(d); if(isFuture(k))continue; poss++; if(((getDay(k).practices)||{})[p.id])done++; } return `<div class="faith-cell"><div class="faith-stat">${done}/${poss}</div><div class="faith-lab">${ic(cfg.icon)} ${esc(p.name)}</div></div>`; }).join('');
+    return `<div class="card faith" style="margin-top:16px"><div class="card-head"><h3>${esc(cfg.title)}</h3><span class="card-sub">tracked with care · ${Math.round(ps.pct*100)}% overall</span></div>
+      <div class="grid g3" style="gap:12px">${cells}</div></div>`;
+  }
+  const f=faithStats(a,b);
   return `<div class="card faith" style="margin-top:16px"><div class="card-head"><h3>Faith & Routine</h3><span class="card-sub">tracked with care</span></div>
     <div class="grid g3" style="gap:12px">
       <div class="faith-cell"><div class="faith-stat">${f.done}/${f.possible}</div><div class="faith-lab">${ic('crescent')} Prayers · ${Math.round(f.pct*100)}%</div></div>
@@ -2949,14 +3105,17 @@ function openOnboarding(){
     <h3>Welcome to Momentum</h3><div class="msub">Your Sep→Dec "Better Me" dashboard. Two minutes to set up — you can change everything later.</div>
     <div class="form-row"><label class="fld"><span>Your name</span><input class="inp" id="ob_name" placeholder="e.g. Alex"></label>
       <label class="fld"><span>Journey start</span><input class="inp" type="date" id="ob_start" value="2026-09-01"></label></div>
+    <label class="fld"><span>Faith / reflection</span><select class="inp" id="ob_religion">${religionOptions('islam')}</select></label>
+    <div class="msub" style="margin:-6px 0 14px;font-size:11.5px">Shapes your daily faith section — Muslims get accurate prayer times &amp; Quran; other faiths get an editable practice list (puja, prayer, meditation…). Always private, never scored. Change it anytime in Settings.</div>
     <div class="form-row"><label class="fld"><span>${ic('dumbbell')} Gym / week</span><input class="inp numin" type="number" id="ob_gym" value="4"></label>
       <label class="fld"><span>${ic('book')} Study hrs / day</span><input class="inp numin" type="number" step="0.5" id="ob_study" value="2"></label></div>
     <label class="fld" style="display:flex;align-items:center;gap:10px"><input type="checkbox" id="ob_seed" checked style="width:auto"><span style="margin:0">Add starter goals, habits & subjects to get me going</span></label>
     <div class="modal-foot"><button class="btn ghost" id="ob_skip">Skip</button><button class="btn primary" id="ob_go">Start my journey →</button></div>
   </div>`;
   document.body.appendChild(ov);
-  const finish=(seed)=>{ state.profile.name=el('ob_name').value.trim(); state.profile.startDate=el('ob_start').value||'2026-09-01'; state.settings.targets.gymPerWeek=parseInt(el('ob_gym').value)||4; state.settings.targets.studyHrsPerDay=parseFloat(el('ob_study').value)||2; state.profile.onboarded=true;
-    if(seed && el('ob_seed').checked){ seedStarter(); } save(); ov.remove(); render(); toast("Let's go"); };
+  const finish=(seed)=>{ state.profile.name=el('ob_name').value.trim(); state.profile.startDate=el('ob_start').value||'2026-09-01'; state.settings.targets.gymPerWeek=parseInt(el('ob_gym').value)||4; state.settings.targets.studyHrsPerDay=parseFloat(el('ob_study').value)||2;
+    state.profile.religion=el('ob_religion').value||'islam'; seedFaithPractices(state.profile.religion); state.profile.onboarded=true;
+    if(seed && el('ob_seed').checked){ seedStarter(); } save(); applyFaithNav(); ov.remove(); render(); toast("Let's go"); };
   el('ob_go').onclick=()=>finish(true); el('ob_skip').onclick=()=>{ state.profile.onboarded=true; save(); ov.remove(); render(); };
 }
 function seedStarter(){
@@ -2998,7 +3157,7 @@ document.addEventListener('change',e=>{ if(e.target.id==='fNotify'){ state.setti
 /* ---------------- prayer reminder ticker (only while app is open) ---------------- */
 const _prayerNotified=new Set();
 function prayerTick(){
-  if(!state.settings.prayerNotify) return;
+  if(!state.settings.prayerNotify || !isIslam()) return;
   const now=new Date(); const nowH=now.getHours()+now.getMinutes()/60; const t=prayerTimesFor(now); const dk=todayKey();
   PRAYERS.forEach(([id,label])=>{ const key=dk+id; if(_prayerNotified.has(key)) return; if(nowH>=t[id] && nowH-t[id]<=1.2/60){ _prayerNotified.add(key); toast(`${label} — time to pray`); if('Notification' in window && Notification.permission==='granted'){ try{ new Notification(label+' — '+fmtTime(t[id]), {body:'Time for prayer.'}); }catch(e){} } } });
 }
