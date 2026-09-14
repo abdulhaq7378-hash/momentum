@@ -769,9 +769,7 @@ html[data-theme="light"] body::before{ mix-blend-mode:normal; }
 
       <div class="navlabel">Life areas</div>
       <button data-action="nav" data-view="goals"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21.5V3"/><path d="M5 4h12.5l-2 3.8L18 12H5"/></svg></span> Goals</button>
-      <button data-action="nav" data-view="gym"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h3l2.5 7 4-15 2.5 8h6"/></svg></span> Gym</button>
-      <button data-action="nav" data-view="academics"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v14H6.5A1.5 1.5 0 0 0 5 18.5z"/><path d="M5 18.5A1.5 1.5 0 0 1 6.5 17H19v4H6.5A1.5 1.5 0 0 1 5 19.5z"/></svg></span> Academics</button>
-      <button data-action="nav" data-view="finance"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.4"/><path d="M12 7.6v8.8M9.6 10.2h3.4a1.9 1.9 0 0 1 0 3.6H9.6"/></svg></span> Finances</button>
+      <span id="lifeAreasNav" style="display:contents"></span>
 
       <div class="navlabel">Insights</div>
       <button data-action="nav" data-view="review"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V11"/><path d="M10 20V4"/><path d="M16 20v-6"/><path d="M21.5 20h-19"/></svg></span> Reviews</button>
@@ -795,9 +793,7 @@ html[data-theme="light"] body::before{ mix-blend-mode:normal; }
   <button data-action="nav" data-view="focus"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.6"/></svg></span>Focus</button>
   <button data-action="nav" data-view="faith"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 14.3A8.2 8.2 0 1 1 9.7 3.5a6.6 6.6 0 0 0 10.8 10.8z"/></svg></span>Faith</button>
   <button data-action="nav" data-view="goals"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21.5V3"/><path d="M5 4h12.5l-2 3.8L18 12H5"/></svg></span>Goals</button>
-  <button data-action="nav" data-view="gym"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h3l2.5 7 4-15 2.5 8h6"/></svg></span>Gym</button>
-  <button data-action="nav" data-view="academics"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v14H6.5A1.5 1.5 0 0 0 5 18.5z"/><path d="M5 18.5A1.5 1.5 0 0 1 6.5 17H19v4H6.5A1.5 1.5 0 0 1 5 19.5z"/></svg></span>Study</button>
-  <button data-action="nav" data-view="finance"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.4"/><path d="M12 7.6v8.8M9.6 10.2h3.4a1.9 1.9 0 0 1 0 3.6H9.6"/></svg></span>Money</button>
+  <span id="lifeAreasMnav" style="display:contents"></span>
   <button data-action="nav" data-view="review"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V11"/><path d="M10 20V4"/><path d="M16 20v-6"/><path d="M21.5 20h-19"/></svg></span>Review</button>
   <button data-action="nav" data-view="settings"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.1"/><path d="M19.5 12a7.5 7.5 0 0 0-.13-1.35l2-1.55-2-3.46-2.35.95a7.5 7.5 0 0 0-2.34-1.36L14.3 2h-4l-.38 2.87a7.5 7.5 0 0 0-2.34 1.36L5.23 5.28l-2 3.46 2 1.55A7.6 7.6 0 0 0 5.1 12c0 .46.05.91.13 1.35l-2 1.55 2 3.46 2.35-.95a7.5 7.5 0 0 0 2.34 1.36L10.3 22h4l.38-2.87a7.5 7.5 0 0 0 2.34-1.36l2.35.95 2-3.46-2-1.55c.08-.44.13-.89.13-1.71z"/></svg></span>More</button>
 </nav>
@@ -883,6 +879,32 @@ const CATS = {
   general:   {label:'General',       short:'General',  emoji:ic('check'),     color:'var(--c-general)'},
 };
 const CAT_ORDER = ['gym','academics','personal','work','general'];
+/* safe category lookup — orphan tasks (e.g. from a deleted custom area) fall back to General */
+function CAT(c){ return CATS[c] || CATS.general; }
+/* ---- Life areas (configurable + custom) ----
+   Areas drive the "Life areas" nav section and extend the task-category system.
+   Built-in kinds (gym/academics/finance) keep their dedicated views; custom areas
+   get a generic tracking page. CATS/CAT_ORDER are (re)derived from the areas config. */
+const AREA_ICONS=['star','dumbbell','book','coin','briefcase','spark','trend','target','leaf','bolt','flame','award','list','calendar','sun','drop','mic','crescent'];
+const AREA_COLORS=['#e8734a','#4a90d6','#8b6ff0','#2fae82','#e0a02a','#0f9aa6','#e0512e','#d6699b'];
+function areas(){ return arr(state.settings && state.settings.areas); }
+function areaById(id){ return areas().find(a=>a.id===id); }
+function areaName(kind, fallback){ const a=areas().find(x=>x.kind===kind); return a?a.name:(fallback||kind); }
+function enabledAreas(){ return areas().filter(a=>a.enabled!==false); }
+function syncAreas(){
+  const list=areas();
+  Object.keys(CATS).forEach(k=>{ if(CATS[k]&&CATS[k]._custom) delete CATS[k]; });
+  list.forEach(a=>{
+    if(a.kind==='gym'&&CATS.gym){ CATS.gym.label=a.name; CATS.gym.short=a.name; CATS.gym.emoji=ic(a.icon||'dumbbell'); }
+    else if(a.kind==='academics'&&CATS.academics){ CATS.academics.label=a.name; CATS.academics.short=a.name; CATS.academics.emoji=ic(a.icon||'book'); }
+    else if(a.kind==='custom'){ CATS[a.id]={label:a.name, short:a.name, emoji:ic(a.icon||'star'), color:a.color||'var(--accent)', _custom:true}; }
+  });
+  // task-category order: gym & academics always present; enabled custom areas; then base cats
+  const order=['gym','academics'];
+  list.forEach(a=>{ if(a.kind==='custom'&&a.enabled!==false&&CATS[a.id]) order.push(a.id); });
+  ['personal','work','general'].forEach(c=>order.push(c));
+  CAT_ORDER.length=0; order.forEach(c=>{ if(CATS[c]) CAT_ORDER.push(c); });
+}
 const PRIO = {high:{l:'High',c:'var(--prio-high)'}, med:{l:'Med',c:'var(--prio-med)'}, low:{l:'Low',c:'var(--prio-low)'}};
 const DIFF = {easy:'Easy', med:'Medium', hard:'Hard'};
 const MOODS = ['😞','😐','🙂','😎','🔥'];
@@ -926,6 +948,11 @@ const DEFAULT_STATE = {
     prayerNotify:false,
     targets:{gymPerWeek:4, studyHrsPerDay:2, dailyTasks:5},
     finance:{currency:'₹', monthlyBudget:0},
+    areas:[
+      {id:'gym',       name:'Gym',       icon:'dumbbell', color:'var(--c-gym)',   kind:'gym',       enabled:true},
+      {id:'academics', name:'Academics', icon:'book',     color:'var(--c-study)', kind:'academics', enabled:true},
+      {id:'finance',   name:'Finances',  icon:'coin',     color:'var(--c-work)',  kind:'finance',   enabled:true},
+    ],
     location:{lat:13.3525, lng:74.7925, city:'Manipal, India', method:'Karachi', asr:'standard', autoTz:true, tz:5.5},
     blockSites:['instagram.com','web.whatsapp.com','reddit.com','discord.com','x.com','twitter.com','facebook.com','tiktok.com','twitch.tv','netflix.com'],
     blockApps:['Discord','Steam','EpicGamesLauncher','WhatsApp'],
@@ -949,6 +976,7 @@ const DEFAULT_STATE = {
 
 /* ---------------- state ---------------- */
 let state = load();
+syncAreas();
 let storageOK = true;
 
 function readEmbedded(){ try{ const el=document.getElementById('MST'); if(!el) return null; const p=JSON.parse(el.textContent||'null'); if(p && p.__mst) return p; }catch(e){} return null; }
@@ -977,6 +1005,7 @@ function mergeState(p){
       targets:{...d.settings.targets, ...((p.settings||{}).targets||{})},
       location:{...d.settings.location, ...((p.settings||{}).location||{})},
       finance:{...d.settings.finance, ...((p.settings||{}).finance||{})},
+      areas:(p.settings&&arr(p.settings.areas).length)?arr(p.settings.areas):d.settings.areas,
       blockSites:(p.settings&&p.settings.blockSites)||d.settings.blockSites,
       blockApps:(p.settings&&p.settings.blockApps)||d.settings.blockApps,
       allowSites:(p.settings&&p.settings.allowSites)||d.settings.allowSites,
@@ -1426,6 +1455,14 @@ function dayCompletionPct(k){
 // REWARD: completing your day warms the whole UI toward gold. Finish everything → radiant (tier 3).
 function applyGlow(){ try{ const p=dayCompletionPct(todayKey()); const g = p>=0.999?3 : p>=0.66?2 : p>=0.34?1 : 0; document.documentElement.setAttribute('data-glow', g); }catch(e){} }
 const _FAITH_SHORT={islam:'Faith',hinduism:'Puja',christianity:'Prayer',sikhism:'Nitnem',buddhism:'Meditate',judaism:'Prayer',other:'Faith',secular:'Reflect',none:'Reflect'};
+function areaView(a){ return a.kind==='custom' ? ('area:'+a.id) : a.id; }
+function applyAreaNav(){ try{
+  const list=enabledAreas();
+  const side=document.getElementById('lifeAreasNav');
+  if(side) side.innerHTML=list.map(a=>`<button data-action="nav" data-view="${attr(areaView(a))}"><span class="ico">${ic(a.icon||'star')}</span> ${esc(a.name)}</button>`).join('');
+  const m=document.getElementById('lifeAreasMnav');
+  if(m) m.innerHTML=list.map(a=>`<button data-action="nav" data-view="${attr(areaView(a))}"><span class="ico">${ic(a.icon||'star')}</span>${esc(a.name.length>7?a.name.slice(0,6)+'…':a.name)}</button>`).join('');
+}catch(e){} }
 function applyFaithNav(){ try{
   const cfg=faithCfg(), hidden=faithHidden(), short=_FAITH_SHORT[religion()]||'Faith';
   document.querySelectorAll('#nav [data-view="faith"]').forEach(b=>{ b.style.display=hidden?'none':''; b.innerHTML=`<span class="ico">${ic(cfg.icon)}</span> ${esc(cfg.nav)}`; const prev=b.previousElementSibling; if(prev&&prev.classList.contains('navlabel')) prev.style.display=hidden?'none':''; });
@@ -1435,10 +1472,12 @@ function applyFaithNav(){ try{
 const VIEWS = {}; // filled below
 
 function render(){
+  syncAreas();
   applyTheme();
   applyGlow();
-  setActiveNav();
   applyFaithNav();
+  applyAreaNav();
+  setActiveNav();
   el('brandName').textContent = state.profile.name ? state.profile.name.split(' ')[0]+"'s Momentum" : 'Momentum';
   const li=levelInfo();
   el('levelWidget').innerHTML = `<div class="level">
@@ -1446,7 +1485,9 @@ function render(){
      <div class="lv-bar"><i style="width:${(li.pct*100).toFixed(0)}%"></i></div>
      <div class="lv-xp">${li.xp-li.cur} / ${li.next-li.cur} XP</div></div>`;
   updateSyncBadge();
-  const fn = VIEWS[ui.view] || VIEWS.dashboard;
+  let fn = VIEWS[ui.view];
+  if(!fn && typeof ui.view==='string' && ui.view.indexOf('area:')===0){ const aid=ui.view.slice(5); fn=()=>genericAreaView(aid); }
+  if(!fn) fn = VIEWS.dashboard;
   app.innerHTML = `<div class="view">${fn()}</div>`;
   if(afterRender[ui.view]) afterRender[ui.view]();
   // only show onboarding once durable (db) state has been checked — prevents the Welcome
@@ -1762,6 +1803,42 @@ function faithHiddenView(){
   </div></div>`;
 }
 
+/* Generic tracking page for a custom life area (tasks + habits + goals + activity). */
+function genericAreaView(id){
+  const a=areaById(id);
+  if(!a){ return `<div class="page-head"><div><h2>Area</h2></div></div><div class="card"><div class="empty" style="padding:24px"><div class="t">Area not found</div><div>It may have been removed or hidden.</div><button class="btn primary" data-action="nav" data-view="dashboard" style="margin-top:12px">Back to dashboard</button></div></div>`; }
+  const tk=todayKey(); const cat=id;
+  const dayT=(getDay(tk).tasks||[]).filter(t=>t.category===cat);
+  const doneToday=dayT.filter(t=>t.done).length;
+  let wkDone=0; { const ws=startOfWeek(new Date()); for(let i=0;i<7;i++){ const k=keyOf(addDays(ws,i)); wkDone+=(getDay(k).tasks||[]).filter(t=>t.category===cat&&t.done).length; } }
+  const hbs=state.habits.filter(h=>h.area===cat);
+  const gls=state.bigGoals.filter(g=>g.area===cat);
+  const chart=barsChart(lastNKeys(14).map(k=>{ const done=(getDay(k).tasks||[]).filter(t=>t.category===cat&&t.done).length; return {label:fromKey(k).getDate()+'', val:done, tip:`<div class='th'>${fmtLong(k)}</div><div class='tr'><span>Done</span><b>${done}</b></div>`, strong:isToday(k)}; }), {valFmt:v=>v});
+  const hbRows = hbs.length ? hbs.map(h=>`<div class="hb" style="padding:9px 12px;margin-bottom:6px"><span class="he">${emojiIcon(h.emoji,'check')}</span><div class="hinfo"><div class="hname" style="font-size:13px">${esc(h.name)}</div></div><span class="hstreak">${ic('flame')} ${habitStreak(h)}</span><button class="check ${habitDone(h,tk)?'done':''}" data-action="habittoggle" data-id="${attr(h.id)}"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6"/></svg></button></div>`).join('') : `<div class="empty" style="padding:14px"><div>No habits here yet.</div></div>`;
+  const glRows = gls.length ? gls.map(goalCard).join('') : `<div class="empty" style="padding:14px"><div>No goals here yet.</div></div>`;
+  const taskRows = dayT.length ? dayT.map(taskRow).join('') : `<div class="empty" style="padding:14px"><div>No tasks today.</div></div>`;
+  return `
+  <div class="page-head"><div><h2>${ic(a.icon||'star')} ${esc(a.name)}</h2><div class="lede">Everything in your ${esc(a.name)} area — tasks, habits and goals.</div></div>
+    <div class="addbar" style="gap:8px"><button class="btn small primary" data-action="areatask" data-cat="${attr(cat)}">${ic('plus')} Task</button><button class="btn small" data-action="addhabit" data-area="${attr(cat)}">${ic('plus')} Habit</button><button class="btn small" data-action="addgoal" data-area="${attr(cat)}">${ic('plus')} Goal</button></div></div>
+
+  <div class="grid g4" style="margin-bottom:16px">
+    <div class="stat"><div class="k">${ic('check')} Today</div><div class="v">${doneToday}/${dayT.length}</div><div class="foot">tasks done</div></div>
+    <div class="stat"><div class="k">${ic('calendar')} This week</div><div class="v">${wkDone}</div><div class="foot">tasks done</div></div>
+    <div class="stat"><div class="k">${ic('repeat')} Habits</div><div class="v">${hbs.length}</div><div class="foot">in this area</div></div>
+    <div class="stat"><div class="k">${ic('flag')} Goals</div><div class="v">${gls.length}</div><div class="foot">in this area</div></div>
+  </div>
+
+  <div class="grid g2">
+    <div class="card"><div class="card-head"><h3>Today's tasks</h3><button class="btn small" data-action="areatask" data-cat="${attr(cat)}">${ic('plus')} Add</button></div>${taskRows}</div>
+    <div class="card"><div class="card-head"><h3>Habits</h3><button class="btn small" data-action="addhabit" data-area="${attr(cat)}">${ic('plus')} Add</button></div>${hbRows}</div>
+  </div>
+
+  <div class="card" style="margin-top:16px"><div class="card-head"><h3>Goals</h3><button class="btn small" data-action="addgoal" data-area="${attr(cat)}">${ic('plus')} Add</button></div>${glRows}</div>
+
+  <div class="card" style="margin-top:16px"><div class="card-head"><h3>Activity</h3><span class="card-sub">Last 14 days · tasks completed</span></div><div class="chart-wrap">${chart}</div></div>
+  `;
+}
+
 /* ============================================================
    VIEW: TASKS
    ============================================================ */
@@ -1785,7 +1862,7 @@ VIEWS.tasks = function(){
   <div class="card">
     <div class="segmented" id="catSeg" style="margin-bottom:11px">${CAT_ORDER.map(c=>`<button data-action="pickcat" data-cat="${c}" class="${ui.addCat===c?'active':''}">${CATS[c].emoji} ${CATS[c].short}</button>`).join('')}</div>
     <div class="addbar">
-      <input class="inp" id="taskInput" placeholder="Add a ${CATS[ui.addCat].short.toLowerCase()} task and press Enter…" autocomplete="off">
+      <input class="inp" id="taskInput" placeholder="Add a ${esc(CAT(ui.addCat).short.toLowerCase())} task and press Enter…" autocomplete="off">
       <button class="btn" data-action="addtask-detail">${ic('plus')}Details</button>
       <button class="btn primary" data-action="addtask">Add</button>
     </div>
@@ -1826,7 +1903,7 @@ function taskRow(t){
   const goal=t.goalId&&state.bigGoals.find(g=>g.id===t.goalId); if(goal) meta.push(`<span class="tag">${ic('award')} ${esc(goal.title)}</span>`);
   return `<div class="task ${t.done?'done':''}" data-id="${attr(t.id)}">
     <button class="check" data-action="toggle" data-id="${attr(t.id)}"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6"/></svg></button>
-    <span class="catdot" style="background:${CATS[t.category].color}"></span>
+    <span class="catdot" style="background:${CAT(t.category).color}"></span>
     <span class="tx">${esc(t.text)}${meta.length?`<span class="meta">${meta.join('')}</span>`:''}</span>
     <span class="row-act"><button data-action="taskedit" data-id="${attr(t.id)}" title="Edit">✎</button><button class="del" data-action="deltask" data-id="${attr(t.id)}" title="Delete">${ic('trash')}</button></span>
   </div>`;
@@ -2002,7 +2079,7 @@ VIEWS.gym = function(){
   const weeks=[]; let w=startOfWeek(new Date()); for(let i=0;i<8;i++){ weeks.push(new Date(w)); w=addDays(w,-7); }
   const weekBars=weeks.reverse().map((wk,idx)=>{ let c=0; for(let i=0;i<7;i++) if(gymDay(keyOf(addDays(wk,i)))) c++; return {label:MONS[wk.getMonth()]+' '+wk.getDate(), val:c, tip:`<div class='th'>Week of ${MONS[wk.getMonth()]} ${wk.getDate()}</div><div class='tr'><span>Gym days</span><b>${c}</b></div>`, strong:idx===weeks.length-1}; });
 
-  return `<div class="page-head"><div><h2>Gym &amp; Fitness</h2><div class="lede">Log workouts and watch strength & consistency climb.</div></div><button class="btn primary" data-action="addworkout">${ic('plus')}Log workout</button></div>
+  return `<div class="page-head"><div><h2>${esc(areaName('gym','Gym'))}</h2><div class="lede">Log workouts and watch strength & consistency climb.</div></div><button class="btn primary" data-action="addworkout">${ic('plus')}Log workout</button></div>
 
   <div class="grid g4" style="margin-bottom:16px">
     <div class="stat"><div class="k">This week</div><div class="v">${wkGym}<small>/${esc(state.settings.targets.gymPerWeek)}</small></div><div class="foot">gym days</div></div>
@@ -2055,7 +2132,7 @@ VIEWS.academics = function(){
     </div>`;
   }).join('');
 
-  return `<div class="page-head"><div><h2>Academics</h2><div class="lede">Subjects, topics, deadlines and real study time.</div></div>
+  return `<div class="page-head"><div><h2>${esc(areaName('academics','Academics'))}</h2><div class="lede">Subjects, topics, deadlines and real study time.</div></div>
     <div style="display:flex;gap:8px"><button class="btn" data-action="addassign">${ic('plus')}Deadline</button><button class="btn primary" data-action="addsubject">${ic('plus')}Subject</button></div></div>
 
   <div class="grid g4" style="margin-bottom:16px">
@@ -2269,7 +2346,7 @@ VIEWS.finance = function(){
   const days=new Date(y,m+1,0).getDate(); const dayBars=[]; for(let d=1;d<=days;d++){ const k=keyOf(new Date(y,m,d)); const dv=state.expenses.filter(e=>e.date===k).reduce((s,e)=>s+(+e.amount||0),0); dayBars.push({label:''+d,val:dv,color:'var(--c-work)',tip:`<div class='th'>${fmtLong(k)}</div><div class='tr'><span>Spent</span><b>${money(dv)}</b></div>`,strong:isToday(k)}); }
   const budgetPct=budget>0?Math.min(1,expense/budget):0;
   const txName=t=> t.kind==='in'?(esc(t.source||'Income')):esc((EXP_CATS.find(e=>e[0]===t.category)||[])[2]||'Expense');
-  return `<div class="page-head"><div><h2>Finances</h2><div class="lede">Income, spending and your monthly budget — all in one place.</div></div>
+  return `<div class="page-head"><div><h2>${esc(areaName('finance','Finances'))}</h2><div class="lede">Income, spending and your monthly budget — all in one place.</div></div>
     <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><button class="iconbtn" data-action="month" data-dir="-1">‹</button><div class="chip">${MON[m]} ${y}</div><button class="iconbtn" data-action="month" data-dir="1" ${isThis?'disabled':''}>›</button>
     <button class="btn" data-action="addincome">${ic('plus')} Income</button><button class="btn primary" data-action="addexpense">${ic('plus')} Expense</button></div></div>
 
@@ -2319,6 +2396,17 @@ VIEWS.settings = function(){
     <div class="set-row"><div class="lab">Study hours / day</div><input class="inp numin" type="number" min="0" max="16" step="0.5" id="tStudy" value="${esc(t.studyHrsPerDay)}"></div>
     <div class="set-row"><div class="lab">Daily task target</div><input class="inp numin" type="number" min="1" max="30" id="tTasks" value="${esc(t.dailyTasks)}"></div>
     <div style="margin-top:12px"><button class="btn primary" data-action="savetargets">Save targets</button></div>
+  </div>
+
+  <div class="card" style="margin-top:16px"><div class="card-head"><h3>Life areas</h3><button class="btn small" data-action="addarea">${ic('plus')} Add area</button></div>
+    <p style="color:var(--text-2);font-size:13px;margin:0 0 10px">Rename, reorder, hide, or add your own areas — Sports, Business, Music, anything. Each area gets its own page and organises its tasks, habits &amp; goals.</p>
+    ${areas().map((a,i)=>`<div class="hb" style="padding:9px 12px;margin-bottom:6px">
+       <span class="he">${ic(a.icon||'star')}</span>
+       <div class="hinfo"><div class="hname" style="font-size:13px">${esc(a.name)}</div><div class="hsub"><span>${a.kind==='custom'?'Custom':'Built-in'}${a.enabled===false?' · hidden':''}</span></div></div>
+       <button class="iconbtn" data-action="areaup" data-id="${attr(a.id)}" ${i===0?'disabled':''} style="width:30px;height:30px">↑</button>
+       <button class="iconbtn" data-action="areadown" data-id="${attr(a.id)}" ${i===areas().length-1?'disabled':''} style="width:30px;height:30px">↓</button>
+       <button class="iconbtn" data-action="editarea" data-id="${attr(a.id)}" style="width:30px;height:30px">${ic('edit')}</button>
+     </div>`).join('')}
   </div>
 
   <div class="card" style="margin-top:16px"><div class="card-head"><h3>Daily score weights</h3><span class="card-sub">How your score is calculated</span></div>
@@ -2428,6 +2516,12 @@ document.addEventListener('click',e=>{
       if(rel!=='islam' && rel!=='none'){ if(!activePractices().length){ seedFaithPractices(rel); }
         else if(prev!==rel && (FAITH_CONFIG[rel]||{}).practices && confirm('Load the default practices for this faith? This replaces your current practice list.')){ seedFaithPractices(rel, true); } }
       save(); applyFaithNav(); go(rel==='none'?'dashboard':'faith'); toast('Faith updated'); break; }
+    case 'addarea': openAreaModal(null); break;
+    case 'editarea': openAreaModal(t.dataset.id); break;
+    case 'areaup': { const l=areas(); const i=l.findIndex(x=>x.id===t.dataset.id); if(i>0){ const tmp=l[i-1]; l[i-1]=l[i]; l[i]=tmp; save(); syncAreas(); render(); } break; }
+    case 'areadown': { const l=areas(); const i=l.findIndex(x=>x.id===t.dataset.id); if(i>=0&&i<l.length-1){ const tmp=l[i+1]; l[i+1]=l[i]; l[i]=tmp; save(); syncAreas(); render(); } break; }
+    case 'ariconpick': window.__arIcon=t.dataset.ic; { const p=t.closest('.segmented'); if(p) p.querySelectorAll('button').forEach(b=>b.classList.toggle('active',b===t)); } break;
+    case 'arcolpick': window.__arColor=t.dataset.col; { const p=t.closest('.segmented'); if(p) p.querySelectorAll('button').forEach(b=>b.classList.toggle('active',b===t)); } break;
     case 'detectloc': detectLocation(); break;
     case 'saveloc': saveLocationFromForm(); render(); toast('Location saved'); break;
     case 'asr': state.settings.location.asr=t.dataset.v; saveLocationFromForm(); render(); break;
@@ -2436,7 +2530,8 @@ document.addEventListener('click',e=>{
     case 'editbig3': openBig3Modal(); break;
     case 'big3toggle': { const d=ensureDay(todayKey()); const b=d.big3[+t.dataset.i]; if(b){ b.done=!b.done; save(); render(); if(d.big3.filter(Boolean).length===3 && d.big3.every(x=>x.done)){ celebrate(); toast('Big 3 complete! Huge.'); } } break; }
     // habits
-    case 'addhabit': openHabitModal(null); break;
+    case 'addhabit': openHabitModal(null, t.dataset.area); break;
+    case 'areatask': { ui.addCat=t.dataset.cat; ui.curDay=todayKey(); go('tasks'); break; }
     case 'habitedit': openHabitModal(t.dataset.id); break;
     case 'habittoggle': { const h=state.habits.find(x=>x.id===t.dataset.id); toggleHabit(h, todayKey()); break; }
     case 'habitplus': { const h=state.habits.find(x=>x.id===t.dataset.id); setHabit(h, todayKey(), habitVal(h,todayKey())+1); break; }
@@ -2458,7 +2553,7 @@ document.addEventListener('click',e=>{
     // plan (voice / text brain-dump)
     case 'planday': openPlanModal(t.dataset.date||todayKey()); break;
     // goals
-    case 'addgoal': openGoalModal(null); break;
+    case 'addgoal': openGoalModal(null, t.dataset.area); break;
     case 'goaledit': openGoalModal(t.dataset.id); break;
     case 'addms': openMsModal(t.dataset.id); break;
     case 'mstoggle': { const g=state.bigGoals.find(x=>x.id===t.dataset.id); if(g){ g.milestones[+t.dataset.i].done=!g.milestones[+t.dataset.i].done; save(); render(); } break; }
@@ -2559,12 +2654,12 @@ function openBig3Modal(){
     <div class="modal-foot"><button class="btn ghost" data-action="closemodal">Cancel</button><button class="btn primary" data-action="modal-submit">Save Big 3</button></div>`,
     ()=>{ const arr2=[]; [0,1,2].forEach(i=>{ const v=el('b3_'+i).value.trim(); if(v){ const ex=b[i]; arr2.push({text:v, done:ex&&ex.text===v?ex.done:false}); } }); d.big3=arr2; save(); closeModal(); render(); });
 }
-function openHabitModal(id){
-  const h=id?state.habits.find(x=>x.id===id):null;
+function openHabitModal(id, defArea){
+  const h=id?state.habits.find(x=>x.id===id):null; const selArea=h?h.area:(defArea||'gym');
   openModal(`<h3>${h?'Edit habit':'New habit'}</h3>
     <label class="fld"><span>Name</span><input class="inp" id="h_name" value="${h?esc(h.name):''}" placeholder="e.g. Read, Gym, Drink water"></label>
     <div class="form-row"><label class="fld"><span>Emoji</span><input class="inp" id="h_emoji" value="${h?emojiInputVal(h.emoji):''}" placeholder="optional" maxlength="2"></label>
-      <label class="fld"><span>Area</span><select class="inp" id="h_area">${CAT_ORDER.map(c=>`<option value="${c}" ${h&&h.area===c?'selected':''}>${CATS[c].emoji} ${CATS[c].short}</option>`).join('')}</select></label></div>
+      <label class="fld"><span>Area</span><select class="inp" id="h_area">${CAT_ORDER.map(c=>`<option value="${c}" ${selArea===c?'selected':''}>${CATS[c].emoji} ${CATS[c].short}</option>`).join('')}</select></label></div>
     <div class="form-row"><label class="fld"><span>Type</span><select class="inp" id="h_type"><option value="check" ${h&&h.type==='check'?'selected':''}>Simple check</option><option value="count" ${h&&h.type==='count'?'selected':''}>Count / amount</option></select></label>
       <label class="fld"><span>Target /day (count)</span><input class="inp" type="number" id="h_target" min="1" value="${esc(h&&h.target?h.target:'')}" placeholder="e.g. 8"></label></div>
     <div class="form-row"><label class="fld"><span>Unit (count)</span><input class="inp" id="h_unit" value="${h?esc(h.unit||''):''}" placeholder="glasses, pages…"></label>
@@ -2575,12 +2670,12 @@ function openHabitModal(id){
       if(h) Object.assign(h,obj); else state.habits.push({id:genId(),createdAt:Date.now(),...obj}); save(); closeModal(); render(); });
   if(h){ setTimeout(()=>{ const d=el('h_del'); if(d) d.onclick=()=>{ if(confirm('Delete this habit?')){ state.habits=state.habits.filter(x=>x.id!==id); save(); closeModal(); render(); } }; },50); }
 }
-function openGoalModal(id){
-  const g=id?state.bigGoals.find(x=>x.id===id):null;
+function openGoalModal(id, defArea){
+  const g=id?state.bigGoals.find(x=>x.id===id):null; const selArea=g?g.area:(defArea||'gym');
   openModal(`<h3>${g?'Edit goal':'New goal'}</h3><div class="msub">A big goal for your Sep→Dec run.</div>
     <label class="fld"><span>Goal</span><input class="inp" id="g_title" value="${g?esc(g.title):''}" placeholder="e.g. Get fitter, Learn AI"></label>
     <div class="form-row"><label class="fld"><span>Emoji</span><input class="inp" id="g_emoji" value="${g?emojiInputVal(g.emoji):''}" placeholder="optional" maxlength="2"></label>
-      <label class="fld"><span>Area</span><select class="inp" id="g_area">${CAT_ORDER.map(c=>`<option value="${c}" ${g&&g.area===c?'selected':''}>${CATS[c].emoji} ${CATS[c].short}</option>`).join('')}</select></label></div>
+      <label class="fld"><span>Area</span><select class="inp" id="g_area">${CAT_ORDER.map(c=>`<option value="${c}" ${selArea===c?'selected':''}>${CATS[c].emoji} ${CATS[c].short}</option>`).join('')}</select></label></div>
     <div class="form-row"><label class="fld"><span>Auto-track (optional)</span><select class="inp" id="g_metric"><option value="">Milestones only</option><option value="gym" ${g&&g.metric==='gym'?'selected':''}>Gym days</option><option value="study_hrs" ${g&&g.metric==='study_hrs'?'selected':''}>Study hours</option><option value="focus_hrs" ${g&&g.metric==='focus_hrs'?'selected':''}>Focus hours</option><option value="tasks" ${g&&g.metric==='tasks'?'selected':''}>Tasks done</option></select></label>
       <label class="fld"><span>Target</span><input class="inp" type="number" id="g_target" value="${esc(g&&g.target?g.target:'')}" placeholder="e.g. 60"></label></div>
     <label class="fld"><span>Deadline</span><input class="inp" type="date" id="g_dl" value="${esc(g&&g.deadline?g.deadline:'2026-12-31')}"></label>
@@ -2608,7 +2703,7 @@ function openLogStudyModal(){ const subjOpt=state.subjects.map(s=>`<option value
 function openDayModal(k){ const s=dayStats(k); const sc=dayScore(k);
   const dls=deadlinesOn(k);
   const dlBody = dls.length? `<div style="font-size:12px;font-weight:700;color:var(--text-2);margin:4px 0 6px">Due this day</div>`+dls.map(a=>`<div class="mtask"><span>${a.atype==='exam'?ic('fileText'):ic('fileText')}</span> ${esc(a.title)}</div>`).join('') : '';
-  const body=s.planned? s.tasks.map(t=>`<div class="mtask ${t.done?'done':''}"><span class="catdot" style="background:${CATS[t.category].color}"></span> ${t.done?'✓':'○'} ${esc(t.text)}${t.startMin!=null?` <span class="tag">${fmtClock(t.startMin)}</span>`:''}</div>`).join('') : `<div class="empty" style="padding:14px"><div>No tasks logged.</div></div>`;
+  const body=s.planned? s.tasks.map(t=>`<div class="mtask ${t.done?'done':''}"><span class="catdot" style="background:${CAT(t.category).color}"></span> ${t.done?'✓':'○'} ${esc(t.text)}${t.startMin!=null?` <span class="tag">${fmtClock(t.startMin)}</span>`:''}</div>`).join('') : `<div class="empty" style="padding:14px"><div>No tasks logged.</div></div>`;
   const fm=focusMinutesOn(k), sm=studyMinutesOn(k);
   openModal(`<h3>${fmtLong(k)}</h3><div class="msub">Score ${sc}/100 · ${s.completed}/${s.planned} tasks${fm?` · ${fmtMin(fm)} focus`:''}${sm?` · ${fmtMin(sm)} study`:''}</div>${dlBody}${body}${s.note?`<div class="insight" style="margin-top:12px">${esc(s.note)}</div>`:''}<div class="modal-foot"><button class="btn ghost" data-action="closemodal">Close</button><button class="btn primary" data-action="editday" data-key="${k}">Open in Tasks ✎</button></div>`);
 }
@@ -2838,7 +2933,7 @@ function doPlanPreview(){
   const box=el('planPreview');
   if(!items.length){ box.innerHTML='<div class="insight">Couldn’t pick anything out — try shorter phrases separated by commas.</div>'; el('planAdd').style.display='none'; return; }
   box.innerHTML='<div style="font-size:12px;color:var(--text-2);margin-bottom:6px">Found '+items.length+' — untick anything wrong:</div>'+items.map((it,i)=>{
-    let d = it.kind==='task' ? (''+esc(it.text)+' <span class="tag">'+CATS[it.category].short+'</span>'+(it.estMin?' <span class="tag">'+fmtMin(it.estMin)+'</span>':'')+(it.startMin!=null?' <span class="tag">'+fmtClock(it.startMin)+'</span>':'')+' <span class="tag">'+fmtShortK(it.date)+'</span>')
+    let d = it.kind==='task' ? (''+esc(it.text)+' <span class="tag">'+CAT(it.category).short+'</span>'+(it.estMin?' <span class="tag">'+fmtMin(it.estMin)+'</span>':'')+(it.startMin!=null?' <span class="tag">'+fmtClock(it.startMin)+'</span>':'')+' <span class="tag">'+fmtShortK(it.date)+'</span>')
       : it.kind==='exam' ? (''+esc(it.title)+' <span class="tag">'+fmtShortK(it.date)+'</span>')
       : (''+esc(it.title)+' <span class="tag">'+fmtShortK(it.date)+'</span>');
     return '<label class="mtask" data-stop style="cursor:pointer;align-items:flex-start"><input type="checkbox" checked data-pi="'+i+'" style="width:auto;margin-top:3px"> <span>'+d+'</span></label>';
@@ -2872,6 +2967,24 @@ function openPracticeModal(id){
     if(p){ Object.assign(p, obj); } else { state.faithPractices.push({id:genId(), createdAt:Date.now(), ...obj}); }
     save(); closeModal(); render(); });
   if(p){ setTimeout(()=>{ const d=el('pr_del'); if(d) d.onclick=()=>{ if(confirm('Delete this practice?')){ state.faithPractices=activePractices().filter(x=>x.id!==id); save(); closeModal(); render(); } }; },50); }
+}
+function openAreaModal(id){
+  const a=id?areaById(id):null; const isCustom=!a||a.kind==='custom';
+  window.__arIcon=a?(a.icon||'star'):'star'; window.__arColor=a?(a.color||AREA_COLORS[0]):AREA_COLORS[0];
+  const iconSeg=`<div class="segmented" id="ar_iconseg" style="flex-wrap:wrap;gap:4px">${AREA_ICONS.map(nm=>`<button type="button" data-action="ariconpick" data-ic="${nm}" class="${window.__arIcon===nm?'active':''}" style="padding:6px 8px">${ic(nm)}</button>`).join('')}</div>`;
+  const colSeg=`<div class="segmented" id="ar_colseg" style="flex-wrap:wrap;gap:4px">${AREA_COLORS.map(c=>`<button type="button" data-action="arcolpick" data-col="${c}" class="${window.__arColor===c?'active':''}" style="padding:6px 9px"><span style="width:15px;height:15px;border-radius:50%;background:${c};display:inline-block;vertical-align:-2px"></span></button>`).join('')}</div>`;
+  openModal(`<h3>${a?'Edit area':'New life area'}</h3><div class="msub">${a&&!isCustom?'Rename, restyle or hide this built-in area.':'A custom area gets its own page for tasks, habits &amp; goals.'}</div>
+    <label class="fld"><span>Name</span><input class="inp" id="ar_name" value="${a?esc(a.name):''}" placeholder="e.g. Sports, Business, Music"></label>
+    <label class="fld"><span>Icon</span>${iconSeg}</label>
+    ${isCustom?`<label class="fld"><span>Colour</span>${colSeg}</label>`:''}
+    <label class="fld" style="display:flex;align-items:center;gap:10px;margin-top:4px"><input type="checkbox" id="ar_enabled" ${!a||a.enabled!==false?'checked':''} style="width:auto"><span style="margin:0">Show in the sidebar</span></label>
+    <div class="modal-foot">${(a&&a.kind==='custom')?`<button class="btn" id="ar_del" style="margin-right:auto;color:var(--bad)">${ic('trash')} Delete</button>`:''}<button class="btn ghost" data-action="closemodal">Cancel</button><button class="btn primary" data-action="modal-submit">${a?'Save':'Add area'}</button></div>`,
+  ()=>{ const name=el('ar_name').value.trim(); if(!name){ toast('Name it'); return; }
+    const icon=window.__arIcon||'star', color=window.__arColor||AREA_COLORS[0], enabled=el('ar_enabled').checked;
+    if(a){ a.name=name; a.icon=icon; if(a.kind==='custom') a.color=color; a.enabled=enabled; }
+    else { state.settings.areas.push({id:'area_'+genId(), name, icon, color, kind:'custom', enabled}); }
+    save(); syncAreas(); closeModal(); render(); toast(a?'Area saved':'Area added'); });
+  if(a&&a.kind==='custom'){ setTimeout(()=>{ const d=el('ar_del'); if(d) d.onclick=()=>{ if(confirm('Delete this area? Its tasks, habits and goals stay but fall back to General.')){ state.settings.areas=areas().filter(x=>x.id!==id); if(ui.view==='area:'+id) ui.view='dashboard'; save(); syncAreas(); closeModal(); render(); } }; },50); }
 }
 function openTimeLog(){ openModal(`<h3>Log time</h3><div class="form-row"><label class="fld"><span>Category</span><select class="inp" id="tl_cat">${TIME_CATS.map(([c,e,l])=>`<option value="${c}">${e} ${l}</option>`).join('')}</select></label><label class="fld"><span>Minutes</span><input class="inp" type="number" id="tl_min" placeholder="e.g. 60"></label></div><label class="fld"><span>Date</span><input class="inp" type="date" id="tl_date" value="${todayKey()}"></label><div class="modal-foot"><button class="btn ghost" data-action="closemodal">Cancel</button><button class="btn primary" data-action="modal-submit">Log</button></div>`,
   ()=>{ const min=parseInt(el('tl_min').value); if(!min){toast('Minutes?');return;} state.timeLog.push({id:genId(),date:el('tl_date').value||todayKey(),category:el('tl_cat').value,minutes:min}); save(); closeModal(); render(); toast('Time logged'); }); }
