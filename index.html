@@ -2363,7 +2363,7 @@ function importData(file){ const rd=new FileReader(); rd.onload=()=>{ try{ const
    MODALS
    ============================================================ */
 function openModal(html, onSubmit){ closeModal(); const ov=document.createElement('div'); ov.className='overlay'; ov.innerHTML=`<div class="modal" data-stop>${html}</div>`; document.body.appendChild(ov); window.__modalSubmit=onSubmit||null; const fi=ov.querySelector('input,textarea,select'); if(fi) setTimeout(()=>fi.focus(),40); }
-function closeModal(){ document.querySelectorAll('.overlay').forEach(o=>o.remove()); window.__modalSubmit=null; }
+function closeModal(){ if(_recOn){ _recOn=false; try{ _rec&&_rec.stop(); }catch(e){} } document.querySelectorAll('.overlay').forEach(o=>o.remove()); window.__modalSubmit=null; }
 
 function openTaskModal(id){
   const day=ensureDay(ui.curDay); const t=id?day.tasks.find(x=>x.id===id):null;
@@ -2606,25 +2606,38 @@ function scheduleRows(k){
 }
 
 /* ---- plan modal (voice + text) ---- */
-let _rec=null;
-function micTip(html){ const h=el('micHint'); if(h){ h.innerHTML=''+html; h.style.color='var(--warn)'; } }
+let _rec=null, _recOn=false, _recBase='';
+function micTip(html,warn){ const h=el('micHint'); if(h){ h.innerHTML=''+html; h.style.color=warn===false?'var(--accent)':'var(--warn)'; } }
+function setMicBtn(on){ const b=el('planMic'); if(b){ b.innerHTML=on?(ic('stop')+' Stop'):(ic('mic')+' Speak'); b.classList.toggle('primary',on); } }
 function toggleVoice(){
-  const btn=el('planMic'); if(!btn) return;
-  if(_rec){ try{_rec.stop();}catch(e){} return; }
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SR){ micTip("This browser has no in-app mic. Click the box and press <b>Win + H</b>, then talk."); return; }
+  if(!SR){ micTip('This browser has no built-in voice. Click the box and press <b>Win + H</b> to use Windows voice typing.'); return; }
+  if(_recOn){ _recOn=false; try{ _rec&&_rec.stop(); }catch(e){} setMicBtn(false); micTip('Added. Tap <b>Preview →</b> to sort it into your day.',false); return; }
+  const ta=el('planText'); if(!ta) return;
+  _recOn=true; _recBase=ta.value.trim(); setMicBtn(true);
+  micTip('Listening… speak naturally — short pauses are fine. Tap <b>Stop</b> when done.',false);
+  startRec(SR);
+}
+function startRec(SR){
   try{
-    _rec=new SR(); _rec.lang='en-US'; _rec.interimResults=true; _rec.continuous=true;
-    const ta=el('planText'); const base=ta.value?ta.value.trim()+' ':'';
-    _rec.onstart=()=>{ toast('Listening…'); };
-    _rec.onresult=e=>{ let s=''; for(let i=0;i<e.results.length;i++) s+=e.results[i][0].transcript+' '; ta.value=base+s; };
-    _rec.onerror=ev=>{ const err=(ev&&ev.error)||'error';
-      if(/network|service|denied|not-allowed|allowed/i.test(err)) micTip("Chrome won't run the in-app mic from a file opened directly. Easiest: click the box, press <b>Win + H</b>, and talk — Windows types it for you.");
-      else micTip('Mic: '+err+'. Press <b>Win + H</b> to talk, or type.');
+    _rec=new SR(); _rec.lang='en-US'; _rec.interimResults=true; _rec.continuous=true; try{_rec.maxAlternatives=1;}catch(e){}
+    _rec.onresult=e=>{ const ta=el('planText'); if(!ta) return; let fin='',intr='';
+      for(let i=e.resultIndex;i<e.results.length;i++){ const r=e.results[i]; if(r.isFinal) fin+=r[0].transcript+' '; else intr+=r[0].transcript+' '; }
+      if(fin) _recBase=(_recBase?_recBase+' ':'')+fin.trim();
+      ta.value=(_recBase?_recBase+' ':'')+intr.trim();
     };
- _rec.onend=()=>{ _rec=null; const b=el('planMic'); if(b){ b.textContent=' Speak'; b.classList.remove('primary'); } };
- _rec.start(); btn.textContent=' Stop'; btn.classList.add('primary');
-  }catch(e){ micTip("Couldn't start the mic here. Click the box, press <b>Win + H</b>, and talk."); _rec=null; }
+    _rec.onerror=ev=>{ const err=(ev&&ev.error)||'error';
+      if(err==='no-speech'||err==='aborted') return;              // harmless — keep listening (onend restarts)
+      if(/not-allowed|service-not-allowed|denied/i.test(err)){ _recOn=false; setMicBtn(false); micTip("Chrome blocked the mic. Click the padlock in the address bar → set Microphone to <b>Allow</b>, reload, and try again. Or press <b>Win + H</b>."); }
+      else if(err==='network'){ micTip("Trouble reaching the speech service — retrying. If it keeps failing, press <b>Win + H</b> to dictate."); }
+      else micTip('Mic: '+err+'. You can press <b>Win + H</b> or type.');
+    };
+    _rec.onend=()=>{ // Chrome auto-ends on any pause — keep it alive until the user taps Stop
+      if(_recOn){ const ta=el('planText'); if(ta) _recBase=ta.value.trim(); try{ _rec.start(); }catch(e){ setTimeout(()=>{ if(_recOn) startRec(SR); },300); } }
+      else setMicBtn(false);
+    };
+    _rec.start();
+  }catch(e){ _recOn=false; setMicBtn(false); micTip("Couldn't start the mic. Click the box and press <b>Win + H</b>, or just type."); }
 }
 function openPlanModal(defDate){
   window.__planItems=[];
@@ -2642,7 +2655,7 @@ function openPlanModal(defDate){
   },50);
 }
 function doPlanPreview(){
-  if(_rec){ try{_rec.stop();}catch(e){} }
+  if(_recOn){ _recOn=false; setMicBtn(false); } if(_rec){ try{_rec.stop();}catch(e){} }
   const text=(el('planText').value||'').trim(); if(!text){ toast('Say or type something first'); return; }
   const {items}=parseBrainDump(text, el('plan_date').value||todayKey());
   window.__planItems=items;
