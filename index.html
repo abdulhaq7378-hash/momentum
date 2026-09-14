@@ -803,6 +803,9 @@ details.dsec[open]>summary::after{transform:rotate(180deg)}
 .card.ink .check{ border-color:var(--ink-border) }
 .card.ink .un-time{ color:var(--accent) }
 .card.ink .up-next .un-sub{ color:var(--ink-text-2) }
+.prow{display:flex;justify-content:space-between;gap:14px;margin-bottom:7px;font-size:13.5px;align-items:baseline}
+.prow>span:first-child{color:var(--text-2);flex:0 0 auto}
+.prow>span:last-child{font-weight:700;text-align:right}
 
 </style></head><body><div id="approot">
 <div class="app">
@@ -822,6 +825,7 @@ details.dsec[open]>summary::after{transform:rotate(180deg)}
       <button data-action="nav" data-view="tasks"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11.5l2.5 2.5L21 4.5"/><path d="M20.5 12v7a2 2 0 0 1-2 2H5.5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9.5"/></svg></span> Tasks</button>
       <button data-action="nav" data-view="habits"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2.5 21 6.5 17 10.5"/><path d="M3 11.5v-1a4 4 0 0 1 4-4h14"/><path d="M7 21.5 3 17.5 7 13.5"/><path d="M21 12.5v1a4 4 0 0 1-4 4H3"/></svg></span> Habits</button>
       <button data-action="nav" data-view="focus"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.6"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/></svg></span> Focus</button>
+      <button data-action="nav" data-view="fitness" id="fitnessNav"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 9v6M6.5 6.5v11M17.5 6.5v11M20.5 9v6M6.5 12h11"/></svg></span> Fitness</button>
 
       <div class="navlabel">Faith</div>
       <button data-action="nav" data-view="faith"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 14.3A8.2 8.2 0 1 1 9.7 3.5a6.6 6.6 0 0 0 10.8 10.8z"/></svg></span> Prayers &amp; Quran</button>
@@ -850,6 +854,7 @@ details.dsec[open]>summary::after{transform:rotate(180deg)}
   <button data-action="nav" data-view="tasks"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11.5l2.5 2.5L21 4.5"/><path d="M20.5 12v7a2 2 0 0 1-2 2H5.5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9.5"/></svg></span>Tasks</button>
   <button data-action="nav" data-view="habits"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2.5 21 6.5 17 10.5"/><path d="M3 11.5v-1a4 4 0 0 1 4-4h14"/><path d="M7 21.5 3 17.5 7 13.5"/><path d="M21 12.5v1a4 4 0 0 1-4 4H3"/></svg></span>Habits</button>
   <button data-action="nav" data-view="focus"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.6"/></svg></span>Focus</button>
+  <button data-action="nav" data-view="fitness" id="fitnessNavM"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 9v6M6.5 6.5v11M17.5 6.5v11M20.5 9v6M6.5 12h11"/></svg></span>Fitness</button>
   <button data-action="nav" data-view="faith"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 14.3A8.2 8.2 0 1 1 9.7 3.5a6.6 6.6 0 0 0 10.8 10.8z"/></svg></span>Faith</button>
   <button data-action="nav" data-view="goals"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21.5V3"/><path d="M5 4h12.5l-2 3.8L18 12H5"/></svg></span>Goals</button>
   <span id="lifeAreasMnav" style="display:contents"></span>
@@ -1003,7 +1008,7 @@ const LEVEL_TITLES = ['Rookie','Starter','Grinder','Consistent','Disciplined','F
 
 const DEFAULT_STATE = {
   version:2,
-  profile:{name:'', startDate:'2026-09-01', onboarded:false, religion:'islam'},
+  profile:{name:'', startDate:'2026-09-01', onboarded:false, religion:'islam', role:''},
   settings:{
     theme:'light',
     weights:{tasks:25, big3:20, habits:15, gym:10, study:20, focus:10},
@@ -1012,6 +1017,7 @@ const DEFAULT_STATE = {
     prayerNotify:false,
     targets:{gymPerWeek:4, studyHrsPerDay:2, dailyTasks:5},
     finance:{currency:'₹', monthlyBudget:0},
+    fitness:{enabled:false},
     areas:[
       {id:'work',     name:'Work',     icon:'briefcase', color:'#4a90d6', kind:'custom',  enabled:true},
       {id:'personal', name:'Personal', icon:'spark',     color:'#8b6ff0', kind:'custom',  enabled:true},
@@ -1038,6 +1044,7 @@ const DEFAULT_STATE = {
   expenses:[],
   income:[],
   faithPractices:[],
+  fitness:{ sex:'', age:null, heightCm:null, activity:'moderate', targetWeight:null, targetDate:'', weightLog:[], food:[], burn:[] },
 };
 
 /* ---------------- state ---------------- */
@@ -1071,6 +1078,7 @@ function mergeState(p){
       targets:{...d.settings.targets, ...((p.settings||{}).targets||{})},
       location:{...d.settings.location, ...((p.settings||{}).location||{})},
       finance:{...d.settings.finance, ...((p.settings||{}).finance||{})},
+      fitness:{...d.settings.fitness, ...((p.settings||{}).fitness||{})},
       areas:(p.settings&&arr(p.settings.areas).length)?arr(p.settings.areas):d.settings.areas,
       blockSites:(p.settings&&p.settings.blockSites)||d.settings.blockSites,
       blockApps:(p.settings&&p.settings.blockApps)||d.settings.blockApps,
@@ -1080,6 +1088,7 @@ function mergeState(p){
     habits:arr(p.habits), habitLog:p.habitLog||{},
     days:p.days||{}, focusSessions:arr(p.focusSessions), workouts:arr(p.workouts),
     subjects:arr(p.subjects), assignments:arr(p.assignments), studyLog:arr(p.studyLog), timeLog:arr(p.timeLog), expenses:arr(p.expenses), income:arr(p.income), faithPractices:arr(p.faithPractices),
+    fitness:{...d.fitness, ...(p.fitness||{}), weightLog:arr(p.fitness&&p.fitness.weightLog), food:arr(p.fitness&&p.fitness.food), burn:arr(p.fitness&&p.fitness.burn)},
     __mst:true, _savedAt:p._savedAt||0,
   };
   // one-time migration to the new light default (respects an explicit user choice)
@@ -1201,6 +1210,7 @@ function fmtShortK(k){ const d=fromKey(k); return MONS[d.getMonth()]+' '+d.getDa
 const isFuture = k => fromKey(k) > new Date(new Date().setHours(0,0,0,0));
 const isToday = k => k===todayKey();
 function fmtMin(m){ m=Math.round(m||0); if(m<60) return m+'m'; const h=Math.floor(m/60); const r=m%60; return r?`${h}h ${r}m`:`${h}h`; }
+function fmtCal(n){ return Math.round(+n||0).toLocaleString()+' kcal'; }
 function daysBetween(k1,k2){ return Math.round((fromKey(k2)-fromKey(k1))/86400000); }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 const attr = esc;
@@ -1405,6 +1415,46 @@ const RELIGIONS = [
   ['none','Prefer not to say / hide this'],
 ];
 function religionOptions(sel){ return RELIGIONS.map(([v,l])=>`<option value="${v}" ${v===sel?'selected':''}>${l}</option>`).join(''); }
+
+/* ---- Role / profession presets: shape starting categories, goals & fitness on first run ---- */
+const ROLE_GROUPS = [
+  ['Studying', [['student','Student']]],
+  ['Healthcare', [['doctor','Doctor'],['surgeon','Surgeon'],['nurse','Nurse'],['dentist','Dentist'],['pharmacist','Pharmacist'],['therapist','Therapist / Physio']]],
+  ['Engineering & Tech', [['engineer','Engineer'],['developer','Software developer'],['architect','Architect'],['analyst','Data / Analyst']]],
+  ['Business & Office', [['entrepreneur','Entrepreneur / Business owner'],['manager','Manager'],['accountant','Accountant'],['sales','Sales & Marketing'],['lawyer','Lawyer'],['consultant','Consultant'],['freelancer','Freelancer']]],
+  ['Education', [['teacher','Teacher / Professor']]],
+  ['Field & Service', [['pilot','Pilot'],['contractor','Contractor'],['chef','Chef'],['driver','Driver'],['staff','Working staff / Retail']]],
+  ['Active', [['athlete','Athlete / Sportsperson'],['coach','Fitness coach']]],
+  ['Home & Life', [['homemaker','Homemaker'],['retired','Retired']]],
+  ['Other', [['other','Something else']]],
+];
+const ROLE_ARCHE = { student:'student', doctor:'healthcare',surgeon:'healthcare',nurse:'healthcare',dentist:'healthcare',pharmacist:'healthcare',therapist:'healthcare',
+  engineer:'tech',developer:'tech',architect:'tech',analyst:'tech',
+  entrepreneur:'business',manager:'business',accountant:'business',sales:'business',lawyer:'business',consultant:'business',freelancer:'business',
+  teacher:'educator', pilot:'field',contractor:'field',chef:'field',driver:'field',staff:'field',
+  athlete:'athlete',coach:'athlete', homemaker:'home',retired:'home', other:'other' };
+const ROLE_ARCHETYPES = {
+  student:   {fitness:true,  areas:[['academics','Academics','book'],['fitness','Fitness','dumbbell'],['learning','Learning','bookOpen'],['personal','Personal','spark']], goals:[['Do well this term','academics','tasks',100],['Build a workout habit','fitness','focus_hrs',40]]},
+  healthcare:{fitness:true,  areas:[['work','Clinical work','spark'],['learning','Learning & CME','book'],['fitness','Health & Fitness','dumbbell'],['personal','Personal','leaf']], goals:[['Stay on top of shifts','work','tasks',120],['Keep myself healthy','fitness','focus_hrs',40]]},
+  tech:      {fitness:true,  areas:[['work','Projects','briefcase'],['learning','Skills & Learning','book'],['fitness','Fitness','dumbbell'],['personal','Personal','spark']], goals:[['Ship key projects','work','tasks',100],['Learn a new skill','learning','focus_hrs',60]]},
+  business:  {fitness:false, areas:[['business','Business','trend'],['work','Work','briefcase'],['learning','Learning','book'],['personal','Personal','spark']], goals:[['Grow the business','business','tasks',120],['Weekly deep work','work','focus_hrs',80]]},
+  educator:  {fitness:false, areas:[['work','Teaching','book'],['learning','Prep & Learning','bookOpen'],['health','Health','spark'],['personal','Personal','leaf']], goals:[['Plan great lessons','work','tasks',100]]},
+  field:     {fitness:false, areas:[['work','Work','briefcase'],['learning','Learning','book'],['health','Health','spark'],['personal','Personal','leaf']], goals:[['Stay consistent at work','work','tasks',100]]},
+  athlete:   {fitness:true,  areas:[['training','Training','dumbbell'],['health','Nutrition & Recovery','spark'],['learning','Skill work','target'],['personal','Personal','leaf']], goals:[['Hit training targets','training','focus_hrs',80]]},
+  home:      {fitness:false, areas:[['home','Home','star'],['health','Health','spark'],['personal','Personal','leaf'],['learning','Learning','book']], goals:[['A calmer daily routine','personal','focus_hrs',40]]},
+  other:     {fitness:false, areas:[['work','Work','briefcase'],['personal','Personal','spark'],['health','Health','leaf'],['learning','Learning','book']], goals:[['Build a daily routine','personal','focus_hrs',60]]},
+};
+function roleOptions(sel){ return ROLE_GROUPS.map(([g,items])=>`<optgroup label="${g}">${items.map(([v,l])=>`<option value="${v}" ${v===sel?'selected':''}>${l}</option>`).join('')}</optgroup>`).join(''); }
+function roleLabel(role){ for(const [,items] of ROLE_GROUPS){ const f=items.find(i=>i[0]===role); if(f) return f[1]; } return ''; }
+function applyRolePreset(role){
+  const arche = ROLE_ARCHETYPES[ROLE_ARCHE[role]||'other'] || ROLE_ARCHETYPES.other;
+  const areas = arche.areas.map((a,i)=>({id:a[0], name:a[1], icon:a[2], color:AREA_COLORS[i%AREA_COLORS.length], kind:'custom', enabled:true}));
+  areas.push({id:'finance', name:'Finances', icon:'coin', color:'#e8734a', kind:'finance', enabled:true});   // finance always
+  state.settings.areas = areas;
+  state.settings.fitness = state.settings.fitness||{}; state.settings.fitness.enabled = !!arche.fitness;
+  state.bigGoals = arche.goals.map(g=>({id:genId(), title:g[0], emoji:ic('flag'), area:g[1], metric:g[2]||null, target:g[3]||null, deadline:'', milestones:[], createdAt:Date.now()}));
+  syncAreas();
+}
 function religion(){ return (state.profile && state.profile.religion) || 'islam'; }
 function faithCfg(){ return FAITH_CONFIG[religion()] || FAITH_CONFIG.islam; }
 function isIslam(){ return religion()==='islam'; }
@@ -1524,6 +1574,7 @@ function applyAreaNav(){ try{
   const m=document.getElementById('lifeAreasMnav');
   if(m) m.innerHTML=list.map(a=>`<button data-action="nav" data-view="${attr(areaView(a))}"><span class="ico">${ic(a.icon||'star')}</span>${esc(a.name.length>7?a.name.slice(0,6)+'…':a.name)}</button>`).join('');
 }catch(e){} }
+function applyFitnessNav(){ try{ const on=!!(state.settings.fitness&&state.settings.fitness.enabled); const a=el('fitnessNav'), b=el('fitnessNavM'); if(a) a.style.display=on?'':'none'; if(b) b.style.display=on?'':'none'; }catch(e){} }
 function applyFaithNav(){ try{
   const cfg=faithCfg(), hidden=faithHidden(), short=_FAITH_SHORT[religion()]||'Faith';
   document.querySelectorAll('#nav [data-view="faith"]').forEach(b=>{ b.style.display=hidden?'none':''; b.innerHTML=`<span class="ico">${ic(cfg.icon)}</span> ${esc(cfg.nav)}`; const prev=b.previousElementSibling; if(prev&&prev.classList.contains('navlabel')) prev.style.display=hidden?'none':''; });
@@ -1537,6 +1588,7 @@ function render(){
   applyTheme();
   applyGlow();
   applyFaithNav();
+  applyFitnessNav();
   applyAreaNav();
   setActiveNav();
   el('brandName').textContent = state.profile.name ? state.profile.name.split(' ')[0]+"'s Momentum" : 'Momentum';
@@ -1756,6 +1808,12 @@ VIEWS.dashboard = function(){
     </div>
     <div class="card"><div class="card-head"><h3>Goals progress</h3><button class="btn small" data-action="nav" data-view="goals">All</button></div>${goalsGlance()}</div>
   </div>
+
+  ${(()=>{ const mo0=new Date(new Date().getFullYear(),new Date().getMonth(),1); const inc=sumIncome(mo0,new Date()), exp=sumExpense(mo0,new Date()); const budget=(state.settings.finance&&state.settings.finance.monthlyBudget)||0;
+    return `<div class="card" style="margin-top:16px"><div class="card-head"><h3>This month · money</h3><button class="btn small" data-action="nav" data-view="finance">Details</button></div>
+      <div class="grid g3" style="gap:11px">${mini(ic('coin'),'Earned',money(inc))}${mini(ic('coin'),'Spent',money(exp))}${mini(ic('bolt'),'Net',money(inc-exp))}</div>
+      ${budget>0?`<div class="meter" style="margin-top:12px"><div class="mrow"><span class="lab">Budget used</span><span class="val">${money(exp)} / ${money(budget)}</span></div><div class="track"><i style="width:${Math.min(100,budget?exp/budget*100:0)}%;background:${exp>budget?'var(--bad)':'var(--accent)'}"></i></div></div>`:`<div class="desc" style="margin-top:10px;color:var(--muted)">Set a monthly budget in Finances to track spending.</div>`}
+    </div>`; })()}
 
   <details class="dsec" style="margin-top:16px"><summary>Trends &amp; analytics</summary>
     <div class="card" style="margin-top:12px">
@@ -2421,6 +2479,130 @@ function curr(){ return (state.settings.finance&&state.settings.finance.currency
 function money(n){ n=Math.round(+n||0); return curr()+n.toLocaleString(); }
 function sumIncome(a,b){ return state.income.filter(e=>e.date>=keyOf(a)&&e.date<=keyOf(b)).reduce((s,e)=>s+(+e.amount||0),0); }
 function sumExpense(a,b){ return state.expenses.filter(e=>e.date>=keyOf(a)&&e.date<=keyOf(b)).reduce((s,e)=>s+(+e.amount||0),0); }
+
+/* ============================================================
+   FITNESS & NUTRITION (only when settings.fitness.enabled)
+   Offline calorie estimation from a built-in food table (Indian + common),
+   BMI/BMR/TDEE math, weight tracking, deficit plan. All estimates are editable.
+   ============================================================ */
+/* kcal per common serving. Order: multi-word / specific first so they match before generic words. */
+const FOOD_DB = [
+  {cal:290,kw:['butter chicken','murgh makhani']},{cal:350,kw:['chicken biryani']},{cal:300,kw:['veg biryani','biryani']},
+  {cal:260,kw:['aloo paratha','paratha','parantha']},{cal:280,kw:['chicken curry']},{cal:250,kw:['fried rice']},
+  {cal:150,kw:['masala dosa','dosa']},{cal:100,kw:['plain rice','steamed rice','white rice','chawal','cooked rice','rice']},
+  {cal:150,kw:['dal makhani']},{cal:130,kw:['dal','daal','lentil','sambar','sambhar']},{cal:210,kw:['rajma']},{cal:220,kw:['chole','chana masala','chana']},
+  {cal:265,kw:['paneer butter masala','paneer tikka','shahi paneer','palak paneer','paneer']},
+  {cal:100,kw:['roti','chapati','chapathi','phulka']},{cal:260,kw:['naan']},{cal:250,kw:['poha']},{cal:250,kw:['upma']},
+  {cal:60,kw:['idli']},{cal:120,kw:['vada','medu vada']},{cal:250,kw:['pav bhaji']},{cal:300,kw:['pani puri','golgappa','puri']},
+  {cal:260,kw:['samosa']},{cal:150,kw:['pakora','bhaji','bhajji']},{cal:150,kw:['dhokla']},{cal:100,kw:['curd','dahi','yogurt','yoghurt']},
+  {cal:180,kw:['lassi','buttermilk','chaas']},{cal:60,kw:['chai','masala tea','tea']},{cal:40,kw:['black coffee']},{cal:90,kw:['coffee','latte']},
+  {cal:150,kw:['gulab jamun']},{cal:140,kw:['jalebi']},{cal:120,kw:['laddu','ladoo']},{cal:130,kw:['barfi','halwa']},{cal:80,kw:['kheer']},
+  {cal:350,kw:['maggi','instant noodles','noodles']},{cal:285,kw:['pizza']},{cal:300,kw:['burger']},{cal:310,kw:['french fries','fries']},
+  {cal:250,kw:['sandwich']},{cal:220,kw:['pasta']},{cal:295,kw:['shawarma','wrap']},{cal:250,kw:['hot dog']},
+  {cal:75,kw:['boiled egg','egg']},{cal:150,kw:['omelette','omelet']},{cal:70,kw:['bread','toast','bread slice']},{cal:100,kw:['butter']},
+  {cal:150,kw:['peanut butter']},{cal:120,kw:['milk']},{cal:150,kw:['oats','oatmeal','dalia']},{cal:150,kw:['cereal','chocos','corn flakes','cornflakes']},
+  {cal:95,kw:['apple']},{cal:105,kw:['banana']},{cal:62,kw:['orange']},{cal:50,kw:['grapes']},{cal:30,kw:['watermelon']},{cal:60,kw:['mango']},
+  {cal:165,kw:['chicken breast','grilled chicken','chicken']},{cal:200,kw:['fish curry','fish']},{cal:250,kw:['mutton','lamb']},{cal:80,kw:['prawns','shrimp']},
+  {cal:160,kw:['almonds','cashew','nuts']},{cal:100,kw:['protein shake','whey','protein']},{cal:130,kw:['chocolate']},{cal:150,kw:['biscuit','cookies','cookie']},
+  {cal:230,kw:['chips','wafers']},{cal:140,kw:['ice cream','icecream']},{cal:150,kw:['cold drink','soda','coke','pepsi','soft drink']},{cal:60,kw:['juice']},
+  {cal:50,kw:['salad']},{cal:80,kw:['soup']},{cal:130,kw:['potato','aloo']},{cal:150,kw:['khichdi','khichdi']},{cal:120,kw:['dal rice','dal chawal']},
+];
+const ACTIVITY_FACTORS = {sedentary:1.2, light:1.375, moderate:1.55, active:1.725, veryactive:1.9};
+const ACTIVITY_LABELS = {sedentary:'Sedentary (little exercise)', light:'Light (1–3 days/wk)', moderate:'Moderate (3–5 days/wk)', active:'Active (6–7 days/wk)', veryactive:'Very active (hard training)'};
+function estimateCalories(text){
+  let s = ' '+String(text||'').toLowerCase().replace(/[^a-z0-9.\s]/g,' ').replace(/\s+/g,' ')+' ';
+  let total=0; const found=[];
+  FOOD_DB.forEach(f=>{ for(const kw of f.kw){ const esc0=kw.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+      const re=new RegExp('(?:(\\d+(?:\\.\\d+)?)\\s*(?:x|\\*|nos?|pcs?)?\\s+)?'+esc0+'(?:s|es)?\\b');
+      const m=s.match(re); if(m){ const qty=m[1]?Math.min(20,parseFloat(m[1])):1; total+=Math.round(f.cal*qty); found.push((qty>1?qty+'× ':'')+kw); s=s.replace(m[0],' '); break; } } });
+  return {cal:total, found};
+}
+const fit = ()=> state.fitness || (state.fitness={sex:'',age:null,heightCm:null,activity:'moderate',targetWeight:null,targetDate:'',weightLog:[],food:[],burn:[]});
+function curWeight(){ const w=arr(fit().weightLog).slice().sort((a,b)=>a.date<b.date?-1:1); return w.length?w[w.length-1].kg:null; }
+function bmiVal(){ const w=curWeight(), h=fit().heightCm; if(!w||!h) return null; return w/Math.pow(h/100,2); }
+function bmiCat(b){ if(b==null) return ''; if(b<18.5) return 'Underweight'; if(b<25) return 'Healthy'; if(b<30) return 'Overweight'; return 'Obese'; }
+function bmrVal(){ const f=fit(), w=curWeight(); if(!w||!f.heightCm||!f.age) return null;
+  const base=10*w+6.25*f.heightCm-5*f.age; return f.sex==='female'?base-161:(f.sex==='male'?base+5:base-78); }
+function tdeeVal(){ const b=bmrVal(); if(b==null) return null; return Math.round(b*(ACTIVITY_FACTORS[fit().activity]||1.55)); }
+function intakeOn(k){ return arr(fit().food).filter(x=>x.date===k).reduce((a,x)=>a+(+x.cal||0),0); }
+function burnOn(k){ return arr(fit().burn).filter(x=>x.date===k).reduce((a,x)=>a+(+x.cal||0),0); }
+function netOn(k){ const t=tdeeVal(); if(t==null) return null; return intakeOn(k)-t-burnOn(k); } // <0 = deficit
+function fitPlan(){ const w=curWeight(), tw=fit().targetWeight; if(w==null||!tw) return null;
+  const deltaKg = w-tw; const dir = deltaKg>0?'lose':(deltaKg<0?'gain':'maintain');
+  const kcalTotal = Math.abs(deltaKg)*7700; let daysLeft=null;
+  if(fit().targetDate){ daysLeft=Math.max(1, daysBetween(todayKey(), fit().targetDate)); }
+  const dailyKcal = daysLeft? Math.round(kcalTotal/daysLeft) : null;
+  return {deltaKg, dir, kcalTotal, daysLeft, dailyKcal};
+}
+VIEWS.fitness = function(){
+  if(!(state.settings.fitness&&state.settings.fitness.enabled)){ return `<div class="page-head"><div><h2>Fitness &amp; Nutrition</h2><div class="lede">Track weight, calories and a plan to reach your target.</div></div></div><div class="card"><div class="empty" style="padding:26px"><div class="t">Turn on fitness tracking</div><div>Enable it to log your weight, food calories (Indian foods included), workouts burned, and get a BMI + calorie plan.</div><button class="btn primary" data-action="enablefitness" style="margin-top:14px">${ic('dumbbell')} Enable fitness tracking</button></div></div>`; }
+  const f=fit(); const tk=todayKey(); const w=curWeight(); const b=bmiVal(); const t=tdeeVal();
+  const intake=intakeOn(tk), burned=burnOn(tk), net=netOn(tk); const plan=fitPlan();
+  const setup = (!f.heightCm || w==null || !f.age);
+  const netBadge = net==null ? '' : (net<0
+    ? `<span class="pill done">${fmtCal(-net)} deficit</span>`
+    : `<span class="pill over">${fmtCal(net)} surplus</span>`);
+  // avg daily net over last 14 logged days (for ETA)
+  let sum=0,n=0; for(let i=0;i<14;i++){ const k=keyOf(addDays(new Date(),-i)); if(intakeOn(k)>0){ const nn=netOn(k); if(nn!=null){ sum+=nn; n++; } } }
+  const avgNet = n? sum/n : null;
+  // plan text
+  let planBody=`<div class="empty" style="padding:14px"><div>Set a target weight &amp; date to get a calorie plan.</div><button class="btn small primary" data-action="fitprofile" style="margin-top:8px">${ic('target')} Set target</button></div>`;
+  if(plan && plan.dir!=='maintain'){
+    let eta='';
+    if(avgNet!=null){ const prog = plan.dir==='lose'? -avgNet : avgNet; // positive = moving toward goal
+      if(prog>50){ const days=Math.round(plan.kcalTotal/prog); const date=keyOf(addDays(new Date(),days)); eta=`<div class="insight" style="margin-top:10px">At your recent pace (${fmtCal(Math.abs(Math.round(avgNet)))}/day ${avgNet<0?'deficit':'surplus'}) you'll reach ${f.targetWeight} kg in about <b>${days} days</b> — around <b>${fmtShortK(date)}</b>.</div>`; }
+      else { eta=`<div class="insight" style="margin-top:10px">Your recent average isn't moving toward ${f.targetWeight} kg yet. Aim for the daily target below.</div>`; }
+    }
+    const eatTarget = t!=null && plan.dailyKcal!=null ? (plan.dir==='lose'? t-plan.dailyKcal : t+plan.dailyKcal) : null;
+    planBody=`<div class="prow"><span>Goal</span><span>${plan.dir==='lose'?'Lose':'Gain'} ${Math.abs(plan.deltaKg).toFixed(1)} kg${plan.daysLeft?` in ${plan.daysLeft} days`:''}</span></div>
+      ${plan.dailyKcal!=null?`<div class="prow"><span>Daily ${plan.dir==='lose'?'deficit':'surplus'} needed</span><span>${fmtCal(plan.dailyKcal)}</span></div>`:''}
+      ${eatTarget!=null?`<div class="prow"><span>So each day</span><span>eat ~${fmtCal(Math.max(1000,Math.round(eatTarget)))}${plan.dir==='lose'?` or burn ${fmtCal(plan.dailyKcal)} extra`:''}</span></div>`:''}
+      ${eta}`;
+  } else if(plan && plan.dir==='maintain'){ planBody=`<div class="insight" style="margin-top:2px">You're at your target weight — aim to stay around ${fmtCal(t||0)}/day to maintain.</div>`; }
+
+  const meals=['Breakfast','Lunch','Dinner','Snacks'];
+  const foodToday=arr(f.food).filter(x=>x.date===tk);
+  const foodBody = foodToday.length ? meals.map(mm=>{ const items=foodToday.filter(x=>x.meal===mm); if(!items.length) return ''; const sub=items.reduce((a,x)=>a+(+x.cal||0),0);
+      return `<div class="catgroup"><div class="catgroup-head"><span>${esc(mm)}</span><span class="cnt">${fmtCal(sub)}</span></div>${items.map(x=>`<div class="task"><span class="tx">${esc(x.text)}<span class="meta"><span class="tag">${fmtCal(x.cal)}</span></span></span><span class="row-act"><button class="del" data-action="delfood" data-id="${attr(x.id)}" title="Remove">${ic('trash')}</button></span></div>`).join('')}</div>`; }).join('')
+    : `<div class="empty" style="padding:14px"><div>No food logged today. Type what you ate — I'll estimate the calories.</div></div>`;
+  const burnToday=arr(f.burn).filter(x=>x.date===tk);
+  const burnBody = burnToday.length ? burnToday.map(x=>`<div class="task"><span class="tx">${esc(x.text||'Activity')}<span class="meta"><span class="tag">${fmtCal(x.cal)} burned</span></span></span><span class="row-act"><button class="del" data-action="delburn" data-id="${attr(x.id)}">${ic('trash')}</button></span></div>`).join('') : `<div class="empty" style="padding:12px"><div>No workouts logged today.</div></div>`;
+  // weight trend
+  const wl=arr(f.weightLog).slice().sort((a,b)=>a.date<b.date?-1:1);
+  const wChart = wl.length>=2 ? barsChart(wl.slice(-14).map(x=>({label:fromKey(x.date).getDate()+'', val:x.kg, tip:`<div class='th'>${fmtLong(x.date)}</div><div class='tr'><span>Weight</span><b>${x.kg} kg</b></div>`})),{valFmt:v=>v+'kg', showVal:false}) : `<div class="empty" style="padding:14px"><div>Log your weight a few times to see the trend.</div></div>`;
+
+  return `
+  <div class="page-head"><div><h2>Fitness &amp; Nutrition</h2><div class="lede">Weight, calories in vs out, and a plan to reach your target.</div></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn small" data-action="fitprofile">${ic('edit')} Body & goal</button><button class="btn small primary" data-action="logfood">${ic('plus')} Log food</button></div></div>
+
+  ${setup?`<div class="card"><div class="empty" style="padding:22px"><div class="t">Set up your profile</div><div>Add your height, age and weight so I can calculate BMI, your daily calorie needs and a plan.</div><button class="btn primary" data-action="fitprofile" style="margin-top:12px">${ic('spark')} Set up</button></div></div>`:''}
+
+  <div class="grid g4">
+    <div class="stat"><div class="k">${ic('spark')} Weight</div><div class="v">${w!=null?w:'—'}<small> kg</small></div><div class="foot">${wl.length>=2?(()=>{const d=wl[wl.length-1].kg-wl[0].kg; return (d>0?'+':'')+d.toFixed(1)+' kg overall';})():'log to track'}</div></div>
+    <div class="stat"><div class="k">${ic('gauge')} BMI</div><div class="v">${b!=null?b.toFixed(1):'—'}</div><div class="foot">${b!=null?bmiCat(b):'set height & weight'}</div></div>
+    <div class="stat hero"><div class="k">${ic('flame')} Today net</div><div class="v" style="font-size:26px">${net==null?'—':(net<0?'-':'+')+fmtCal(Math.abs(net)).replace(' kcal','')}<small> kcal</small></div><div class="foot">${net==null?'set up profile':(net<0?'in deficit':'in surplus')}</div></div>
+    <div class="stat"><div class="k">${ic('target')} Target</div><div class="v">${f.targetWeight?f.targetWeight:'—'}<small> kg</small></div><div class="foot">${f.targetDate?'by '+fmtShortK(f.targetDate):'set a target'}</div></div>
+  </div>
+
+  <div class="grid g2" style="margin-top:16px">
+    <div class="card"><div class="card-head"><h3>Today's calories</h3>${netBadge}</div>
+      <div class="grid g3" style="gap:11px;margin-bottom:6px">
+        ${mini(ic('coin'),'Eaten', fmtCal(intake))}
+        ${mini(ic('bolt'),'Needs (TDEE)', t!=null?fmtCal(t):'—')}
+        ${mini(ic('dumbbell'),'Burned', fmtCal(burned))}
+      </div>
+      <div class="card-head" style="margin-top:6px"><h3 style="font-size:15px">Food log</h3><button class="btn small primary" data-action="logfood">${ic('plus')} Add</button></div>
+      ${foodBody}
+      <div class="card-head" style="margin-top:10px"><h3 style="font-size:15px">Workouts burned</h3><button class="btn small" data-action="logburn">${ic('plus')} Add</button></div>
+      ${burnBody}
+    </div>
+    <div class="card"><div class="card-head"><h3>Your plan</h3></div>${planBody}
+      <div class="card-head" style="margin-top:14px"><h3 style="font-size:15px">Weight trend</h3><button class="btn small" data-action="logweight">${ic('plus')} Log weight</button></div>
+      <div class="chart-wrap">${wChart}</div>
+    </div>
+  </div>`;
+};
+
 VIEWS.finance = function(){
   const {y,m}=ui.monthRef; const a=new Date(y,m,1), b=new Date(y,m+1,0);
   const income=sumIncome(a,b), expense=sumExpense(a,b), net=income-expense;
@@ -2475,7 +2657,10 @@ VIEWS.settings = function(){
 
   <div class="card"><div class="card-head"><h3>Profile & journey</h3></div>
     <div class="set-row"><div><div class="lab">Your name</div><div class="desc">Used in your greeting.</div></div><input class="inp textin" id="setName" value="${esc(state.profile.name)}" placeholder="e.g. Alex" style="max-width:220px"></div>
-    <div class="set-row"><div><div class="lab">Journey start</div><div class="desc">Day 1 of your Sep→Dec run.</div></div><input class="inp" type="date" id="setStart" value="${esc(state.profile.startDate)}" style="max-width:200px"></div>
+    <div class="set-row"><div><div class="lab">Start date</div><div class="desc">Day 1 of your journey.</div></div><input class="inp" type="date" id="setStart" value="${esc(state.profile.startDate)}" style="max-width:200px"></div>
+    <div class="set-row"><div><div class="lab">Your role</div><div class="desc">Change &amp; re-apply a starter set of categories + goals (replaces current ones).</div></div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><select class="inp" id="setRole" style="max-width:210px">${roleOptions(state.profile.role||'other')}</select><button class="btn small" data-action="applyrole">Apply</button></div></div>
+    <div class="set-row"><div><div class="lab">Fitness & nutrition tracking</div><div class="desc">Weight, BMI, food calories & a plan. For gym / sports / health-focused users.</div></div><label class="switch"><input type="checkbox" id="fitToggle" ${(state.settings.fitness&&state.settings.fitness.enabled)?'checked':''}><span class="sl"></span></label></div>
   </div>
 
   <div class="card" style="margin-top:16px"><div class="card-head"><h3>Targets</h3></div>
@@ -2590,6 +2775,15 @@ document.addEventListener('click',e=>{
     case 'addexpense': openExpenseModal(); break;
     case 'addincome': openIncomeModal(); break;
     case 'setbudget': openBudgetModal(); break;
+    case 'applyrole': { const r=el('setRole').value||'other'; if(confirm('Replace your current categories and goals with the recommended set for a '+(roleLabel(r)||'this role')+'? Your tasks, habits and finances stay.')){ state.profile.role=r; applyRolePreset(r); save(); go('home'); toast('Set up for '+(roleLabel(r)||'you')); } break; }
+    case 'enablefitness': state.settings.fitness=state.settings.fitness||{}; state.settings.fitness.enabled=true; save(); render(); openFitProfile(); break;
+    case 'fitprofile': openFitProfile(); break;
+    case 'logweight': openWeightModal(); break;
+    case 'logfood': openFoodModal(); break;
+    case 'delfood': { const f=fit(); f.food=arr(f.food).filter(x=>x.id!==t.dataset.id); save(); render(); break; }
+    case 'logburn': openBurnModal(); break;
+    case 'delburn': { const f=fit(); f.burn=arr(f.burn).filter(x=>x.id!==t.dataset.id); save(); render(); break; }
+    case 'estcal': runFoodEstimate(); break;
     case 'deltx': { if(t.dataset.kind==='in') state.income=state.income.filter(x=>x.id!==t.dataset.id); else state.expenses=state.expenses.filter(x=>x.id!==t.dataset.id); save(); render(); break; }
     // december me
     case 'editdecember': openVisionModal(); break;
@@ -3122,6 +3316,44 @@ function openTimeLog(){ openModal(`<h3>Log time</h3><div class="form-row"><label
   ()=>{ const min=parseInt(el('tl_min').value); if(!min){toast('Minutes?');return;} state.timeLog.push({id:genId(),date:el('tl_date').value||todayKey(),category:el('tl_cat').value,minutes:min}); save(); closeModal(); render(); toast('Time logged'); }); }
 function openExpenseModal(){ openModal(`<h3>Add expense</h3><div class="form-row"><label class="fld"><span>Category</span><select class="inp" id="ex_cat">${EXP_CATS.map(([c,e,l])=>`<option value="${c}">${e} ${l}</option>`).join('')}</select></label><label class="fld"><span>Amount</span><input class="inp" type="number" step="0.01" id="ex_amt" placeholder="0"></label></div><div class="form-row"><label class="fld"><span>Note</span><input class="inp" id="ex_note" placeholder="optional"></label><label class="fld"><span>Date</span><input class="inp" type="date" id="ex_date" value="${todayKey()}"></label></div><div class="modal-foot"><button class="btn ghost" data-action="closemodal">Cancel</button><button class="btn primary" data-action="modal-submit">Add</button></div>`,
   ()=>{ const amt=parseFloat(el('ex_amt').value); if(!amt){toast('Amount?');return;} state.expenses.push({id:genId(),date:el('ex_date').value||todayKey(),category:el('ex_cat').value,amount:amt,note:el('ex_note').value.trim()}); save(); closeModal(); render(); toast('Expense added'); }); }
+function openFitProfile(){ const f=fit();
+  openModal(`<h3>Body &amp; goal</h3><div class="msub">Used for BMI and your daily calorie needs. Private to this device.</div>
+    <div class="form-row"><label class="fld"><span>Sex</span><select class="inp" id="ft_sex"><option value="">—</option><option value="male" ${f.sex==='male'?'selected':''}>Male</option><option value="female" ${f.sex==='female'?'selected':''}>Female</option></select></label>
+      <label class="fld"><span>Age</span><input class="inp" type="number" id="ft_age" min="5" max="120" value="${esc(f.age||'')}"></label></div>
+    <div class="form-row"><label class="fld"><span>Height (cm)</span><input class="inp" type="number" id="ft_h" min="80" max="250" value="${esc(f.heightCm||'')}"></label>
+      <label class="fld"><span>Current weight (kg)</span><input class="inp" type="number" step="0.1" id="ft_w" value="${esc(curWeight()||'')}"></label></div>
+    <label class="fld"><span>Activity level</span><select class="inp" id="ft_act">${Object.keys(ACTIVITY_LABELS).map(a=>`<option value="${a}" ${f.activity===a?'selected':''}>${ACTIVITY_LABELS[a]}</option>`).join('')}</select></label>
+    <div class="form-row"><label class="fld"><span>Target weight (kg)</span><input class="inp" type="number" step="0.1" id="ft_tw" value="${esc(f.targetWeight||'')}"></label>
+      <label class="fld"><span>Target date</span><input class="inp" type="date" id="ft_td" value="${esc(f.targetDate||'')}"></label></div>
+    <div class="modal-foot"><button class="btn ghost" data-action="closemodal">Cancel</button><button class="btn primary" data-action="modal-submit">Save</button></div>`,
+  ()=>{ const f=fit(); f.sex=el('ft_sex').value; f.age=parseInt(el('ft_age').value)||null; f.heightCm=parseFloat(el('ft_h').value)||null; f.activity=el('ft_act').value||'moderate'; f.targetWeight=parseFloat(el('ft_tw').value)||null; f.targetDate=el('ft_td').value||'';
+    const w=parseFloat(el('ft_w').value); if(w>0) recordWeight(w); save(); closeModal(); render(); toast('Saved'); });
+}
+function recordWeight(kg){ const f=fit(); const tk=todayKey(); const ex=arr(f.weightLog).find(x=>x.date===tk); if(ex) ex.kg=kg; else f.weightLog.push({id:genId(),date:tk,kg}); }
+function openWeightModal(){ openModal(`<h3>Log weight</h3>
+    <div class="form-row"><label class="fld"><span>Weight (kg)</span><input class="inp" type="number" step="0.1" id="wl_kg" value="${esc(curWeight()||'')}"></label>
+      <label class="fld"><span>Date</span><input class="inp" type="date" id="wl_date" value="${todayKey()}"></label></div>
+    <div class="modal-foot"><button class="btn ghost" data-action="closemodal">Cancel</button><button class="btn primary" data-action="modal-submit">Save</button></div>`,
+  ()=>{ const kg=parseFloat(el('wl_kg').value); if(!(kg>0)){ toast('Enter a weight'); return; } const dt=el('wl_date').value||todayKey(); const f=fit(); const ex=arr(f.weightLog).find(x=>x.date===dt); if(ex)ex.kg=kg; else f.weightLog.push({id:genId(),date:dt,kg}); save(); closeModal(); render(); toast('Weight logged'); }); }
+function runFoodEstimate(){ const ta=el('fd_text'); if(!ta) return; const r=estimateCalories(ta.value); const c=el('fd_cal'), h=el('fd_hint'); if(c) c.value=r.cal||''; if(h) h.innerHTML = r.found.length? ('Recognised: '+r.found.map(esc).join(', ')) : (ta.value.trim()?'Not in my food list — type the calories yourself.':''); }
+function openFoodModal(){
+  openModal(`<h3>Log food</h3><div class="msub">Type what you ate — e.g. "2 roti, dal, rice" or "dosa and chai". I'll estimate the calories (edit if needed).</div>
+    <div class="form-row"><label class="fld"><span>Meal</span><select class="inp" id="fd_meal">${['Breakfast','Lunch','Dinner','Snacks'].map(m=>`<option>${m}</option>`).join('')}</select></label>
+      <label class="fld"><span>Date</span><input class="inp" type="date" id="fd_date" value="${todayKey()}"></label></div>
+    <label class="fld"><span>What did you eat?</span><input class="inp" id="fd_text" placeholder="e.g. 2 roti, dal, rice, salad"></label>
+    <div class="form-row"><label class="fld"><span>Calories (auto — edit if needed)</span><input class="inp" type="number" id="fd_cal" min="0" placeholder="0"></label>
+      <label class="fld" style="align-self:end"><button class="btn" data-action="estcal" type="button">${ic('bolt')} Re-estimate</button></label></div>
+    <div id="fd_hint" style="font-size:11.5px;color:var(--text-2);margin-top:2px"></div>
+    <div class="modal-foot"><button class="btn ghost" data-action="closemodal">Cancel</button><button class="btn primary" data-action="modal-submit">Add</button></div>`,
+  ()=>{ const text=el('fd_text').value.trim(); if(!text){ toast('Type what you ate'); return; } let cal=parseInt(el('fd_cal').value); if(!(cal>=0)||el('fd_cal').value===''){ cal=estimateCalories(text).cal; } const f=fit(); f.food.push({id:genId(),date:el('fd_date').value||todayKey(),meal:el('fd_meal').value,text,cal:cal||0}); save(); closeModal(); render(); toast('Food logged'); });
+  setTimeout(()=>{ const ta=el('fd_text'); if(ta) ta.addEventListener('input',runFoodEstimate); },40);
+}
+function openBurnModal(){ openModal(`<h3>Log workout / activity</h3><div class="msub">Roughly how many calories did you burn? (gym, run, sport…)</div>
+    <label class="fld"><span>Activity</span><input class="inp" id="bn_text" placeholder="e.g. Gym, running 5 km"></label>
+    <div class="form-row"><label class="fld"><span>Calories burned</span><input class="inp" type="number" id="bn_cal" min="0" placeholder="e.g. 300"></label>
+      <label class="fld"><span>Date</span><input class="inp" type="date" id="bn_date" value="${todayKey()}"></label></div>
+    <div class="modal-foot"><button class="btn ghost" data-action="closemodal">Cancel</button><button class="btn primary" data-action="modal-submit">Add</button></div>`,
+  ()=>{ const cal=parseInt(el('bn_cal').value); if(!(cal>0)){ toast('Enter calories burned'); return; } const f=fit(); f.burn.push({id:genId(),date:el('bn_date').value||todayKey(),text:el('bn_text').value.trim()||'Workout',cal}); save(); closeModal(); render(); toast('Logged'); }); }
 function openVisionModal(){ openModal(`<h3>December Me — your vision</h3><label class="fld"><span>Who do you want to be by December?</span><textarea class="inp" id="dm_vision" placeholder="Fitter, sharper, more disciplined, consistent in prayer…">${esc((state.decemberMe||{}).vision||'')}</textarea></label><div class="modal-foot"><button class="btn ghost" data-action="closemodal">Cancel</button><button class="btn primary" data-action="modal-submit">Save</button></div>`,
   ()=>{ state.decemberMe=state.decemberMe||{vision:'',targets:[]}; state.decemberMe.vision=el('dm_vision').value.trim(); save(); closeModal(); render(); }); }
 function openDmTargetModal(){ openModal(`<h3>Add December target</h3><label class="fld"><span>Target</span><input class="inp" id="dt_label" placeholder="e.g. Bench press 80kg, 60 gym sessions"></label><div class="form-row"><label class="fld"><span>Auto-track</span><select class="inp" id="dt_metric"><option value="">Manual count</option><option value="gym">Gym days</option><option value="study_hrs">Study hours</option><option value="focus_hrs">Focus hours</option><option value="tasks">Tasks done</option></select></label><label class="fld"><span>Target number</span><input class="inp" type="number" id="dt_target" placeholder="e.g. 60"></label></div><div class="modal-foot"><button class="btn ghost" data-action="closemodal">Cancel</button><button class="btn primary" data-action="modal-submit">Add</button></div>`,
@@ -3350,6 +3582,8 @@ function openOnboarding(){
     <h3>Welcome to Momentum</h3><div class="msub">A simple space to plan your day, build habits and reach your goals. Under a minute to set up — everything's editable later.</div>
     <div class="form-row"><label class="fld"><span>Your name</span><input class="inp" id="ob_name" placeholder="e.g. Alex"></label>
       <label class="fld"><span>Start date</span><input class="inp" type="date" id="ob_start" value="${todayKey()}"></label></div>
+    <label class="fld"><span>What are you right now?</span><select class="inp" id="ob_role">${roleOptions('student')}</select></label>
+    <div class="msub" style="margin:-6px 0 14px;font-size:11.5px">I'll set up categories &amp; goals that fit — e.g. a student gets Academics, Fitness &amp; Learning; a doctor gets Clinical work, Learning &amp; Health. Fully editable, and Finances is always included.</div>
     <label class="fld"><span>Faith / reflection (optional)</span><select class="inp" id="ob_religion">${religionOptions('secular')}</select></label>
     <div class="msub" style="margin:-6px 0 14px;font-size:11.5px">Adds an optional daily reflection section. Muslims get accurate prayer times &amp; Quran; other faiths get an editable practice list; pick "Prefer not to say" to hide it. Always private, never scored — change it anytime in Settings.</div>
     <label class="fld" style="display:flex;align-items:center;gap:10px"><input type="checkbox" id="ob_seed" checked style="width:auto"><span style="margin:0">Add a few example categories &amp; habits to get me started (optional)</span></label>
@@ -3357,6 +3591,7 @@ function openOnboarding(){
   </div>`;
   document.body.appendChild(ov);
   const finish=(seed)=>{ state.profile.name=el('ob_name').value.trim(); state.profile.startDate=el('ob_start').value||todayKey();
+    state.profile.role=el('ob_role').value||'other'; applyRolePreset(state.profile.role);
     state.profile.religion=el('ob_religion').value||'secular'; seedFaithPractices(state.profile.religion); state.profile.onboarded=true;
     if(seed && el('ob_seed').checked){ seedStarter(); } save(); syncAreas(); applyFaithNav(); ov.remove(); render(); toast("You're all set"); };
   el('ob_go').onclick=()=>finish(true); el('ob_skip').onclick=()=>{ state.profile.onboarded=true; save(); ov.remove(); render(); };
@@ -3394,7 +3629,7 @@ let toastTmr; function toast(msg){ const t=el('toast'); t.textContent=msg; t.cla
 function celebrate(){ const cv=el('confetti'), ctx=cv.getContext('2d'); cv.width=innerWidth; cv.height=innerHeight; const colors=['#8b7bf9','#b18cf8','#2fce88','#f5b73d','#3f8ae6','#e0662f']; const parts=[]; for(let i=0;i<150;i++) parts.push({x:innerWidth/2+(Math.random()-.5)*220,y:innerHeight/3,vx:(Math.random()-.5)*12,vy:Math.random()*-13-4,g:.32+Math.random()*.16,s:6+Math.random()*7,c:colors[i%colors.length],rot:Math.random()*6,vr:(Math.random()-.5)*.4}); let f=0; (function loop(){ ctx.clearRect(0,0,cv.width,cv.height); f++; parts.forEach(p=>{ p.vy+=p.g; p.x+=p.vx; p.y+=p.vy; p.rot+=p.vr; ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot); ctx.fillStyle=p.c; ctx.fillRect(-p.s/2,-p.s/2,p.s,p.s*0.6); ctx.restore(); }); if(f<130) requestAnimationFrame(loop); else ctx.clearRect(0,0,cv.width,cv.height); })(); }
 
 /* request notification permission lazily when toggled */
-document.addEventListener('change',e=>{ if(e.target.id==='fNotify'){ state.settings.notify=e.target.checked; if(e.target.checked && 'Notification' in window && Notification.permission!=='granted'){ Notification.requestPermission(); } save(); } if(e.target.id==='fStrict'){ state.settings.focus.strict=e.target.checked; save(); } if(e.target.id==='fDefault'){ state.settings.focus.defaultMin=parseInt(e.target.value)||45; save(); } if(e.target.id==='prayerNotify'){ state.settings.prayerNotify=e.target.checked; if(e.target.checked && 'Notification' in window && Notification.permission!=='granted'){ Notification.requestPermission(); } save(); } });
+document.addEventListener('change',e=>{ if(e.target.id==='fitToggle'){ state.settings.fitness=state.settings.fitness||{}; state.settings.fitness.enabled=e.target.checked; save(); render(); } if(e.target.id==='fNotify'){ state.settings.notify=e.target.checked; if(e.target.checked && 'Notification' in window && Notification.permission!=='granted'){ Notification.requestPermission(); } save(); } if(e.target.id==='fStrict'){ state.settings.focus.strict=e.target.checked; save(); } if(e.target.id==='fDefault'){ state.settings.focus.defaultMin=parseInt(e.target.value)||45; save(); } if(e.target.id==='prayerNotify'){ state.settings.prayerNotify=e.target.checked; if(e.target.checked && 'Notification' in window && Notification.permission!=='granted'){ Notification.requestPermission(); } save(); } });
 
 /* ---------------- prayer reminder ticker (only while app is open) ---------------- */
 const _prayerNotified=new Set();
