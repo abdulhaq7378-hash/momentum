@@ -747,6 +747,25 @@ html[data-theme="light"] body::before{ mix-blend-mode:normal; }
 /* mobile: drop the floating frame */
 @media(max-width:820px){ .app{ margin:0; border-radius:0; min-height:100vh; box-shadow:none; } .sidebar{ border-radius:0; } .main{ padding:18px 14px 96px; } }
 
+/* ===== Home page + compact sections (general-purpose redesign) ===== */
+.home-hero{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+.home-hero .hh-ring{flex:0 0 auto}
+.hh-stats{display:flex;gap:12px;flex:1;flex-wrap:wrap;min-width:210px}
+.hh-stat{flex:1;min-width:96px;background:var(--surface-2);border:1px solid var(--border);border-radius:14px;padding:14px 13px}
+.hh-stat .hs-v{font-size:26px;font-weight:800;line-height:1;letter-spacing:-.5px}
+.hh-stat .hs-k{font-size:11.5px;color:var(--text-2);margin-top:7px;display:flex;align-items:center;gap:5px}
+.up-next{display:flex;align-items:center;gap:14px}
+.up-next .un-time{font-weight:800;font-size:14.5px;min-width:78px;color:var(--accent)}
+.up-next .un-body{flex:1;min-width:0}
+.up-next .un-title{font-weight:650;font-size:14.5px}
+.up-next .un-sub{font-size:12px;color:var(--text-2);margin-top:3px;display:flex;align-items:center;gap:6px}
+.up-next .un-sub .catdot{width:8px;height:8px;border-radius:50%;flex:0 0 auto}
+details.dsec{margin-top:16px}
+details.dsec>summary{list-style:none;cursor:pointer;padding:15px 18px;font-weight:700;font-family:var(--font-display);letter-spacing:-.01em;background:var(--surface);border:1px solid var(--border);border-radius:14px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow-sm)}
+details.dsec>summary::-webkit-details-marker{display:none}
+details.dsec>summary::after{content:"⌄";font-size:19px;color:var(--muted);transition:transform .2s var(--ease)}
+details.dsec[open]>summary::after{transform:rotate(180deg)}
+
 </style></head><body><div id="approot">
 <div class="app">
   <aside class="sidebar">
@@ -754,12 +773,13 @@ html[data-theme="light"] body::before{ mix-blend-mode:normal; }
       <div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 15.5 9 10l3.5 3.5L19.5 6"/><path d="M14.5 6h5v5"/></svg></div>
       <div>
         <h1 id="brandName">Momentum</h1>
-        <div class="sub" id="brandSub">Better Me · Sep–Dec</div>
+        <div class="sub" id="brandSub">Plan · Focus · Grow</div>
       </div>
     </div>
 
     <nav class="nav" id="nav">
-      <button data-action="nav" data-view="dashboard"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.6 12 3l9 7.6"/><path d="M5.5 9.5V21h13V9.5"/></svg></span> Dashboard</button>
+      <button data-action="nav" data-view="home"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.6 12 3l9 7.6"/><path d="M5.5 9.5V21h13V9.5"/></svg></span> Home</button>
+      <button data-action="nav" data-view="dashboard"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13h6V4H4zM14 20h6v-9h-6zM14 8h6V4h-6zM4 20h6v-4H4z"/></svg></span> Dashboard</button>
       <button data-action="nav" data-view="tasks"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11.5l2.5 2.5L21 4.5"/><path d="M20.5 12v7a2 2 0 0 1-2 2H5.5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9.5"/></svg></span> Tasks</button>
       <button data-action="nav" data-view="habits"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2.5 21 6.5 17 10.5"/><path d="M3 11.5v-1a4 4 0 0 1 4-4h14"/><path d="M7 21.5 3 17.5 7 13.5"/><path d="M21 12.5v1a4 4 0 0 1-4 4H3"/></svg></span> Habits</button>
       <button data-action="nav" data-view="focus"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.6"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/></svg></span> Focus</button>
@@ -787,7 +807,7 @@ html[data-theme="light"] body::before{ mix-blend-mode:normal; }
 </div>
 
 <nav class="mobilenav" id="mnav">
-  <button data-action="nav" data-view="dashboard"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.6 12 3l9 7.6"/><path d="M5.5 9.5V21h13V9.5"/></svg></span>Home</button>
+  <button data-action="nav" data-view="home"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.6 12 3l9 7.6"/><path d="M5.5 9.5V21h13V9.5"/></svg></span>Home</button>
   <button data-action="nav" data-view="tasks"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11.5l2.5 2.5L21 4.5"/><path d="M20.5 12v7a2 2 0 0 1-2 2H5.5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9.5"/></svg></span>Tasks</button>
   <button data-action="nav" data-view="habits"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2.5 21 6.5 17 10.5"/><path d="M3 11.5v-1a4 4 0 0 1 4-4h14"/><path d="M7 21.5 3 17.5 7 13.5"/><path d="M21 12.5v1a4 4 0 0 1-4 4H3"/></svg></span>Habits</button>
   <button data-action="nav" data-view="focus"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.6"/></svg></span>Focus</button>
@@ -893,17 +913,21 @@ function areaName(kind, fallback){ const a=areas().find(x=>x.kind===kind); retur
 function enabledAreas(){ return areas().filter(a=>a.enabled!==false); }
 function syncAreas(){
   const list=areas();
+  // clear previously-registered custom cats (base cats gym/academics/personal/work/general persist)
   Object.keys(CATS).forEach(k=>{ if(CATS[k]&&CATS[k]._custom) delete CATS[k]; });
   list.forEach(a=>{
-    if(a.kind==='gym'&&CATS.gym){ CATS.gym.label=a.name; CATS.gym.short=a.name; CATS.gym.emoji=ic(a.icon||'dumbbell'); }
-    else if(a.kind==='academics'&&CATS.academics){ CATS.academics.label=a.name; CATS.academics.short=a.name; CATS.academics.emoji=ic(a.icon||'book'); }
-    else if(a.kind==='custom'){ CATS[a.id]={label:a.name, short:a.name, emoji:ic(a.icon||'star'), color:a.color||'var(--accent)', _custom:true}; }
+    if(a.kind==='finance') return;                 // finance is a module, not a task category
+    if(CATS[a.id] && !CATS[a.id]._custom){          // an existing base cat: restyle it in place from the area
+      CATS[a.id].label=a.name; CATS[a.id].short=a.name; CATS[a.id].emoji=ic(a.icon||'star'); if(a.color) CATS[a.id].color=a.color;
+    } else {                                         // a user-created area: register a fresh category
+      CATS[a.id]={label:a.name, short:a.name, emoji:ic(a.icon||'star'), color:a.color||'var(--accent)', _custom:true};
+    }
   });
-  // task-category order: gym & academics always present; enabled custom areas; then base cats
-  const order=['gym','academics'];
-  list.forEach(a=>{ if(a.kind==='custom'&&a.enabled!==false&&CATS[a.id]) order.push(a.id); });
-  ['personal','work','general'].forEach(c=>order.push(c));
-  CAT_ORDER.length=0; order.forEach(c=>{ if(CATS[c]) CAT_ORDER.push(c); });
+  // task-category order = enabled non-finance areas, in the user's order, + General as the fallback bucket
+  const order=[];
+  list.forEach(a=>{ if(a.kind!=='finance' && a.enabled!==false && CATS[a.id]) order.push(a.id); });
+  if(!order.includes('general')) order.push('general');
+  CAT_ORDER.length=0; order.forEach(c=>CAT_ORDER.push(c));
 }
 const PRIO = {high:{l:'High',c:'var(--prio-high)'}, med:{l:'Med',c:'var(--prio-med)'}, low:{l:'Low',c:'var(--prio-low)'}};
 const DIFF = {easy:'Easy', med:'Medium', hard:'Hard'};
@@ -949,9 +973,11 @@ const DEFAULT_STATE = {
     targets:{gymPerWeek:4, studyHrsPerDay:2, dailyTasks:5},
     finance:{currency:'₹', monthlyBudget:0},
     areas:[
-      {id:'gym',       name:'Gym',       icon:'dumbbell', color:'var(--c-gym)',   kind:'gym',       enabled:true},
-      {id:'academics', name:'Academics', icon:'book',     color:'var(--c-study)', kind:'academics', enabled:true},
-      {id:'finance',   name:'Finances',  icon:'coin',     color:'var(--c-work)',  kind:'finance',   enabled:true},
+      {id:'work',     name:'Work',     icon:'briefcase', color:'#4a90d6', kind:'custom',  enabled:true},
+      {id:'personal', name:'Personal', icon:'spark',     color:'#8b6ff0', kind:'custom',  enabled:true},
+      {id:'health',   name:'Health',   icon:'spark',     color:'#2fae82', kind:'custom',  enabled:true},
+      {id:'learning', name:'Learning', icon:'book',      color:'#e0a02a', kind:'custom',  enabled:true},
+      {id:'finance',  name:'Finances', icon:'coin',      color:'#e8734a', kind:'finance', enabled:true},
     ],
     location:{lat:13.3525, lng:74.7925, city:'Manipal, India', method:'Karachi', asr:'standard', autoTz:true, tz:5.5},
     blockSites:['instagram.com','web.whatsapp.com','reddit.com','discord.com','x.com','twitter.com','facebook.com','tiktok.com','twitch.tv','netflix.com'],
@@ -1159,8 +1185,8 @@ function dayStats(k){
   (day.tasks||[]).forEach(t=>{ planned++; if(byCat[t.category]) byCat[t.category].planned++; if(t.done){ completed++; if(byCat[t.category]) byCat[t.category].completed++; } });
   return {planned, completed, missed:planned-completed, pct:planned?completed/planned:0, byCat, note:day.note||'', tasks:day.tasks||[], big3:day.big3||[]};
 }
-const gymDay = k => dayStats(k).byCat.gym.completed>0 || state.workouts.some(w=>w.date===k);
-const studyDayFlag = k => dayStats(k).byCat.academics.completed>0 || studyMinutesOn(k)>0;
+const gymDay = k => { const b=dayStats(k).byCat.gym; return (b&&b.completed>0) || state.workouts.some(w=>w.date===k); };
+const studyDayFlag = k => { const b=dayStats(k).byCat.academics; return (b&&b.completed>0) || studyMinutesOn(k)>0; };
 const productiveDay = k => dayStats(k).completed>0 || focusMinutesOn(k)>0 || (state.workouts.some(w=>w.date===k));
 
 /* ---------------- focus / study time ---------------- */
@@ -1229,15 +1255,9 @@ function scoreBreakdown(k){
   const b3=s.big3.filter(Boolean); if(b3.length){ const dn=b3.filter(x=>x.done).length; comps.push({key:'big3',label:'Big 3',c:dn/b3.length,w:w.big3,detail:`${dn}/${b3.length}`,active:true}); }
   // habits
   const hs=activeHabits(); if(hs.length){ const dn=hs.filter(h=>habitDone(h,k)).length; comps.push({key:'habits',label:'Habits',c:dn/hs.length,w:w.habits,detail:`${dn}/${hs.length}`,active:true}); }
-  // gym (weekly progress reflected)
-  let gymW=0; for(let i=0;i<7;i++){ if(gymDay(keyOf(addDays(ws,i)))) gymW++; }
-  comps.push({key:'gym',label:'Gym',c:Math.min(1, gymW/Math.max(1,tg.gymPerWeek)),w:w.gym,detail:`${gymW}/${tg.gymPerWeek} this wk`,active:true});
-  // study
-  const sm=studyMinutesOn(k); const sTarget=(tg.studyHrsPerDay||2)*60;
-  comps.push({key:'study',label:'Study',c:Math.min(1, sm/Math.max(30,sTarget)),w:w.study,detail:fmtMin(sm),active:true});
-  // focus
+  // focus (universal — a deep-work timer, no lifestyle assumption)
   const fm=focusMinutesOn(k); const fTarget=state.settings.focus.focusTarget||90;
-  comps.push({key:'focus',label:'Focus',c:Math.min(1, fm/Math.max(25,fTarget)),w:w.focus,detail:fmtMin(fm),active:true});
+  if(fm>0 || w.focus) comps.push({key:'focus',label:'Focus',c:Math.min(1, fm/Math.max(25,fTarget)),w:w.focus,detail:fmtMin(fm),active:true});
 
   const totalW = comps.reduce((a,c)=>a+c.w,0)||1;
   const score = Math.round( comps.reduce((a,c)=>a+c.w*c.c,0)/totalW*100 );
@@ -1428,7 +1448,7 @@ function expenseByCatRange(a,b){ const o={}; EXP_CATS.forEach(([c])=>o[c]=0); le
 
 /* ---------------- UI state + router ---------------- */
 const ui = {
-  view:'dashboard',
+  view:'home',
   curDay: todayKey(),
   addCat:'general',
   calRef:(()=>{ const d=new Date(); return {y:d.getFullYear(), m:d.getMonth()}; })(),
@@ -1455,7 +1475,7 @@ function dayCompletionPct(k){
 // REWARD: completing your day warms the whole UI toward gold. Finish everything → radiant (tier 3).
 function applyGlow(){ try{ const p=dayCompletionPct(todayKey()); const g = p>=0.999?3 : p>=0.66?2 : p>=0.34?1 : 0; document.documentElement.setAttribute('data-glow', g); }catch(e){} }
 const _FAITH_SHORT={islam:'Faith',hinduism:'Puja',christianity:'Prayer',sikhism:'Nitnem',buddhism:'Meditate',judaism:'Prayer',other:'Faith',secular:'Reflect',none:'Reflect'};
-function areaView(a){ return a.kind==='custom' ? ('area:'+a.id) : a.id; }
+function areaView(a){ return a.kind==='finance' ? 'finance' : ('area:'+a.id); }
 function applyAreaNav(){ try{
   const list=enabledAreas();
   const side=document.getElementById('lifeAreasNav');
@@ -1594,6 +1614,49 @@ function tickRing(pct, big, sub){
 /* ============================================================
    VIEW: DASHBOARD
    ============================================================ */
+function taskMinutes(t){ if(t.startMin!=null && t.endMin!=null && t.endMin>t.startMin) return t.endMin-t.startMin; return t.estMin||0; }
+/* ============================================================
+   VIEW: HOME — clean, today-only, "what do I need to do today?"
+   ============================================================ */
+VIEWS.home = function(){
+  const tk=todayKey(); ui.curDay=tk;                 // Home always acts on today
+  const tasks=(getDay(tk).tasks||[]);
+  const done=tasks.filter(t=>t.done), remaining=tasks.filter(t=>!t.done);
+  const pct=tasks.length? done.length/tasks.length : 0;
+  const usedMin=tasks.reduce((a,t)=>a+taskMinutes(t),0);
+  const freeMin=Math.max(0, 1440-usedMin);
+  const timed=remaining.filter(t=>t.startMin!=null).sort((a,b)=>a.startMin-b.startMin);
+  const next=timed[0]||remaining[0]||null;
+  const dls=upcomingDeadlines(3);
+  const hour=new Date().getHours(); const greet=hour<12?'Good morning':hour<18?'Good afternoon':'Good evening';
+  const nm=state.profile.name?', '+esc(state.profile.name.split(' ')[0]):'';
+  const nextCard = next ? `<div class="up-next">
+      <div class="un-time">${next.startMin!=null?fmtClock(next.startMin):'Anytime'}</div>
+      <div class="un-body"><div class="un-title">${esc(next.text)}</div><div class="un-sub"><span class="catdot" style="background:${CAT(next.category).color}"></span> ${esc(CAT(next.category).short)}${taskMinutes(next)?' · '+fmtMin(taskMinutes(next)):''}</div></div>
+      <button class="check" data-action="toggle" data-id="${attr(next.id)}"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6"/></svg></button>
+    </div>` : (tasks.length?`<div class="empty" style="padding:16px"><div>All done for today. Nice work.</div></div>`:`<div class="empty" style="padding:16px"><div>No tasks yet. Add the first thing you want to get done.</div></div>`);
+  const list = tasks.length ? tasks.slice(0,6).map(taskRow).join('')+(tasks.length>6?`<button class="btn small" data-action="nav" data-view="tasks" style="margin-top:8px">View all ${tasks.length} tasks</button>`:'') : `<div class="empty" style="padding:16px"><div>Nothing scheduled today.</div><button class="btn small primary" data-action="newtask" style="margin-top:10px">${ic('plus')} Add your first task</button></div>`;
+  return `
+  <div class="page-head"><div><h2>${greet}${nm}</h2><div class="lede">${fmtLong(tk)}</div></div>
+    <button class="btn primary" data-action="newtask">${ic('plus')} Add task</button></div>
+
+  <div class="home-hero card">
+    <div class="hh-ring">${ringSVG(pct, 150, done.length+'/'+tasks.length, 'done')}</div>
+    <div class="hh-stats">
+      <div class="hh-stat"><div class="hs-v">${remaining.length}</div><div class="hs-k">${ic('list')} Left to do</div></div>
+      <div class="hh-stat"><div class="hs-v">${fmtMin(freeMin)}</div><div class="hs-k">${ic('clock')} Free time</div></div>
+      <div class="hh-stat"><div class="hs-v">${Math.round(pct*100)}%</div><div class="hs-k">${ic('check')} Complete</div></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:14px"><div class="card-head"><h3>Up next</h3><button class="btn small" data-action="nav" data-view="tasks">Schedule</button></div>${nextCard}</div>
+
+  <div class="card" style="margin-top:14px"><div class="card-head"><h3>Today's tasks</h3><button class="btn small" data-action="newtask">${ic('plus')} Add</button></div>${list}</div>
+
+  ${dls.length?`<div class="card" style="margin-top:14px"><div class="card-head"><h3>Deadlines</h3><button class="btn small" data-action="nav" data-view="calendar">Calendar</button></div>${dls.map(d=>{const days=daysBetween(todayKey(),d.deadline);return `<div class="dl"><span class="lp" style="background:${dlColor(days)}"></span><span class="dtx">${esc(d.title)}${d.subj?` <span class="tag">${esc(d.subj)}</span>`:''}</span><span class="dwhen" style="color:${dlColor(days)}">${dlText(d.deadline)}</span></div>`;}).join('')}</div>`:''}
+  `;
+};
+
 VIEWS.dashboard = function(){
   const tk=todayKey(), s=dayStats(tk), sb=scoreBreakdown(tk);
   const streak=currentStreak();
@@ -1615,31 +1678,13 @@ VIEWS.dashboard = function(){
 
   return `
   <div class="page-head">
-    <div><h2>${greet}${state.profile.name?', '+esc(state.profile.name.split(' ')[0]):''}</h2>
+    <div><h2>Overview</h2>
     <div class="lede">${fmtLong(tk)} · “${quote}”</div></div>
-    <span class="chip accent">Day ${Math.max(journeyDay(),0)}</span>
+    <div style="display:flex;gap:8px;align-items:center"><button class="btn small" data-action="planday" data-date="${tk}">${ic('mic')} Plan my day</button><span class="chip accent">Day ${Math.max(journeyDay(),0)}</span></div>
   </div>
   ${nudge}
 
   ${faithBlock(tk)}
-
-  <div class="card" style="margin-top:16px">
-    <div class="card-head"><h3>Today's plan</h3><div style="display:flex;gap:8px"><button class="btn small primary" data-action="planday" data-date="${tk}">${ic('mic')} Plan my day</button><button class="btn small" data-action="planday" data-date="${keyOf(addDays(new Date(),1))}">Plan tomorrow</button></div></div>
-    ${(getDay(tk).tasks||[]).filter(t=>!t.done).length ? scheduleRows(tk) : `<div class="empty" style="padding:16px"><div class="big">${ic('mic')}</div><div class="t">No plan for today yet</div><div>Tap <b>Plan my day</b> and just say it — "gym 3 hours, study 5 hours, meeting 7:30 to 9". I'll lay out your day around your prayer times.</div></div>`}
-  </div>
-
-  <div class="grid g2" style="margin-top:16px">
-    <div class="card">
-      <div class="card-head"><h3>Today's Big 3</h3><button class="btn small" data-action="editbig3">${big3.length?'Edit':'Set priorities'}</button></div>
-      ${big3.length? `<div class="big3">${big3.map((b,i)=>`<div class="big3-item ${b.done?'done':''}"><span class="num">${i+1}</span><span class="b3tx">${esc(b.text)}</span><button class="check ${b.done?'':''}" data-action="big3toggle" data-i="${i}"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6"/></svg></button></div>`).join('')}</div>`
-        : `<div class="big3-empty" data-action="editbig3">${ic('plus')}Choose your 3 most important tasks for today</div>`}
-    </div>
-    <div class="card">
-      <div class="card-head"><h3>Upcoming deadlines</h3><button class="btn small" data-action="nav" data-view="academics">All</button></div>
-      ${dls.length? dls.map(d=>{ const days=daysBetween(todayKey(),d.deadline); return `<div class="dl"><span class="lp" style="background:${dlColor(days)}"></span><span class="dtx">${esc(d.title)} ${d.subj?`<span class="tag">${esc(d.subj)}</span>`:''}</span><span class="dwhen" style="color:${dlColor(days)}">${dlText(d.deadline)}</span></div>`; }).join('')
-        : `<div class="empty" style="padding:18px"><div>No deadlines set. Add them in Tasks or Academics.</div></div>`}
-    </div>
-  </div>
 
   <div class="grid g4" style="margin-top:16px">
     <div class="stat hero" data-action="scoreinfo" style="cursor:pointer"><div class="k">${ic('bolt')} Daily score <span style="margin-left:auto;opacity:.6">ⓘ</span></div><div class="v">${sb.score}<small>/100</small></div><div class="foot">Tap for breakdown</div></div>
@@ -1650,34 +1695,35 @@ VIEWS.dashboard = function(){
 
   <div class="grid g2" style="margin-top:16px">
     <div class="card">
-      <div class="card-head"><h3>Habits today</h3><button class="btn small" data-action="nav" data-view="habits">Manage</button></div>
-      ${hs.length? `<div class="meter" style="margin-top:0"><div class="mrow"><span class="lab">Completed</span><span class="val">${habitsDone}/${hs.length}</span></div><div class="track"><i style="width:${hs.length?habitsDone/hs.length*100:0}%;background:var(--c-general)"></i></div></div>
-        <div style="margin-top:12px">${hs.slice(0,5).map(h=>`<div class="hb" style="padding:8px 11px;margin-bottom:6px"><span class="he">${emojiIcon(h.emoji,'check')}</span><div class="hinfo"><div class="hname" style="font-size:13px">${esc(h.name)}</div></div><span class="hstreak">${ic('flame')}${habitStreak(h)}</span><button class="check ${habitDone(h,tk)?'done':''}" data-action="habittoggle" data-id="${attr(h.id)}"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6"/></svg></button></div>`).join('')}</div>`
-        : `<div class="empty" style="padding:18px"><div>No habits yet. Build your daily routine.</div><button class="btn small primary" data-action="nav" data-view="habits" style="margin-top:10px">Add habits</button></div>`}
+      <div class="card-head"><h3>Today's Big 3</h3><button class="btn small" data-action="editbig3">${big3.length?'Edit':'Set priorities'}</button></div>
+      ${big3.length? `<div class="big3">${big3.map((b,i)=>`<div class="big3-item ${b.done?'done':''}"><span class="num">${i+1}</span><span class="b3tx">${esc(b.text)}</span><button class="check ${b.done?'':''}" data-action="big3toggle" data-i="${i}"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6"/></svg></button></div>`).join('')}</div>`
+        : `<div class="big3-empty" data-action="editbig3">${ic('plus')}Choose your 3 most important tasks for today</div>`}
     </div>
     <div class="card">
-      <div class="card-head"><h3>This week</h3><span class="card-sub">Mon–today</span></div>
-      <div class="grid g2" style="gap:11px">
-        ${mini('','Gym', wk.gym+'/'+esc(state.settings.targets.gymPerWeek))}
-        ${mini('','Study', fmtMin(wk.studyMin))}
-        ${mini('','Focus', fmtMin(wk.focusMin))}
-        ${mini('','Avg score', wk.avgScore)}
-      </div>
-      <div style="margin-top:14px"><button class="emergency" data-action="emergency">${ic('alert')} I NEED TO FOCUS</button></div>
-      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap"><button class="btn small" data-action="logtime">${ic('clock')} Log time</button><button class="btn small" data-action="logstudy">${ic('bookOpen')} Log study</button><button class="btn small" data-action="addworkout">${ic('dumbbell')} Log workout</button></div>
+      <div class="card-head"><h3>Upcoming deadlines</h3><button class="btn small" data-action="nav" data-view="calendar">Calendar</button></div>
+      ${dls.length? dls.map(d=>{ const days=daysBetween(todayKey(),d.deadline); return `<div class="dl"><span class="lp" style="background:${dlColor(days)}"></span><span class="dtx">${esc(d.title)} ${d.subj?`<span class="tag">${esc(d.subj)}</span>`:''}</span><span class="dwhen" style="color:${dlColor(days)}">${dlText(d.deadline)}</span></div>`; }).join('')
+        : `<div class="empty" style="padding:18px"><div>No deadlines set. Add a deadline when you create a task.</div></div>`}
     </div>
-  </div>
-
-  <div class="card" style="margin-top:16px">
-    <div class="card-head"><h3>Tasks planned vs completed</h3><span class="card-sub">Last 14 days</span></div>
-    <div class="chart-wrap">${plannedVsCompletedChart(14)}</div>
-    <div class="legend"><span><i style="background:var(--surface-3)"></i> Planned</span><span><i style="background:var(--accent)"></i> Completed</span></div>
   </div>
 
   <div class="grid g2" style="margin-top:16px">
-    <div class="card"><div class="card-head"><h3>Daily score trend</h3><span class="card-sub">Last 30 days</span></div><div class="chart-wrap">${lineChart(30, k=>dayScore(k)/100, v=>Math.round(v*100), {pct:true,name:'Score'})}</div></div>
+    <div class="card">
+      <div class="card-head"><h3>Habits today</h3><button class="btn small" data-action="nav" data-view="habits">Manage</button></div>
+      ${hs.length? `<div class="meter" style="margin-top:0"><div class="mrow"><span class="lab">Completed</span><span class="val">${habitsDone}/${hs.length}</span></div><div class="track"><i style="width:${hs.length?habitsDone/hs.length*100:0}%;background:var(--accent)"></i></div></div>
+        <div style="margin-top:12px">${hs.slice(0,5).map(h=>`<div class="hb" style="padding:8px 11px;margin-bottom:6px"><span class="he">${emojiIcon(h.emoji,'check')}</span><div class="hinfo"><div class="hname" style="font-size:13px">${esc(h.name)}</div></div><span class="hstreak">${ic('flame')}${habitStreak(h)}</span><button class="check ${habitDone(h,tk)?'done':''}" data-action="habittoggle" data-id="${attr(h.id)}"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6"/></svg></button></div>`).join('')}</div>`
+        : `<div class="empty" style="padding:18px"><div>No habits yet. Build your daily routine.</div><button class="btn small primary" data-action="nav" data-view="habits" style="margin-top:10px">Add habits</button></div>`}
+    </div>
     <div class="card"><div class="card-head"><h3>Goals progress</h3><button class="btn small" data-action="nav" data-view="goals">All</button></div>${goalsGlance()}</div>
-  </div>`;
+  </div>
+
+  <details class="dsec" style="margin-top:16px"><summary>Trends &amp; analytics</summary>
+    <div class="card" style="margin-top:12px">
+      <div class="card-head"><h3>Tasks planned vs completed</h3><span class="card-sub">Last 14 days</span></div>
+      <div class="chart-wrap">${plannedVsCompletedChart(14)}</div>
+      <div class="legend"><span><i style="background:var(--surface-3)"></i> Planned</span><span><i style="background:var(--accent)"></i> Completed</span></div>
+    </div>
+    <div class="card" style="margin-top:12px"><div class="card-head"><h3>Daily score trend</h3><span class="card-sub">Last 30 days</span></div><div class="chart-wrap">${lineChart(30, k=>dayScore(k)/100, v=>Math.round(v*100), {pct:true,name:'Score'})}</div></div>
+  </details>`;
 };
 function mini(emoji,label,val){ return `<div class="stat soft"><div class="k">${emoji} ${label}</div><div class="v" style="font-size:23px">${val}</div></div>`; }
 function goalsGlance(){
@@ -1905,7 +1951,7 @@ function taskRow(t){
     <button class="check" data-action="toggle" data-id="${attr(t.id)}"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6"/></svg></button>
     <span class="catdot" style="background:${CAT(t.category).color}"></span>
     <span class="tx">${esc(t.text)}${meta.length?`<span class="meta">${meta.join('')}</span>`:''}</span>
-    <span class="row-act"><button data-action="taskedit" data-id="${attr(t.id)}" title="Edit">✎</button><button class="del" data-action="deltask" data-id="${attr(t.id)}" title="Delete">${ic('trash')}</button></span>
+    <span class="row-act"><button data-action="taskedit" data-id="${attr(t.id)}" title="Edit">${ic('edit')}</button><button class="del" data-action="deltask" data-id="${attr(t.id)}" title="Delete">${ic('trash')}</button></span>
   </div>`;
 }
 afterRender.tasks = function(){
@@ -2306,7 +2352,7 @@ function calMonth(){
     <div class="heat-month">${cells}</div>
     <div class="heat-legend"><span>Less</span><span class="sw" style="background:var(--surface-2)"></span><span class="sw" style="background:${heatColor(.25)}"></span><span class="sw" style="background:${heatColor(.5)}"></span><span class="sw" style="background:${heatColor(.75)}"></span><span class="sw" style="background:${heatColor(1)}"></span><span>More</span><span style="margin-left:auto">Dots = areas completed</span></div>
   </div>
-  <div class="grid g4" style="margin-top:16px">${mini(ic('check'),'Tasks done',ms.completed)}${mini(ic('dumbbell'),'Gym days',ms.gym)}${mini(ic('book'),'Study days',ms.study)}${mini(ic('star'),'Perfect days',ms.perfect)}</div>`;
+  <div class="grid g4" style="margin-top:16px">${mini(ic('check'),'Tasks done',ms.completed)}${mini(ic('target'),'Focus',fmtMin(ms.focusMin))}${mini(ic('star'),'Perfect days',ms.perfect)}${mini(ic('bolt'),'Avg score',ms.avgScore)}</div>`;
 }
 function calYear(){
   const start=fromKey(state.profile.startDate); const year=start.getFullYear();
@@ -2324,7 +2370,7 @@ function calYear(){
   return `<div class="card"><div class="card-head"><h3>Your journey · ${year}</h3><span class="card-sub">Sep → Dec</span></div>
     <div class="year-scroll"><div class="year-months">${monthLabels}</div><div class="year-grid">${cols}</div></div>
     <div class="heat-legend"><span>Less</span><span class="sw" style="background:var(--surface-2)"></span><span class="sw" style="background:${heatColor(.35)}"></span><span class="sw" style="background:${heatColor(.7)}"></span><span class="sw" style="background:${heatColor(1)}"></span><span>More</span></div></div>
-  <div class="grid g4" style="margin-top:16px">${mini(ic('check'),'Tasks',r.completed)}${mini(ic('dumbbell'),'Gym days',r.gym)}${mini(ic('target'),'Focus',fmtMin(r.focusMin))}${mini(ic('bolt'),'Avg score',r.avgScore)}</div>`;
+  <div class="grid g4" style="margin-top:16px">${mini(ic('check'),'Tasks',r.completed)}${mini(ic('target'),'Focus',fmtMin(r.focusMin))}${mini(ic('flame'),'Best streak',longestStreak()+'d')}${mini(ic('bolt'),'Avg score',r.avgScore)}</div>`;
 }
 
 /* ============================================================
@@ -2482,6 +2528,7 @@ document.addEventListener('click',e=>{
     case 'today-jump': ui.curDay=todayKey(); render(); break;
     case 'pickcat': ui.addCat=t.dataset.cat; render(); break;
     case 'addtask': addTask(); break;
+    case 'newtask': openTaskModal(null); break;
     case 'suggest': addTaskText(t.dataset.text); break;
     case 'toggle': toggleTask(t.dataset.id); break;
     case 'deltask': delTask(t.dataset.id); break;
@@ -2621,31 +2668,60 @@ function importData(file){ const rd=new FileReader(); rd.onload=()=>{ try{ const
 function openModal(html, onSubmit){ closeModal(); const ov=document.createElement('div'); ov.className='overlay'; ov.innerHTML=`<div class="modal" data-stop>${html}</div>`; document.body.appendChild(ov); window.__modalSubmit=onSubmit||null; const fi=ov.querySelector('input,textarea,select'); if(fi) setTimeout(()=>fi.focus(),40); }
 function closeModal(){ if(_recOn){ _recOn=false; clearTimeout(_recWatch); try{ _rec&&_rec.stop(); }catch(e){} } document.querySelectorAll('.overlay').forEach(o=>o.remove()); window.__modalSubmit=null; }
 
+function hhmm(min){ if(min==null) return ''; min=((Math.round(min)%1440)+1440)%1440; return pad(Math.floor(min/60))+':'+pad(min%60); }
 function openTaskModal(id){
-  const day=ensureDay(ui.curDay); const t=id?day.tasks.find(x=>x.id===id):null;
+  const fromDayKey = ui.curDay || todayKey();
+  const day=ensureDay(fromDayKey); const t=id?day.tasks.find(x=>x.id===id):null;
   const goalsOpt=state.bigGoals.map(g=>`<option value="${attr(g.id)}" ${t&&t.goalId===g.id?'selected':''}>${esc(g.title)}</option>`).join('');
-  openModal(`<h3>${t?'Edit task':'New task'}</h3><div class="msub">Only the text is required.</div>
-    <label class="fld"><span>Task</span><input class="inp" id="m_text" value="${t?esc(t.text):''}" placeholder="What needs doing?"></label>
+  const durVal = t ? (t.estMin || (t.startMin!=null&&t.endMin!=null?t.endMin-t.startMin:'')) : '';
+  openModal(`<h3>${t?'Edit task':'New task'}</h3><div class="msub">Give it a name and category — date, time, duration and priority are optional.</div>
+    <label class="fld"><span>Task name</span><input class="inp" id="m_text" value="${t?esc(t.text):''}" placeholder="What needs doing?"></label>
     <div class="form-row">
-      <label class="fld"><span>Category</span><select class="inp" id="m_cat">${CAT_ORDER.map(c=>`<option value="${c}" ${(t?t.category:ui.addCat)===c?'selected':''}>${CATS[c].emoji} ${CATS[c].short}</option>`).join('')}</select></label>
+      <label class="fld"><span>Category</span><select class="inp" id="m_cat">${CAT_ORDER.map(c=>`<option value="${c}" ${(t?t.category:ui.addCat)===c?'selected':''}>${CATS[c].short}</option>`).join('')}</select></label>
       <label class="fld"><span>Priority</span><select class="inp" id="m_prio">${Object.keys(PRIO).map(p=>`<option value="${p}" ${t&&t.priority===p?'selected':(!t&&p==='low'?'selected':'')}>${PRIO[p].l}</option>`).join('')}</select></label>
     </div>
     <div class="form-row">
-      <label class="fld"><span>Difficulty</span><select class="inp" id="m_diff"><option value="">—</option>${Object.keys(DIFF).map(d=>`<option value="${d}" ${t&&t.difficulty===d?'selected':''}>${DIFF[d]}</option>`).join('')}</select></label>
-      <label class="fld"><span>Est. minutes</span><input class="inp" type="number" id="m_est" min="0" step="5" value="${esc(t&&t.estMin?t.estMin:'')}" placeholder="e.g. 30"></label>
+      <label class="fld"><span>Date</span><input class="inp" type="date" id="m_date" value="${esc(fromDayKey)}"></label>
+      <label class="fld"><span>Start time</span><input class="inp" type="time" id="m_start" value="${hhmm(t&&t.startMin!=null?t.startMin:null)}"></label>
     </div>
     <div class="form-row">
-      <label class="fld"><span>Deadline</span><input class="inp" type="date" id="m_dl" value="${esc(t&&t.deadline?t.deadline:'')}"></label>
+      <label class="fld"><span>Duration (min)</span><input class="inp" type="number" id="m_est" min="1" max="1440" step="5" value="${esc(durVal||'')}" placeholder="e.g. 30"></label>
+      <label class="fld"><span>Difficulty</span><select class="inp" id="m_diff"><option value="">—</option>${Object.keys(DIFF).map(d=>`<option value="${d}" ${t&&t.difficulty===d?'selected':''}>${DIFF[d]}</option>`).join('')}</select></label>
+    </div>
+    <div class="form-row">
+      <label class="fld"><span>Deadline (optional)</span><input class="inp" type="date" id="m_dl" value="${esc(t&&t.deadline?t.deadline:'')}"></label>
       <label class="fld"><span>Link to goal</span><select class="inp" id="m_goal"><option value="">—</option>${goalsOpt}</select></label>
     </div>
     <label class="fld" style="display:flex;align-items:center;gap:10px"><input type="checkbox" id="m_rec" ${t&&t.recurring?'checked':''} style="width:auto"> <span style="margin:0">${ic('repeat')} Recurring (re-add tomorrow when done)</span></label>
     ${t&&!t.done?`<label class="fld"><span>If skipped, why? (helps spot patterns)</span><select class="inp" id="m_reason"><option value="">—</option>${['Forgot','Too difficult','No time','Procrastinated','Distracted','Not important anymore','Other'].map(r=>`<option ${t.missReason===r?'selected':''}>${r}</option>`).join('')}</select></label>`:''}
     <div class="modal-foot"><button class="btn ghost" data-action="closemodal">Cancel</button><button class="btn primary" data-action="modal-submit">${t?'Save':'Add task'}</button></div>`,
-    ()=>{ const text=el('m_text').value.trim(); if(!text){ toast('Add some text'); return; }
-      const obj={category:el('m_cat').value, priority:el('m_prio').value, difficulty:el('m_diff').value||null, estMin:parseInt(el('m_est').value)||null, deadline:el('m_dl').value||null, goalId:el('m_goal').value||null, recurring:el('m_rec').checked, text};
+    ()=>{ const text=el('m_text').value.trim(); if(!text){ toast('Add a task name'); return; }
+      const newDate=el('m_date').value||fromDayKey;
+      const startV=el('m_start').value; const startMin = startV ? (parseInt(startV.slice(0,2),10)*60+parseInt(startV.slice(3,5),10)) : null;
+      const durRaw=el('m_est').value.trim(); const durMin = durRaw!=='' ? parseInt(durRaw,10) : 0;
+      // ---- validation ----
+      if(durRaw!=='' && (!durMin || durMin<=0)){ toast('Duration must be more than 0 minutes'); return; }
+      if(durMin>1440){ toast("A task can't be longer than 24 hours"); return; }
+      if(startMin!=null && durMin>0 && startMin+durMin>1440){ toast("That start time + duration runs past midnight — shorten it or move it earlier"); return; }
+      const targetDay=ensureDay(newDate);
+      const others=targetDay.tasks.filter(x=>x.id!==(t?t.id:'__none'));
+      const usedMin=others.reduce((a,x)=>a+taskMinutes(x),0);
+      if(usedMin+durMin>1440){ toast(`That day would exceed 24 hours (${fmtMin(usedMin)} already planned). Trim something first.`); return; }
+      if(startMin!=null && durMin>0){ const endMin=startMin+durMin;
+        const clash=others.find(x=>{ if(x.startMin==null) return false; const xe=x.endMin!=null?x.endMin:x.startMin+(x.estMin||0); return startMin<xe && x.startMin<endMin && (x.estMin||x.endMin!=null); });
+        if(clash){ if(!confirm(`This overlaps "${clash.text}" (${fmtClock(clash.startMin)}). Schedule it anyway?`)) return; }
+      }
+      const obj={category:el('m_cat').value, priority:el('m_prio').value, difficulty:el('m_diff').value||null,
+        estMin:durMin||null, startMin:(startMin!=null?startMin:null), endMin:(startMin!=null&&durMin>0?startMin+durMin:null),
+        deadline:el('m_dl').value||null, goalId:el('m_goal').value||null, recurring:el('m_rec').checked, text};
       if(el('m_reason')) obj.missReason=el('m_reason').value||null;
-      if(t){ Object.assign(t,obj); } else { day.tasks.push({id:genId(),done:false,ts:Date.now(),...obj}); }
-      save(); closeModal(); render(); });
+      if(t){
+        if(newDate!==fromDayKey){ day.tasks=day.tasks.filter(x=>x.id!==t.id); targetDay.tasks.push({...t,...obj}); }
+        else { Object.assign(t,obj); if(startMin==null){ delete t.startMin; delete t.endMin; } }
+      } else {
+        targetDay.tasks.push({id:genId(),done:false,ts:Date.now(),...obj});
+      }
+      save(); closeModal(); render(); toast(t?'Task saved':'Task added'); });
 }
 function openBig3Modal(){
   const d=ensureDay(todayKey()); const b=d.big3.filter(Boolean);
@@ -2655,7 +2731,7 @@ function openBig3Modal(){
     ()=>{ const arr2=[]; [0,1,2].forEach(i=>{ const v=el('b3_'+i).value.trim(); if(v){ const ex=b[i]; arr2.push({text:v, done:ex&&ex.text===v?ex.done:false}); } }); d.big3=arr2; save(); closeModal(); render(); });
 }
 function openHabitModal(id, defArea){
-  const h=id?state.habits.find(x=>x.id===id):null; const selArea=h?h.area:(defArea||'gym');
+  const h=id?state.habits.find(x=>x.id===id):null; const selArea=h?h.area:(defArea||CAT_ORDER[0]||'general');
   openModal(`<h3>${h?'Edit habit':'New habit'}</h3>
     <label class="fld"><span>Name</span><input class="inp" id="h_name" value="${h?esc(h.name):''}" placeholder="e.g. Read, Gym, Drink water"></label>
     <div class="form-row"><label class="fld"><span>Emoji</span><input class="inp" id="h_emoji" value="${h?emojiInputVal(h.emoji):''}" placeholder="optional" maxlength="2"></label>
@@ -2671,12 +2747,12 @@ function openHabitModal(id, defArea){
   if(h){ setTimeout(()=>{ const d=el('h_del'); if(d) d.onclick=()=>{ if(confirm('Delete this habit?')){ state.habits=state.habits.filter(x=>x.id!==id); save(); closeModal(); render(); } }; },50); }
 }
 function openGoalModal(id, defArea){
-  const g=id?state.bigGoals.find(x=>x.id===id):null; const selArea=g?g.area:(defArea||'gym');
+  const g=id?state.bigGoals.find(x=>x.id===id):null; const selArea=g?g.area:(defArea||CAT_ORDER[0]||'general');
   openModal(`<h3>${g?'Edit goal':'New goal'}</h3><div class="msub">A big goal for your Sep→Dec run.</div>
     <label class="fld"><span>Goal</span><input class="inp" id="g_title" value="${g?esc(g.title):''}" placeholder="e.g. Get fitter, Learn AI"></label>
     <div class="form-row"><label class="fld"><span>Emoji</span><input class="inp" id="g_emoji" value="${g?emojiInputVal(g.emoji):''}" placeholder="optional" maxlength="2"></label>
       <label class="fld"><span>Area</span><select class="inp" id="g_area">${CAT_ORDER.map(c=>`<option value="${c}" ${selArea===c?'selected':''}>${CATS[c].emoji} ${CATS[c].short}</option>`).join('')}</select></label></div>
-    <div class="form-row"><label class="fld"><span>Auto-track (optional)</span><select class="inp" id="g_metric"><option value="">Milestones only</option><option value="gym" ${g&&g.metric==='gym'?'selected':''}>Gym days</option><option value="study_hrs" ${g&&g.metric==='study_hrs'?'selected':''}>Study hours</option><option value="focus_hrs" ${g&&g.metric==='focus_hrs'?'selected':''}>Focus hours</option><option value="tasks" ${g&&g.metric==='tasks'?'selected':''}>Tasks done</option></select></label>
+    <div class="form-row"><label class="fld"><span>Auto-track (optional)</span><select class="inp" id="g_metric"><option value="">Milestones only</option><option value="focus_hrs" ${g&&g.metric==='focus_hrs'?'selected':''}>Focus hours</option><option value="tasks" ${g&&g.metric==='tasks'?'selected':''}>Tasks done</option>${g&&g.metric==='gym'?'<option value="gym" selected>Active days</option>':''}${g&&g.metric==='study_hrs'?'<option value="study_hrs" selected>Study hours</option>':''}</select></label>
       <label class="fld"><span>Target</span><input class="inp" type="number" id="g_target" value="${esc(g&&g.target?g.target:'')}" placeholder="e.g. 60"></label></div>
     <label class="fld"><span>Deadline</span><input class="inp" type="date" id="g_dl" value="${esc(g&&g.deadline?g.deadline:'2026-12-31')}"></label>
     <div class="modal-foot">${g?`<button class="btn danger" id="g_del">Delete</button>`:''}<button class="btn ghost" data-action="closemodal">Cancel</button><button class="btn primary" data-action="modal-submit">${g?'Save':'Create goal'}</button></div>`,
@@ -2700,12 +2776,12 @@ function openWorkoutModal(){
 function openSubjectModal(){ openModal(`<h3>New subject</h3><div class="form-row"><label class="fld"><span>Name</span><input class="inp" id="s_name" placeholder="e.g. Signals & Systems"></label><label class="fld"><span>Emoji</span><input class="inp" id="s_emoji" placeholder="" maxlength="2"></label></div><label class="fld"><span>Topics (one per line, optional)</span><textarea class="inp" id="s_topics" placeholder="Chapter 1&#10;Chapter 2"></textarea></label><div class="modal-foot"><button class="btn ghost" data-action="closemodal">Cancel</button><button class="btn primary" data-action="modal-submit">Add subject</button></div>`, ()=>{ const name=el('s_name').value.trim(); if(!name){toast('Name it');return;} const topics=el('s_topics').value.split('\n').map(x=>x.trim()).filter(Boolean).map(n=>({id:genId(),name:n,done:false})); state.subjects.push({id:genId(),name,emoji:el('s_emoji').value.trim()||ic('book'),topics}); save(); closeModal(); render(); }); }
 function openAssignModal(){ const subjOpt=state.subjects.map(s=>`<option value="${attr(s.id)}">${esc(s.name)}</option>`).join(''); openModal(`<h3>Add deadline</h3><label class="fld"><span>Title</span><input class="inp" id="as_t" placeholder="e.g. Biomedical Assignment"></label><div class="form-row"><label class="fld"><span>Type</span><select class="inp" id="as_type"><option value="assignment">Assignment</option><option value="exam">Exam</option><option value="other">Other</option></select></label><label class="fld"><span>Subject</span><select class="inp" id="as_subj"><option value="">—</option>${subjOpt}</select></label></div><label class="fld"><span>Deadline</span><input class="inp" type="date" id="as_dl" value="${todayKey()}"></label><div class="modal-foot"><button class="btn ghost" data-action="closemodal">Cancel</button><button class="btn primary" data-action="modal-submit">Add</button></div>`, ()=>{ const title=el('as_t').value.trim(); if(!title){toast('Title?');return;} state.assignments.push({id:genId(),title,atype:el('as_type').value,subjectId:el('as_subj').value||null,deadline:el('as_dl').value,done:false}); save(); closeModal(); render(); }); }
 function openLogStudyModal(){ const subjOpt=state.subjects.map(s=>`<option value="${attr(s.id)}">${esc(s.name)}</option>`).join(''); openModal(`<h3>Log study time</h3><div class="form-row"><label class="fld"><span>Date</span><input class="inp" type="date" id="ls_date" value="${todayKey()}"></label><label class="fld"><span>Minutes</span><input class="inp" type="number" id="ls_min" placeholder="60"></label></div><label class="fld"><span>Subject (optional)</span><select class="inp" id="ls_subj"><option value="">—</option>${subjOpt}</select></label><div class="modal-foot"><button class="btn ghost" data-action="closemodal">Cancel</button><button class="btn primary" data-action="modal-submit">Log</button></div>`, ()=>{ const min=parseInt(el('ls_min').value); if(!min){toast('Minutes?');return;} state.studyLog.push({id:genId(),date:el('ls_date').value||todayKey(),minutes:min,subjectId:el('ls_subj').value||null}); save(); closeModal(); render(); toast('Study logged'); }); }
-function openDayModal(k){ const s=dayStats(k); const sc=dayScore(k);
+function openDayModal(k){ ui.curDay=k; const s=dayStats(k); const sc=dayScore(k);
   const dls=deadlinesOn(k);
-  const dlBody = dls.length? `<div style="font-size:12px;font-weight:700;color:var(--text-2);margin:4px 0 6px">Due this day</div>`+dls.map(a=>`<div class="mtask"><span>${a.atype==='exam'?ic('fileText'):ic('fileText')}</span> ${esc(a.title)}</div>`).join('') : '';
-  const body=s.planned? s.tasks.map(t=>`<div class="mtask ${t.done?'done':''}"><span class="catdot" style="background:${CAT(t.category).color}"></span> ${t.done?'✓':'○'} ${esc(t.text)}${t.startMin!=null?` <span class="tag">${fmtClock(t.startMin)}</span>`:''}</div>`).join('') : `<div class="empty" style="padding:14px"><div>No tasks logged.</div></div>`;
-  const fm=focusMinutesOn(k), sm=studyMinutesOn(k);
-  openModal(`<h3>${fmtLong(k)}</h3><div class="msub">Score ${sc}/100 · ${s.completed}/${s.planned} tasks${fm?` · ${fmtMin(fm)} focus`:''}${sm?` · ${fmtMin(sm)} study`:''}</div>${dlBody}${body}${s.note?`<div class="insight" style="margin-top:12px">${esc(s.note)}</div>`:''}<div class="modal-foot"><button class="btn ghost" data-action="closemodal">Close</button><button class="btn primary" data-action="editday" data-key="${k}">Open in Tasks ✎</button></div>`);
+  const dlBody = dls.length? `<div style="font-size:12px;font-weight:700;color:var(--text-2);margin:4px 0 6px">Due this day</div>`+dls.map(a=>`<div class="mtask"><span>${ic('fileText')}</span> ${esc(a.title)}</div>`).join('') : '';
+  const body=s.planned? s.tasks.map(t=>`<div class="mtask ${t.done?'done':''}" data-action="taskedit" data-id="${attr(t.id)}" style="cursor:pointer"><span class="catdot" style="background:${CAT(t.category).color}"></span> <span style="flex:1">${esc(t.text)}</span>${t.startMin!=null?`<span class="tag">${fmtClock(t.startMin)}</span>`:''}${taskMinutes(t)?`<span class="tag">${fmtMin(taskMinutes(t))}</span>`:''}<span style="color:var(--muted)">${t.done?'✓':''}</span></div>`).join('') : `<div class="empty" style="padding:14px"><div>No tasks for this day yet.</div></div>`;
+  const fm=focusMinutesOn(k);
+  openModal(`<h3>${fmtLong(k)}</h3><div class="msub">${s.completed}/${s.planned} tasks done${s.planned?` · score ${sc}/100`:''}${fm?` · ${fmtMin(fm)} focus`:''} · tap a task to edit</div>${dlBody}${body}${s.note?`<div class="insight" style="margin-top:12px">${esc(s.note)}</div>`:''}<div class="modal-foot"><button class="btn ghost" data-action="closemodal">Close</button><button class="btn" data-action="editday" data-key="${k}">Open in Tasks</button><button class="btn primary" data-action="newtask">${ic('plus')} Add task</button></div>`);
 }
 function openScoreModal(){ const sb=scoreBreakdown(todayKey());
   openModal(`<h3>How today's score works</h3><div class="msub">Score = weighted average of what you actually did. Creating tasks never helps — only completing them.</div>
@@ -2813,13 +2889,27 @@ function parseBrainDump(text, defDate){
   return {items, scheduleDate: globalDate||defDate};
 }
 function applyPlanItems(items){
-  let nTasks=0,nExam=0,nAssign=0;
+  let nTasks=0,nExam=0,nAssign=0,capped=0;
+  const dayUsed={};
+  const usedFor=k=>{ if(dayUsed[k]==null) dayUsed[k]=(getDay(k).tasks||[]).reduce((a,x)=>a+taskMinutes(x),0); return dayUsed[k]; };
   items.forEach(it=>{
     if(it.kind==='exam'){ state.assignments.push({id:genId(),title:it.title||'Exam',atype:'exam',subjectId:null,deadline:it.date,done:false}); nExam++; }
     else if(it.kind==='assignment'){ state.assignments.push({id:genId(),title:it.title||'Assignment',atype:'assignment',subjectId:null,deadline:it.date,done:false}); nAssign++; }
-    else { const d=ensureDay(it.date); const t={id:genId(),text:it.text||'Task',category:it.category||'general',done:false,ts:Date.now()}; if(it.estMin)t.estMin=it.estMin; if(it.startMin!=null)t.startMin=it.startMin; if(it.endMin!=null)t.endMin=it.endMin; d.tasks.push(t); nTasks++; }
+    else {
+      const d=ensureDay(it.date);
+      // realistic-limits: no single task > 24h, and a day can't exceed 24h total
+      let dur = it.estMin ? Math.min(1440, Math.max(1, it.estMin)) : 0;
+      const avail = 1440 - usedFor(it.date);
+      if(dur>Math.max(0,avail)){ dur = Math.max(0, avail); capped++; }
+      const cat = CATS[it.category] ? it.category : 'general';
+      const t={id:genId(), text:it.text||'Task', category:cat, done:false, ts:Date.now()};
+      if(dur>0) t.estMin=dur;
+      if(it.startMin!=null){ t.startMin=it.startMin; if(dur>0) t.endMin=Math.min(1440, it.startMin+dur); }
+      dayUsed[it.date]=usedFor(it.date)+dur;
+      d.tasks.push(t); nTasks++;
+    }
   });
-  save(); return {nTasks,nExam,nAssign};
+  save(); return {nTasks,nExam,nAssign,capped};
 }
 
 /* ---- day schedule generator (fits flexible tasks around prayers + fixed events) ---- */
@@ -2945,7 +3035,7 @@ function doPlanAdd(){
   if(!items.length){ toast('Nothing ticked'); return; }
   const r=applyPlanItems(items); closeModal(); render();
   const parts=[]; if(r.nTasks)parts.push(r.nTasks+' task'+(r.nTasks>1?'s':'')); if(r.nExam)parts.push(r.nExam+' exam'+(r.nExam>1?'s':'')); if(r.nAssign)parts.push(r.nAssign+' assignment'+(r.nAssign>1?'s':''));
-  toast('Added '+(parts.join(', ')||'items')); celebrate();
+  toast('Added '+(parts.join(', ')||'items')+(r.capped?' · trimmed to fit 24h':'')); celebrate();
 }
 function deadlinesOn(k){ return state.assignments.filter(a=>!a.done && a.deadline===k); }
 
@@ -3215,34 +3305,31 @@ function openOnboarding(){
   if(document.getElementById('obOverlay')) return;
   const ov=document.createElement('div'); ov.className='overlay'; ov.id='obOverlay';
   ov.innerHTML=`<div class="modal wide" data-stop>
-    <h3>Welcome to Momentum</h3><div class="msub">Your Sep→Dec "Better Me" dashboard. Two minutes to set up — you can change everything later.</div>
+    <h3>Welcome to Momentum</h3><div class="msub">A simple space to plan your day, build habits and reach your goals. Under a minute to set up — everything's editable later.</div>
     <div class="form-row"><label class="fld"><span>Your name</span><input class="inp" id="ob_name" placeholder="e.g. Alex"></label>
-      <label class="fld"><span>Journey start</span><input class="inp" type="date" id="ob_start" value="2026-09-01"></label></div>
-    <label class="fld"><span>Faith / reflection</span><select class="inp" id="ob_religion">${religionOptions('islam')}</select></label>
-    <div class="msub" style="margin:-6px 0 14px;font-size:11.5px">Shapes your daily faith section — Muslims get accurate prayer times &amp; Quran; other faiths get an editable practice list (puja, prayer, meditation…). Always private, never scored. Change it anytime in Settings.</div>
-    <div class="form-row"><label class="fld"><span>${ic('dumbbell')} Gym / week</span><input class="inp numin" type="number" id="ob_gym" value="4"></label>
-      <label class="fld"><span>${ic('book')} Study hrs / day</span><input class="inp numin" type="number" step="0.5" id="ob_study" value="2"></label></div>
-    <label class="fld" style="display:flex;align-items:center;gap:10px"><input type="checkbox" id="ob_seed" checked style="width:auto"><span style="margin:0">Add starter goals, habits & subjects to get me going</span></label>
-    <div class="modal-foot"><button class="btn ghost" id="ob_skip">Skip</button><button class="btn primary" id="ob_go">Start my journey →</button></div>
+      <label class="fld"><span>Start date</span><input class="inp" type="date" id="ob_start" value="${todayKey()}"></label></div>
+    <label class="fld"><span>Faith / reflection (optional)</span><select class="inp" id="ob_religion">${religionOptions('secular')}</select></label>
+    <div class="msub" style="margin:-6px 0 14px;font-size:11.5px">Adds an optional daily reflection section. Muslims get accurate prayer times &amp; Quran; other faiths get an editable practice list; pick "Prefer not to say" to hide it. Always private, never scored — change it anytime in Settings.</div>
+    <label class="fld" style="display:flex;align-items:center;gap:10px"><input type="checkbox" id="ob_seed" checked style="width:auto"><span style="margin:0">Add a few example categories &amp; habits to get me started (optional)</span></label>
+    <div class="modal-foot"><button class="btn ghost" id="ob_skip">Skip</button><button class="btn primary" id="ob_go">Get started →</button></div>
   </div>`;
   document.body.appendChild(ov);
-  const finish=(seed)=>{ state.profile.name=el('ob_name').value.trim(); state.profile.startDate=el('ob_start').value||'2026-09-01'; state.settings.targets.gymPerWeek=parseInt(el('ob_gym').value)||4; state.settings.targets.studyHrsPerDay=parseFloat(el('ob_study').value)||2;
-    state.profile.religion=el('ob_religion').value||'islam'; seedFaithPractices(state.profile.religion); state.profile.onboarded=true;
-    if(seed && el('ob_seed').checked){ seedStarter(); } save(); applyFaithNav(); ov.remove(); render(); toast("Let's go"); };
+  const finish=(seed)=>{ state.profile.name=el('ob_name').value.trim(); state.profile.startDate=el('ob_start').value||todayKey();
+    state.profile.religion=el('ob_religion').value||'secular'; seedFaithPractices(state.profile.religion); state.profile.onboarded=true;
+    if(seed && el('ob_seed').checked){ seedStarter(); } save(); syncAreas(); applyFaithNav(); ov.remove(); render(); toast("You're all set"); };
   el('ob_go').onclick=()=>finish(true); el('ob_skip').onclick=()=>{ state.profile.onboarded=true; save(); ov.remove(); render(); };
 }
 function seedStarter(){
+  // generic, lifestyle-neutral starters mapped to the default categories — all editable/deletable
   if(!state.habits.length){ state.habits.push(
-    {id:genId(),name:'Gym',emoji:ic('dumbbell'),area:'gym',type:'check',perWeek:4,createdAt:Date.now()},
-    {id:genId(),name:'Study',emoji:ic('book'),area:'academics',type:'check',perWeek:6,createdAt:Date.now()},
-    {id:genId(),name:'Read',emoji:ic('bookOpen'),area:'personal',type:'check',perWeek:7,createdAt:Date.now()},
-    {id:genId(),name:'Water',emoji:ic('drop'),area:'general',type:'count',target:8,unit:'glasses',perWeek:7,createdAt:Date.now()},
-    {id:genId(),name:'Sleep by 11',emoji:ic('moon'),area:'personal',type:'check',perWeek:7,createdAt:Date.now()}
+    {id:genId(),name:'Drink water',emoji:ic('drop'),area:'health',type:'count',target:8,unit:'glasses',perWeek:7,createdAt:Date.now()},
+    {id:genId(),name:'Read 20 minutes',emoji:ic('bookOpen'),area:'learning',type:'check',perWeek:7,createdAt:Date.now()},
+    {id:genId(),name:'Move / exercise',emoji:ic('spark'),area:'health',type:'check',perWeek:4,createdAt:Date.now()},
+    {id:genId(),name:'Wind down on time',emoji:ic('moon'),area:'personal',type:'check',perWeek:7,createdAt:Date.now()}
   ); }
   if(!state.bigGoals.length){ state.bigGoals.push(
-    {id:genId(),title:'Get fitter',emoji:ic('dumbbell'),area:'gym',metric:'gym',target:60,deadline:'2026-12-31',milestones:[],createdAt:Date.now()},
-    {id:genId(),title:'Improve academics',emoji:ic('book'),area:'academics',metric:'study_hrs',target:120,deadline:'2026-12-31',milestones:[],createdAt:Date.now()},
-    {id:genId(),title:'Build discipline',emoji:ic('spark'),area:'personal',metric:'focus_hrs',target:100,deadline:'2026-12-31',milestones:[],createdAt:Date.now()}
+    {id:genId(),title:'Build a daily routine',emoji:ic('spark'),area:'personal',metric:'focus_hrs',target:60,deadline:'',milestones:[],createdAt:Date.now()},
+    {id:genId(),title:'Stay consistent this month',emoji:ic('flag'),area:'work',metric:'tasks',target:100,deadline:'',milestones:[],createdAt:Date.now()}
   ); }
 }
 
