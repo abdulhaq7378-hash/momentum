@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Momentum — Better Me</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap"><style id="appcss">
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Momentum — Better Me</title><meta name="theme-color" content="#f5cf3d"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Momentum"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon.svg"><link rel="apple-touch-icon" href="icon.svg"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap"><style id="appcss">
 /* ============================================================
    MOMENTUM — "Better Me" personal dashboard
    Design system + components. Theme-aware (dark default + light).
@@ -560,11 +560,13 @@ html[data-theme="light"] .focus-overlay{background:radial-gradient(1000px 700px 
 @media(max-width:820px){
   .app{flex-direction:column}
   .sidebar{display:none}
-  .main{padding:18px 14px 92px;max-width:100%}
-  .mobilenav{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:120;background:var(--surface);border-top:1px solid var(--border);padding:7px 4px calc(7px + env(safe-area-inset-bottom));overflow-x:auto;gap:2px}
-  .mobilenav button{display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--muted);font-size:9.5px;font-weight:650;padding:4px 11px;border-radius:10px;flex:0 0 auto}
-  .mobilenav button .ico{font-size:18px}
+  .main{padding:66px 14px 88px;max-width:100%}
+  .mobilenav{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:120;background:var(--surface);border-top:1px solid var(--border);padding:8px 6px calc(8px + env(safe-area-inset-bottom));gap:2px}
+  .mobilenav button{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--muted);font-size:10.5px;font-weight:650;padding:5px 2px;border-radius:12px;flex:1 1 0;min-width:0}
+  .mobilenav button .ico{display:flex;align-items:center;justify-content:center}
+  .mobilenav button .ico svg{width:22px;height:22px}
   .mobilenav button.active{color:var(--accent)}
+  .mobilenav button.active .ico{color:var(--accent)}
   .page-head h2{font-size:22px}
 }
 
@@ -789,17 +791,40 @@ details.dsec[open]>summary::after{transform:rotate(180deg)}
 .card.ink .hb, .card.ink .stat{ background:var(--ink-2); border-color:var(--ink-border); }
 /* diagonal hatch texture (Crextio's striped fills) */
 .hatch{ background-image:repeating-linear-gradient(45deg, var(--border-strong) 0 1px, transparent 1px 8px); }
-/* fixed theme toggle, top-left (mobile) + sidebar toggle (desktop) */
+/* theme toggle (sidebar on desktop, mobile top bar on phone) */
 .theme-toggle{ display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:11px;background:var(--surface-2);border:1px solid var(--border);color:var(--text-2);flex:0 0 auto;transition:.15s var(--ease) }
 .theme-toggle:hover{ background:var(--surface-3);color:var(--text) }
 .theme-toggle .i{ width:17px;height:17px }
-.theme-toggle-float{ position:fixed; top:14px; left:14px; z-index:300; display:none;
-  width:40px;height:40px;border-radius:12px;align-items:center;justify-content:center;
-  background:var(--surface);border:1px solid var(--border);color:var(--text);box-shadow:var(--shadow) }
-.theme-toggle-float .i{ width:19px;height:19px }
-@media(max-width:820px){ .theme-toggle-float{ display:inline-flex } .theme-toggle{ display:none } }
-/* bigger, bolder stat numbers (Crextio) */
 .stat .v{ letter-spacing:-1px }
+
+/* ===== Mobile top bar + slimmer bottom nav + "More" sheet ===== */
+.mtopbar{ display:none }
+@media(max-width:820px){
+  .mtopbar{ display:flex; position:fixed; top:0; left:0; right:0; height:54px; z-index:130;
+    align-items:center; justify-content:space-between; padding:0 14px;
+    background:var(--surface); border-bottom:1px solid var(--border); }
+  .main{ padding-top:66px; }
+}
+.mtb-brand{ display:flex; align-items:center; gap:9px; font-weight:750; font-size:16.5px; letter-spacing:-.01em; font-family:var(--font-display) }
+.mtb-logo{ width:30px; height:30px; border-radius:9px; background:linear-gradient(135deg,var(--accent),var(--accent-2)); display:grid; place-items:center; color:var(--accent-ink); flex:0 0 auto }
+.mtb-logo svg{ width:17px; height:17px }
+/* More sheet */
+.more-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:6px }
+.more-item{ display:flex; flex-direction:column; align-items:center; gap:8px; padding:15px 6px; border-radius:15px; background:var(--surface-2); border:1px solid var(--border); font-size:12px; font-weight:600; color:var(--text); transition:.12s }
+.more-item:hover{ background:var(--surface-3) }
+.more-item.active{ border-color:var(--accent); background:var(--accent-soft) }
+.more-ic{ width:38px; height:38px; border-radius:12px; background:var(--surface); display:grid; place-items:center; color:var(--accent) }
+.more-ic .i{ width:19px; height:19px }
+/* tighter, 2-up stat grids on phones (was collapsing to 1 huge column) */
+@media(max-width:760px){ .g4{ grid-template-columns:1fr 1fr } }
+@media(max-width:560px){
+  .g3{ grid-template-columns:1fr 1fr }
+  .stat{ padding:15px 14px }
+  .stat .v{ font-size:24px }
+  .page-head h2{ font-size:22px }
+  .main{ padding-left:14px; padding-right:14px }
+  .card{ padding:16px }
+}
 .card.ink .check{ border-color:var(--ink-border) }
 .card.ink .un-time{ color:var(--accent) }
 .card.ink .up-next .un-sub{ color:var(--ink-text-2) }
@@ -864,20 +889,18 @@ details.dsec[open]>summary::after{transform:rotate(180deg)}
   <main class="main" id="app-content"></main>
 </div>
 
+<header class="mtopbar" id="mtopbar">
+  <div class="mtb-brand"><span class="mtb-logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 15.5 9 10l3.5 3.5L19.5 6"/><path d="M14.5 6h5v5"/></svg></span><span id="mtbName">Momentum</span></div>
+  <button class="theme-toggle" data-action="toggletheme" id="themeToggleFloat" title="Switch light / dark" aria-label="Switch theme"></button>
+</header>
+
 <nav class="mobilenav" id="mnav">
   <button data-action="nav" data-view="home"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.6 12 3l9 7.6"/><path d="M5.5 9.5V21h13V9.5"/></svg></span>Home</button>
   <button data-action="nav" data-view="tasks"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11.5l2.5 2.5L21 4.5"/><path d="M20.5 12v7a2 2 0 0 1-2 2H5.5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9.5"/></svg></span>Tasks</button>
+  <button data-action="nav" data-view="calendar"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.2" y="4.8" width="17.6" height="16" rx="2.2"/><path d="M3.2 9.4h17.6"/><path d="M8 3v3.4M16 3v3.4"/></svg></span>Calendar</button>
   <button data-action="nav" data-view="habits"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2.5 21 6.5 17 10.5"/><path d="M3 11.5v-1a4 4 0 0 1 4-4h14"/><path d="M7 21.5 3 17.5 7 13.5"/><path d="M21 12.5v1a4 4 0 0 1-4 4H3"/></svg></span>Habits</button>
-  <button data-action="nav" data-view="focus"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.6"/></svg></span>Focus</button>
-  <button data-action="nav" data-view="fitness" id="fitnessNavM"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 9v6M6.5 6.5v11M17.5 6.5v11M20.5 9v6M6.5 12h11"/></svg></span>Fitness</button>
-  <button data-action="nav" data-view="faith"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 14.3A8.2 8.2 0 1 1 9.7 3.5a6.6 6.6 0 0 0 10.8 10.8z"/></svg></span>Faith</button>
-  <button data-action="nav" data-view="goals"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21.5V3"/><path d="M5 4h12.5l-2 3.8L18 12H5"/></svg></span>Goals</button>
-  <span id="lifeAreasMnav" style="display:contents"></span>
-  <button data-action="nav" data-view="review"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V11"/><path d="M10 20V4"/><path d="M16 20v-6"/><path d="M21.5 20h-19"/></svg></span>Review</button>
-  <button data-action="nav" data-view="settings"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.1"/><path d="M19.5 12a7.5 7.5 0 0 0-.13-1.35l2-1.55-2-3.46-2.35.95a7.5 7.5 0 0 0-2.34-1.36L14.3 2h-4l-.38 2.87a7.5 7.5 0 0 0-2.34 1.36L5.23 5.28l-2 3.46 2 1.55A7.6 7.6 0 0 0 5.1 12c0 .46.05.91.13 1.35l-2 1.55 2 3.46 2.35-.95a7.5 7.5 0 0 0 2.34 1.36L10.3 22h4l.38-2.87a7.5 7.5 0 0 0 2.34-1.36l2.35.95 2-3.46-2-1.55c.08-.44.13-.89.13-1.71z"/></svg></span>More</button>
+  <button data-action="moremenu"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/></svg></span>More</button>
 </nav>
-
-<button class="theme-toggle-float" data-action="toggletheme" id="themeToggleFloat" title="Switch light / dark" aria-label="Switch theme"></button>
 <div id="tip"></div>
 <div id="toast"></div>
 <canvas id="confetti"></canvas>
@@ -944,6 +967,7 @@ const ICONS = {
   x:'<path d="M6 6l12 12M18 6 6 18"/>',
   coin:'<circle cx="12" cy="12" r="8.4"/><path d="M12 7.6v8.8M9.6 10.2h3.4a1.9 1.9 0 0 1 0 3.6H9.6"/>',
   leaf:'<path d="M5 19c0-8 6-13 14-13 0 8-6 13-14 13z"/><path d="M5 19c3-4 6-6 10-8"/>',
+  gear:'<circle cx="12" cy="12" r="3.1"/><path d="M19.5 12a7.5 7.5 0 0 0-.13-1.35l2-1.55-2-3.46-2.35.95a7.5 7.5 0 0 0-2.34-1.36L14.3 2h-4l-.38 2.87a7.5 7.5 0 0 0-2.34 1.36L5.23 5.28l-2 3.46 2 1.55A7.6 7.6 0 0 0 5.1 12c0 .46.05.91.13 1.35l-2 1.55 2 3.46 2.35-.95a7.5 7.5 0 0 0 2.34 1.36L10.3 22h4l.38-2.87a7.5 7.5 0 0 0 2.34-1.36l2.35.95 2-3.46-2-1.55c.08-.44.13-.89.13-1.71z"/>',
   cross:'<path d="M12 3.4v17.2M7.6 8.6h8.8"/>',
   lotus:'<path d="M12 21c-3.6 0-6.6-2.1-6.6-5.6 2.3 0 4.1 1 5.1 2.7"/><path d="M12 21c3.6 0 6.6-2.1 6.6-5.6-2.3 0-4.1 1-5.1 2.7"/><path d="M12 21c-2.1 0-3.7-2.4-3.7-5.3 0-2.8 1.6-4.9 3.7-6.4 2.1 1.5 3.7 3.6 3.7 6.4 0 2.9-1.6 5.3-3.7 5.3z"/>',
   starD:'<path d="M12 3l7 12H5zM12 21 5 9h14z"/>',
@@ -1463,9 +1487,9 @@ const ROLE_ARCHE = { student:'student', doctor:'healthcare',surgeon:'healthcare'
   teacher:'educator', pilot:'field',contractor:'field',chef:'field',driver:'field',staff:'field',
   athlete:'athlete',coach:'athlete', homemaker:'home',retired:'home', other:'other' };
 const ROLE_ARCHETYPES = {
-  student:   {fitness:true,  areas:[['academics','Academics','book'],['fitness','Fitness','dumbbell'],['learning','Learning','bookOpen'],['personal','Personal','spark']], goals:[['Do well this term','academics','tasks',100],['Build a workout habit','fitness','focus_hrs',40]]},
+  student:   {fitness:true,  areas:[['academics','Academics','book'],['fitness','Workouts','dumbbell'],['learning','Learning','bookOpen'],['personal','Personal','spark']], goals:[['Do well this term','academics','tasks',100],['Build a workout habit','fitness','focus_hrs',40]]},
   healthcare:{fitness:true,  areas:[['work','Clinical work','spark'],['learning','Learning & CME','book'],['fitness','Health & Fitness','dumbbell'],['personal','Personal','leaf']], goals:[['Stay on top of shifts','work','tasks',120],['Keep myself healthy','fitness','focus_hrs',40]]},
-  tech:      {fitness:true,  areas:[['work','Projects','briefcase'],['learning','Skills & Learning','book'],['fitness','Fitness','dumbbell'],['personal','Personal','spark']], goals:[['Ship key projects','work','tasks',100],['Learn a new skill','learning','focus_hrs',60]]},
+  tech:      {fitness:true,  areas:[['work','Projects','briefcase'],['learning','Skills & Learning','book'],['fitness','Workouts','dumbbell'],['personal','Personal','spark']], goals:[['Ship key projects','work','tasks',100],['Learn a new skill','learning','focus_hrs',60]]},
   business:  {fitness:false, areas:[['business','Business','trend'],['work','Work','briefcase'],['learning','Learning','book'],['personal','Personal','spark']], goals:[['Grow the business','business','tasks',120],['Weekly deep work','work','focus_hrs',80]]},
   educator:  {fitness:false, areas:[['work','Teaching','book'],['learning','Prep & Learning','bookOpen'],['health','Health','spark'],['personal','Personal','leaf']], goals:[['Plan great lessons','work','tasks',100]]},
   field:     {fitness:false, areas:[['work','Work','briefcase'],['learning','Learning','book'],['health','Health','spark'],['personal','Personal','leaf']], goals:[['Stay consistent at work','work','tasks',100]]},
@@ -2805,6 +2829,8 @@ document.addEventListener('click',e=>{
     case 'pickcat': ui.addCat=t.dataset.cat; render(); break;
     case 'addtask': addTask(); break;
     case 'newtask': openTaskModal(null); break;
+    case 'moremenu': openMoreMenu(); break;
+    case 'gonav': closeModal(); go(t.dataset.view); break;
     case 'toggletheme': state.settings.theme=(state.settings.theme==='dark'?'light':'dark'); state.settings._themeUserSet=true; save(); render(); break;
     case 'suggest': addTaskText(t.dataset.text); break;
     case 'toggle': toggleTask(t.dataset.id); break;
@@ -3369,6 +3395,16 @@ function openTimeLog(){ openModal(`<h3>Log time</h3><div class="form-row"><label
   ()=>{ const min=parseInt(el('tl_min').value); if(!min){toast('Minutes?');return;} state.timeLog.push({id:genId(),date:el('tl_date').value||todayKey(),category:el('tl_cat').value,minutes:min}); save(); closeModal(); render(); toast('Time logged'); }); }
 function openExpenseModal(){ openModal(`<h3>Add expense</h3><div class="form-row"><label class="fld"><span>Category</span><select class="inp" id="ex_cat">${EXP_CATS.map(([c,e,l])=>`<option value="${c}">${e} ${l}</option>`).join('')}</select></label><label class="fld"><span>Amount</span><input class="inp" type="number" step="0.01" id="ex_amt" placeholder="0"></label></div><div class="form-row"><label class="fld"><span>Note</span><input class="inp" id="ex_note" placeholder="optional"></label><label class="fld"><span>Date</span><input class="inp" type="date" id="ex_date" value="${todayKey()}"></label></div><div class="modal-foot"><button class="btn ghost" data-action="closemodal">Cancel</button><button class="btn primary" data-action="modal-submit">Add</button></div>`,
   ()=>{ const amt=parseFloat(el('ex_amt').value); if(!amt){toast('Amount?');return;} state.expenses.push({id:genId(),date:el('ex_date').value||todayKey(),category:el('ex_cat').value,amount:amt,note:el('ex_note').value.trim()}); save(); closeModal(); render(); toast('Expense added'); }); }
+function openMoreMenu(){
+  const items=[['home','Home','home'],['dashboard','Dashboard','bars'],['tasks','Tasks','check'],['habits','Habits','repeat'],['focus','Focus','target'],['calendar','Calendar','calendar']];
+  if(state.settings.fitness&&state.settings.fitness.enabled) items.push(['fitness','Fitness','dumbbell']);
+  if(!faithHidden()) items.push(['faith', faithCfg().nav, faithCfg().icon]);
+  items.push(['goals','Goals','flag']);
+  enabledAreas().forEach(a=> items.push([areaView(a), a.name, a.icon||'star']));
+  items.push(['review','Reviews','bars'],['settings','Settings','gear']);
+  const body=items.map(([v,label,icn])=>`<button class="more-item ${ui.view===v?'active':''}" data-action="gonav" data-view="${attr(v)}"><span class="more-ic">${ic(icn)}</span><span>${esc(label)}</span></button>`).join('');
+  openModal(`<h3>All sections</h3><div class="more-grid">${body}</div><div class="modal-foot"><button class="btn ghost" data-action="closemodal">Close</button></div>`);
+}
 function openEventModal(id, defDate, defType){
   const e = id ? state.assignments.find(x=>x.id===id) : null;
   const type = e?e.atype:(defType||'exam');
@@ -3721,4 +3757,4 @@ setTimeout(()=>{ if(!dbSettled){ dbSettled=true; render(); } }, 11000);
 document.addEventListener('visibilitychange', ()=>{ if(document.hidden) flushDbNow(); });
 window.addEventListener('pagehide', flushDbNow);
 
-</script></body></html>
+</script><script>if("serviceWorker" in navigator && window.isSecureContext){addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}</script></body></html>
