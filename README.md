@@ -5,7 +5,7 @@ generated daily plan, habits, focus sessions, goals, gym & academics tracking,
 a respectful faith/prayer routine, personal finances, and a transparent daily score —
 with a voice/text "plan my day" that turns a spoken brain-dump into a scheduled day.
 
-**Live app:** _(GitHub Pages link goes here once enabled)_
+**Live app:** https://abdulhaq7378-hash.github.io/momentum/
 
 ## Highlights
 - **Speak or type your day** — "gym 3 hours, study 5 hours, meeting 7:30–9, exam on the 25th" → tasks, exams and a time-blocked schedule built around your prayer times.
