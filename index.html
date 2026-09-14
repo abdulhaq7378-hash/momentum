@@ -2978,9 +2978,16 @@ function seedStarter(){
    TOOLTIP + TOAST + CONFETTI
    ============================================================ */
 const tip=el('tip');
-document.addEventListener('mouseover',e=>{ const t=e.target.closest('[data-tip]'); if(!t) return; tip.innerHTML=t.dataset.tip; tip.style.opacity='1'; posTip(e); });
-document.addEventListener('mousemove',e=>{ if(tip.style.opacity==='1') posTip(e); });
-document.addEventListener('mouseout',e=>{ if(e.target.closest('[data-tip]')) tip.style.opacity='0'; });
+/* Hover tooltips only on devices that actually hover. On touch phones a tap fires a
+   synthetic mouseover (shows the tip) but no mouseout, so the tip used to stick and
+   follow taps ("Full screen" box that wouldn't go away). Gate it, and always hide on touch. */
+const _canHover = !window.matchMedia || window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+if(_canHover){
+  document.addEventListener('mouseover',e=>{ const t=e.target.closest('[data-tip]'); if(!t) return; tip.innerHTML=t.dataset.tip; tip.style.opacity='1'; posTip(e); });
+  document.addEventListener('mousemove',e=>{ if(tip.style.opacity==='1') posTip(e); });
+  document.addEventListener('mouseout',e=>{ if(e.target.closest('[data-tip]')) tip.style.opacity='0'; });
+}
+document.addEventListener('touchstart',()=>{ tip.style.opacity='0'; },{passive:true});
 function posTip(e){ const pad=14; let x=e.clientX+pad, y=e.clientY+pad; const r=tip.getBoundingClientRect(); if(x+r.width>innerWidth-8) x=e.clientX-r.width-pad; if(y+r.height>innerHeight-8) y=e.clientY-r.height-pad; tip.style.left=x+'px'; tip.style.top=y+'px'; }
 let toastTmr; function toast(msg){ const t=el('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toastTmr); toastTmr=setTimeout(()=>t.classList.remove('show'),2600); }
 function celebrate(){ const cv=el('confetti'), ctx=cv.getContext('2d'); cv.width=innerWidth; cv.height=innerHeight; const colors=['#8b7bf9','#b18cf8','#2fce88','#f5b73d','#3f8ae6','#e0662f']; const parts=[]; for(let i=0;i<150;i++) parts.push({x:innerWidth/2+(Math.random()-.5)*220,y:innerHeight/3,vx:(Math.random()-.5)*12,vy:Math.random()*-13-4,g:.32+Math.random()*.16,s:6+Math.random()*7,c:colors[i%colors.length],rot:Math.random()*6,vr:(Math.random()-.5)*.4}); let f=0; (function loop(){ ctx.clearRect(0,0,cv.width,cv.height); f++; parts.forEach(p=>{ p.vy+=p.g; p.x+=p.vx; p.y+=p.vy; p.rot+=p.vr; ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot); ctx.fillStyle=p.c; ctx.fillRect(-p.s/2,-p.s/2,p.s,p.s*0.6); ctx.restore(); }); if(f<130) requestAnimationFrame(loop); else ctx.clearRect(0,0,cv.width,cv.height); })(); }
