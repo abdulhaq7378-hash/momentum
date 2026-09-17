@@ -27,4 +27,4 @@ the public-domain PrayTimes astronomical algorithm for prayer times, and the Web
 Speech API for voice input. No frameworks, no dependencies.
 
 ---
-Built with care. © abdulhaq7378
+Designed and built by **Mohammed Abdul Haq** — B.Tech Biomedical Engineering, MIT Manipal. © 2026
