@@ -2814,6 +2814,7 @@ VIEWS.settings = function(){
     <div class="set-row"><div><div class="lab">Cloud sync</div><div class="desc">Auto-syncs when you switch away or close the app. Tap to push to all your devices right now (briefly reloads).</div></div><button class="btn" data-action="syncnow">${ic('cloud')} Sync now</button></div>
     <div class="set-row"><div><div class="lab">Backup</div><div class="desc">Download everything as a file. Do this weekly.</div></div><button class="btn" data-action="export">${ic('download')} Export backup</button></div>
     <div class="set-row"><div><div class="lab">Restore</div><div class="desc">Load from a backup (replaces current data).</div></div><button class="btn" data-action="import">${ic('upload')} Import</button><input type="file" id="importFile" accept="application/json" class="hidden"></div>
+    <div class="set-row"><div><div class="lab">Import a study plan</div><div class="desc">Load a plan file — adds its tasks &amp; exam dates to your calendar without touching your setup.</div></div><button class="btn primary" data-action="importplan">${ic('calendar')} Import plan</button></div>
     <div class="set-row"><div><div class="lab">Reset</div><div class="desc">Erase everything and start fresh.</div></div><button class="btn danger" data-action="reset">${ic('trash')} Reset all</button></div>
     ${!storageOK?`<div style="margin-top:10px;color:var(--bad);font-weight:600">${ic('alert')} Saving failed — export backups and avoid private mode.</div>`:''}
   </div>
@@ -2970,6 +2971,7 @@ document.addEventListener('click',e=>{
     case 'syncnow': syncNow(); break;
     case 'export': exportData(); break;
     case 'import': el('importFile').click(); break;
+    case 'importplan': el('importFile').click(); break;
     case 'reset': if(confirm('Erase ALL data and start fresh? This cannot be undone.')){ state=structuredClone(DEFAULT_STATE); save(); render(); } break;
     // modal generic
     case 'closemodal': closeModal(); break;
@@ -2998,7 +3000,28 @@ async function exportData(){ const data=JSON.stringify(state,null,2); const fn='
   if(CAP.downloads){ try{ await CAP.downloads.save({filename:fn, data}); toast('Backup saved'); return; }catch(e){} }
   try{ const blob=new Blob([data],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=fn; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),1000); toast('Backup downloaded'); }
   catch(e){ openModal(`<h3>Copy your backup</h3><div class="msub">Select all and copy this to a safe place.</div><textarea class="inp" style="min-height:200px" onclick="this.select()">${esc(data)}</textarea><div class="modal-foot"><button class="btn primary" data-action="closemodal">Done</button></div>`); } }
-function importData(file){ const rd=new FileReader(); rd.onload=()=>{ try{ const p=JSON.parse(rd.result); if(!p||typeof p!=='object'||!('days' in p)) throw 0; state=mergeState(p); save(); render(); toast('Data restored'); }catch(e){ toast('Could not read that file'); } }; rd.readAsText(file); }
+function importData(file){ const rd=new FileReader(); rd.onload=()=>{ try{ const p=JSON.parse(rd.result);
+    if(p && p.__plan){ mergePlan(p); return; }                     // study-plan file → merge, don't wipe
+    if(!p||typeof p!=='object'||!('days' in p)) throw 0; state=mergeState(p); save(); render(); toast('Data restored'); }catch(e){ toast('Could not read that file'); } }; rd.readAsText(file); }
+/* Additively merge a study-plan file: adds tasks + calendar events, leaves profile/settings/habits untouched. */
+function mergePlan(plan){
+  let nt=0,ne=0;
+  arr(plan.tasks).forEach(it=>{ if(!it||!it.date||!it.text) return;
+    const d=ensureDay(it.date);
+    if(d.tasks.some(x=>x.text===it.text && !x.done)) return;        // dedupe on re-import
+    const cat = CATS[it.category] ? it.category : 'general';
+    const t={id:genId(), text:it.text, category:cat, done:false, ts:Date.now()};
+    if(it.estMin) t.estMin=it.estMin;
+    if(it.startMin!=null){ t.startMin=it.startMin; if(it.estMin) t.endMin=it.startMin+it.estMin; }
+    if(it.priority) t.priority=it.priority;
+    d.tasks.push(t); nt++;
+  });
+  arr(plan.events).forEach(ev=>{ if(!ev||!ev.title||!ev.deadline) return;
+    if(state.assignments.some(a=>a.title===ev.title && a.deadline===ev.deadline)) return;
+    state.assignments.push({id:genId(), title:ev.title, atype:(EVENT_TYPES[ev.atype]?ev.atype:'event'), deadline:ev.deadline, time:ev.time||'', subjectId:null, done:false}); ne++;
+  });
+  save(); render(); toast(`Study plan added — ${nt} tasks, ${ne} events`); go('home');
+}
 
 /* ============================================================
    MODALS
