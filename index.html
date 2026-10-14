@@ -2581,37 +2581,322 @@ function sumExpense(a,b){ return state.expenses.filter(e=>e.date>=keyOf(a)&&e.da
    Offline calorie estimation from a built-in food table (Indian + common),
    BMI/BMR/TDEE math, weight tracking, deficit plan. All estimates are editable.
    ============================================================ */
-/* kcal per common serving. Order: multi-word / specific first so they match before generic words. */
+/* Built-in food table. cal = kcal per typical Indian serving; p/c/f = grams; serv = serving note.
+   Order matters: composite plates and multi-word dishes come first so they match before their
+   single-word parts (e.g. "idli sambar" and "masala dosa" before "idli"/"dosa"); generic staples
+   (rice, dal, roti, curd…) come last. Calories are calibrated; macros are approximate. */
+function mkFood(n,cal,p,c,fat,serv,kw){ return {n,cal,p,c,f:fat,serv,kw:[n.toLowerCase()].concat(kw?kw.split('|'):[])}; }
 const FOOD_DB = [
-  {cal:290,kw:['butter chicken','murgh makhani']},{cal:350,kw:['chicken biryani']},{cal:300,kw:['veg biryani','biryani']},
-  {cal:260,kw:['aloo paratha','paratha','parantha']},{cal:280,kw:['chicken curry']},{cal:250,kw:['fried rice']},
-  {cal:150,kw:['masala dosa','dosa']},{cal:100,kw:['plain rice','steamed rice','white rice','chawal','cooked rice','rice']},
-  {cal:150,kw:['dal makhani']},{cal:130,kw:['dal','daal','lentil','sambar','sambhar']},{cal:210,kw:['rajma']},{cal:220,kw:['chole','chana masala','chana']},
-  {cal:265,kw:['paneer butter masala','paneer tikka','shahi paneer','palak paneer','paneer']},
-  {cal:100,kw:['roti','chapati','chapathi','phulka']},{cal:260,kw:['naan']},{cal:250,kw:['poha']},{cal:250,kw:['upma']},
-  {cal:60,kw:['idli']},{cal:120,kw:['vada','medu vada']},{cal:250,kw:['pav bhaji']},{cal:300,kw:['pani puri','golgappa','puri']},
-  {cal:260,kw:['samosa']},{cal:150,kw:['pakora','bhaji','bhajji']},{cal:150,kw:['dhokla']},{cal:100,kw:['curd','dahi','yogurt','yoghurt']},
-  {cal:180,kw:['lassi','buttermilk','chaas']},{cal:60,kw:['chai','masala tea','tea']},{cal:40,kw:['black coffee']},{cal:90,kw:['coffee','latte']},
-  {cal:150,kw:['gulab jamun']},{cal:140,kw:['jalebi']},{cal:120,kw:['laddu','ladoo']},{cal:130,kw:['barfi','halwa']},{cal:80,kw:['kheer']},
-  {cal:350,kw:['maggi','instant noodles','noodles']},{cal:285,kw:['pizza']},{cal:300,kw:['burger']},{cal:310,kw:['french fries','fries']},
-  {cal:250,kw:['sandwich']},{cal:220,kw:['pasta']},{cal:295,kw:['shawarma','wrap']},{cal:250,kw:['hot dog']},
-  {cal:75,kw:['boiled egg','egg']},{cal:150,kw:['omelette','omelet']},{cal:70,kw:['bread','toast','bread slice']},{cal:100,kw:['butter']},
-  {cal:150,kw:['peanut butter']},{cal:120,kw:['milk']},{cal:150,kw:['oats','oatmeal','dalia']},{cal:150,kw:['cereal','chocos','corn flakes','cornflakes']},
-  {cal:95,kw:['apple']},{cal:105,kw:['banana']},{cal:62,kw:['orange']},{cal:50,kw:['grapes']},{cal:30,kw:['watermelon']},{cal:60,kw:['mango']},
-  {cal:165,kw:['chicken breast','grilled chicken','chicken']},{cal:200,kw:['fish curry','fish']},{cal:250,kw:['mutton','lamb']},{cal:80,kw:['prawns','shrimp']},
-  {cal:160,kw:['almonds','cashew','nuts']},{cal:100,kw:['protein shake','whey','protein']},{cal:130,kw:['chocolate']},{cal:150,kw:['biscuit','cookies','cookie']},
-  {cal:230,kw:['chips','wafers']},{cal:140,kw:['ice cream','icecream']},{cal:150,kw:['cold drink','soda','coke','pepsi','soft drink']},{cal:60,kw:['juice']},
-  {cal:50,kw:['salad']},{cal:80,kw:['soup']},{cal:130,kw:['potato','aloo']},{cal:150,kw:['khichdi','khichdi']},{cal:120,kw:['dal rice','dal chawal']},
+  /* ---- COMPOSITE PLATES (match before their parts) ---- */
+  mkFood('Idli Sambar',235,8,40,5,'2 idli + sambar','idli sambhar|idly sambar|idli with sambar'),
+  mkFood('Idli Vada',300,9,44,10,'idli + vada + sambar','idli vada sambar'),
+  mkFood('Dosa Sambar',265,7,40,9,'dosa + sambar','dosa with sambar'),
+  mkFood('Chole Bhature',650,16,80,30,'2 bhature + chole','chole bhatura|chhole bhature|chana bhatura'),
+  mkFood('Rajma Chawal',410,14,62,10,'rajma + rice','rajma rice|rajma chaawal'),
+  mkFood('Dal Chawal',350,12,58,7,'dal + rice','dal rice|daal chawal|dal chaawal'),
+  mkFood('Kadhi Chawal',380,10,60,10,'kadhi + rice','kadhi rice'),
+  mkFood('Chole Chawal',420,13,64,11,'chole rice|chana chawal'),
+  mkFood('Sambar Rice',300,8,50,7,'sambar + rice','sambar rice|sambhar rice'),
+  mkFood('Rasam Rice',260,6,46,6,'rasam + rice'),
+  mkFood('Poori Bhaji',400,8,52,18,'2 poori + aloo bhaji','puri bhaji|poori sabji'),
+  mkFood('Roti Sabzi',300,10,45,9,'2 roti + sabzi','roti sabji|chapati sabzi'),
+  /* ---- SOUTH INDIAN ---- */
+  mkFood('Masala Dosa',290,6,40,12,'1 dosa','masaladosa'),
+  mkFood('Rava Dosa',205,4,28,8,'1 dosa'),
+  mkFood('Onion Uttapam',230,6,34,8,'1 uttapam','uthappam|uttappam|utappam'),
+  mkFood('Set Dosa',220,5,34,7,'2 pc'),
+  mkFood('Plain Dosa',133,3,18,5,'1 dosa','dosa|dose|dosai'),
+  mkFood('Medu Vada',97,3,10,5,'1 pc','vada|vadai|medhu vada'),
+  mkFood('Dahi Vada',180,5,22,8,'2 pc','dahi bhalla'),
+  mkFood('Ven Pongal',280,7,38,10,'1 bowl','pongal'),
+  mkFood('Lemon Rice',280,5,48,8,'1 bowl','chitranna'),
+  mkFood('Curd Rice',250,7,38,7,'1 bowl','thayir sadam|dahi rice'),
+  mkFood('Tamarind Rice',300,5,52,8,'1 bowl','puliyogare|pulihora'),
+  mkFood('Bisi Bele Bath',320,9,48,10,'1 bowl','bisibelebath|bisi bele'),
+  mkFood('Coconut Chutney',90,1,3,8,'2 tbsp','nariyal chutney'),
+  mkFood('Sambar',120,5,16,3.5,'1 katori','sambhar|saaru'),
+  mkFood('Rasam',65,2,9,2,'1 katori','charu'),
+  mkFood('Appam',120,2,22,2,'1 pc','aappam'),
+  mkFood('Idiyappam',170,4,34,2,'1 serving','string hoppers'),
+  mkFood('Puttu',210,5,40,3,'1 serving'),
+  mkFood('Pesarattu',150,6,20,4,'1 pc'),
+  mkFood('Filter Coffee',90,3,10,4,'1 cup','south indian coffee|kaapi'),
+  mkFood('Idli',58,2,12,0.4,'1 pc','idly|iddli'),
+  /* ---- NORTH INDIAN BREADS ---- */
+  mkFood('Aloo Paratha',290,6,36,13,'1 paratha','alu paratha|aloo parantha'),
+  mkFood('Gobi Paratha',270,6,34,12,'1 paratha'),
+  mkFood('Paneer Paratha',300,10,34,13,'1 paratha'),
+  mkFood('Lachha Paratha',280,5,36,12,'1 paratha','laccha paratha'),
+  mkFood('Plain Paratha',230,5,30,10,'1 paratha','paratha|parantha|parotta'),
+  mkFood('Butter Naan',300,8,45,10,'1 naan'),
+  mkFood('Garlic Naan',310,8,46,10,'1 naan'),
+  mkFood('Naan',260,8,44,6,'1 naan'),
+  mkFood('Tandoori Roti',120,4,24,1.5,'1 roti'),
+  mkFood('Missi Roti',160,5,26,4,'1 roti'),
+  mkFood('Kulcha',200,5,34,5,'1 pc'),
+  mkFood('Bhatura',300,6,42,12,'1 pc','bhatoora'),
+  mkFood('Phulka',70,2.5,14,0.8,'1 pc'),
+  mkFood('Roti',90,3,18,1,'1 roti','chapati|chapathi|chappati|rotli'),
+  mkFood('Poori',85,1.5,10,4.5,'1 pc fried','puri'),
+  /* ---- DALS & CURRIES (VEG) ---- */
+  mkFood('Dal Makhani',230,9,20,12,'1 katori','daal makhani|dal makhni'),
+  mkFood('Dal Tadka',150,9,18,5,'1 katori','dal fry|dal|daal|lentil|toor dal|moong dal'),
+  mkFood('Rajma',210,9,28,6,'1 katori','kidney beans'),
+  mkFood('Chole',220,9,30,7,'1 katori','chana masala|chhole|chickpea curry'),
+  mkFood('Chana',180,8,24,5,'1 katori','kala chana|black chana'),
+  mkFood('Kadhi',180,6,18,9,'1 katori','kadi|kadhi pakora'),
+  mkFood('Paneer Butter Masala',300,12,12,22,'1 katori','paneer makhani'),
+  mkFood('Shahi Paneer',310,12,14,22,'1 katori'),
+  mkFood('Kadai Paneer',280,13,12,19,'1 katori','karahi paneer'),
+  mkFood('Palak Paneer',250,12,10,18,'1 katori'),
+  mkFood('Matar Paneer',260,11,14,17,'1 katori','mutter paneer'),
+  mkFood('Malai Kofta',330,8,22,23,'1 katori'),
+  mkFood('Paneer Tikka',250,14,8,17,'4 pc'),
+  mkFood('Aloo Gobi',160,4,20,7,'1 katori','alu gobi'),
+  mkFood('Bhindi Masala',160,3,16,9,'1 katori','okra|bhindi fry'),
+  mkFood('Baingan Bharta',150,3,14,9,'1 katori','baigan bharta|brinjal'),
+  mkFood('Aloo Matar',170,5,24,6,'1 katori','alu matar'),
+  mkFood('Jeera Aloo',180,3,26,7,'1 katori'),
+  mkFood('Dum Aloo',230,4,28,11,'1 katori'),
+  mkFood('Mixed Veg',150,4,18,7,'1 katori','mix veg|veg sabzi|sabzi|sabji'),
+  mkFood('Veg Kurma',200,5,20,11,'1 katori','kurma|korma'),
+  mkFood('Palak Saag',140,5,12,8,'1 katori','saag|palak'),
+  mkFood('Raita',90,3,8,5,'1 katori','boondi raita|veg raita'),
+  mkFood('Papad',40,2,6,1,'1 pc','papadum|appalam'),
+  mkFood('Pickle',30,0,3,2,'1 tbsp','achar'),
+  /* ---- RICE DISHES ---- */
+  mkFood('Chicken Biryani',480,20,55,16,'1 plate','murgh biryani'),
+  mkFood('Mutton Biryani',550,24,56,22,'1 plate','gosht biryani'),
+  mkFood('Egg Biryani',400,15,56,12,'1 plate'),
+  mkFood('Hyderabadi Biryani',500,20,58,18,'1 plate'),
+  mkFood('Veg Biryani',350,8,55,11,'1 plate','vegetable biryani|biryani|biriyani|briyani'),
+  mkFood('Chicken Fried Rice',290,14,42,8,'1 plate'),
+  mkFood('Veg Fried Rice',250,6,42,7,'1 plate','fried rice'),
+  mkFood('Jeera Rice',240,5,46,5,'1 cup'),
+  mkFood('Veg Pulao',250,6,44,6,'1 cup','pulao|pulav|peas pulao'),
+  mkFood('Dal Khichdi',250,9,40,6,'1 bowl','khichdi|khichadi'),
+  mkFood('Plain Rice',205,4,45,0.5,'1 cup cooked','rice|steamed rice|white rice|chawal|cooked rice|boiled rice'),
+  /* ---- STREET FOOD / CHAAT ---- */
+  mkFood('Pani Puri',150,3,28,3,'6 pc','golgappa|gol gappa|puchka|gupchup'),
+  mkFood('Bhel Puri',220,5,38,6,'1 plate','bhelpuri'),
+  mkFood('Sev Puri',250,5,36,10,'1 plate'),
+  mkFood('Dahi Puri',280,6,38,11,'1 plate'),
+  mkFood('Vada Pav',290,7,40,12,'1 pc','wada pav'),
+  mkFood('Pav Bhaji',400,9,50,18,'1 plate','paav bhaji'),
+  mkFood('Misal Pav',400,12,48,17,'1 plate'),
+  mkFood('Dabeli',220,4,32,9,'1 pc'),
+  mkFood('Samosa',130,3,17,6,'1 pc','singara'),
+  mkFood('Kachori',190,4,22,10,'1 pc','kachauri'),
+  mkFood('Aloo Tikki',150,3,22,6,'1 pc','alu tikki'),
+  mkFood('Bread Pakora',180,4,20,9,'1 pc'),
+  mkFood('Pakora',230,6,22,13,'1 plate','pakoda|bhaji|bhajji|bhajiya|fritters'),
+  mkFood('Dhokla',160,6,24,4,'2 pc'),
+  mkFood('Khandvi',120,4,12,6,'4 pc'),
+  mkFood('Momos',250,8,35,8,'6 pc steamed','momo|dumpling'),
+  mkFood('Fried Momos',350,9,38,16,'6 pc'),
+  mkFood('Spring Roll',150,3,18,7,'1 pc'),
+  mkFood('Veg Frankie',300,7,42,11,'1 roll','frankie|kathi roll|veg roll'),
+  mkFood('Egg Roll',330,12,38,14,'1 roll'),
+  mkFood('Chicken Roll',360,16,38,15,'1 roll'),
+  mkFood('Cutlet',120,3,14,6,'1 pc','veg cutlet'),
+  /* ---- SNACKS / BREAKFAST ---- */
+  mkFood('Poha',250,5,45,6,'1 bowl','pohe|aval'),
+  mkFood('Upma',250,6,40,8,'1 bowl','uppma|uppittu'),
+  mkFood('Sabudana Khichdi',300,5,48,10,'1 bowl','sabudana|sago khichdi'),
+  mkFood('Thepla',120,3,18,4,'1 pc'),
+  mkFood('Besan Chilla',120,6,12,5,'1 pc','chilla|cheela|besan cheela'),
+  mkFood('Maggi',350,7,50,13,'1 pack','maggie'),
+  mkFood('Hakka Noodles',350,8,54,11,'1 plate','noodles|chowmein|chow mein|veg noodles'),
+  mkFood('Veg Manchurian',300,6,38,14,'1 plate','manchurian|gobi manchurian'),
+  mkFood('Chilli Paneer',350,14,22,22,'1 plate'),
+  mkFood('Chilli Chicken',380,22,20,24,'1 plate'),
+  mkFood('Club Sandwich',380,12,42,18,'1 pc'),
+  mkFood('Grilled Cheese Sandwich',320,10,34,16,'1 pc','cheese sandwich|grilled sandwich'),
+  mkFood('Veg Sandwich',250,7,36,8,'1 pc','sandwich'),
+  mkFood('Butter Toast',120,3,16,5,'1 slice'),
+  mkFood('Bread Butter',230,6,30,9,'2 slices'),
+  mkFood('Toast',70,2,13,1,'1 slice','bread slice|bread'),
+  /* ---- EGGS ---- */
+  mkFood('Egg Bhurji',220,13,4,16,'2 egg'),
+  mkFood('Omelette',200,12,2,15,'2 egg','omlette|omelet|omlet'),
+  mkFood('Scrambled Eggs',200,13,2,15,'2 egg'),
+  mkFood('Boiled Egg',78,6,0.6,5,'1 pc','egg|anda|ande'),
+  mkFood('Fried Egg',90,6,0.5,7,'1 pc','half fry|sunny side up'),
+  /* ---- OATS / CEREALS ---- */
+  mkFood('Masala Oats',200,7,30,5,'1 bowl'),
+  mkFood('Oats',160,6,27,3,'1 bowl','oatmeal|oat'),
+  mkFood('Muesli',230,6,38,6,'1 bowl'),
+  mkFood('Cornflakes',200,6,34,4,'1 bowl with milk','corn flakes|cereal|chocos'),
+  mkFood('Daliya',180,6,34,3,'1 bowl','dalia|broken wheat'),
+  /* ---- SWEETS ---- */
+  mkFood('Gulab Jamun',150,2,25,5,'1 pc','gulabjamun'),
+  mkFood('Rasgulla',125,3,25,1.5,'1 pc','rosogolla'),
+  mkFood('Rasmalai',185,5,22,8,'1 pc','ras malai'),
+  mkFood('Jalebi',150,1,30,4,'1 pc','jilebi'),
+  mkFood('Imarti',160,2,30,4,'1 pc'),
+  mkFood('Besan Laddu',180,4,20,9,'1 pc','besan ladoo'),
+  mkFood('Motichoor Laddu',170,2,24,8,'1 pc','motichur laddu|boondi laddu'),
+  mkFood('Rava Laddu',150,2,22,6,'1 pc','rava ladoo'),
+  mkFood('Laddu',180,3,22,9,'1 pc','ladoo'),
+  mkFood('Kaju Katli',90,1.5,10,5,'1 pc','kaju barfi'),
+  mkFood('Barfi',150,3,18,7,'1 pc','burfi'),
+  mkFood('Gajar Halwa',300,4,40,14,'1 katori','carrot halwa|gajar ka halwa'),
+  mkFood('Sooji Halwa',280,4,42,11,'1 katori','suji halwa|rava halwa'),
+  mkFood('Moong Dal Halwa',350,6,40,18,'1 katori'),
+  mkFood('Halwa',290,4,40,13,'1 katori'),
+  mkFood('Kheer',200,6,32,6,'1 katori','payasam|payesh'),
+  mkFood('Sevaiyan',230,6,36,7,'1 katori','seviyan|vermicelli kheer'),
+  mkFood('Mysore Pak',180,2,20,10,'1 pc'),
+  mkFood('Soan Papdi',110,1,16,5,'1 pc','son papdi'),
+  mkFood('Peda',100,2,14,4,'1 pc'),
+  mkFood('Sandesh',110,4,14,4,'1 pc','sondesh'),
+  mkFood('Modak',120,2,20,4,'1 pc'),
+  mkFood('Kulfi',180,4,20,9,'1 pc'),
+  mkFood('Ice Cream',140,3,18,6,'1 scoop','icecream'),
+  mkFood('Cake',350,5,45,17,'1 slice','pastry'),
+  mkFood('Brownie',250,4,32,13,'1 pc'),
+  mkFood('Donut',250,4,30,13,'1 pc','doughnut'),
+  /* ---- BEVERAGES ---- */
+  mkFood('Masala Chai',90,2,12,3,'1 cup','chai|tea|masala tea|cutting chai'),
+  mkFood('Green Tea',2,0,0.3,0,'1 cup'),
+  mkFood('Black Coffee',5,0.3,0.5,0,'1 cup'),
+  mkFood('Cold Coffee',200,6,28,7,'1 glass'),
+  mkFood('Cappuccino',120,6,12,5,'1 cup','latte|coffee'),
+  mkFood('Mango Lassi',250,6,40,7,'1 glass'),
+  mkFood('Sweet Lassi',220,6,30,8,'1 glass','lassi'),
+  mkFood('Buttermilk',60,3,6,2,'1 glass','chaas|chhaas|chaach|mattha'),
+  mkFood('Badam Milk',200,7,26,8,'1 glass'),
+  mkFood('Milk',120,6,10,6,'1 glass','doodh|dudh'),
+  mkFood('Coconut Water',45,0.5,9,0,'1 glass','nariyal pani'),
+  mkFood('Nimbu Pani',90,0,22,0,'1 glass','lemon water|lemonade|shikanji'),
+  mkFood('Orange Juice',110,1,26,0,'1 glass'),
+  mkFood('Mango Juice',150,0.5,36,0,'1 glass'),
+  mkFood('Fruit Juice',120,0.5,28,0,'1 glass','juice|mixed juice'),
+  mkFood('Sugarcane Juice',180,0,44,0,'1 glass','ganne ka ras'),
+  mkFood('Soft Drink',140,0,39,0,'1 can','cold drink|coke|pepsi|soda|thums up|sprite'),
+  mkFood('Protein Shake',120,24,3,2,'1 scoop','whey|whey protein|protein'),
+  mkFood('Banana Shake',220,6,38,5,'1 glass'),
+  mkFood('Mango Shake',250,6,44,6,'1 glass'),
+  mkFood('Milkshake',300,8,42,11,'1 glass','shake'),
+  /* ---- NON-VEG MAINS ---- */
+  mkFood('Butter Chicken',320,20,10,22,'1 katori','murgh makhani|chicken makhani'),
+  mkFood('Chicken Curry',240,22,6,14,'1 katori','chicken gravy|chicken masala'),
+  mkFood('Chicken Tikka',220,30,4,9,'4 pc'),
+  mkFood('Tandoori Chicken',280,34,3,15,'2 pc'),
+  mkFood('Chicken 65',300,24,12,18,'1 plate','chicken sixty five'),
+  mkFood('Fried Chicken',400,25,20,25,'2 pc'),
+  mkFood('Chicken Lollipop',350,22,14,22,'4 pc'),
+  mkFood('Grilled Chicken',165,31,0,3.6,'100 g','chicken breast|grilled chicken breast'),
+  mkFood('Chicken Kebab',200,22,6,10,'2 pc','seekh kebab|chicken seekh'),
+  mkFood('Fish Curry',200,20,6,11,'1 katori'),
+  mkFood('Fish Fry',220,22,6,12,'1 pc','fried fish'),
+  mkFood('Prawns Curry',180,20,6,9,'1 katori','prawn curry|jhinga'),
+  mkFood('Prawns Fry',200,22,5,11,'1 plate','prawn fry|shrimp'),
+  mkFood('Mutton Curry',300,22,6,20,'1 katori','mutton gravy|lamb curry|gosht'),
+  mkFood('Rogan Josh',330,22,8,22,'1 katori','mutton rogan josh'),
+  mkFood('Keema',280,20,8,19,'1 katori','kheema|mutton keema'),
+  mkFood('Egg Curry',240,13,8,17,'2 egg'),
+  mkFood('Fish',200,20,0,11,'100 g','grilled fish'),
+  mkFood('Chicken',200,25,2,10,'100 g','chicken piece'),
+  mkFood('Mutton',250,21,0,18,'100 g','lamb'),
+  /* ---- FRUITS ---- */
+  mkFood('Apple',95,0.5,25,0.3,'1 medium','seb'),
+  mkFood('Banana',105,1,27,0.4,'1 medium','kela'),
+  mkFood('Orange',62,1,15,0.2,'1 medium','santra'),
+  mkFood('Mango',150,1,38,0.6,'1 medium','aam'),
+  mkFood('Grapes',100,1,27,0.3,'1 cup','angoor'),
+  mkFood('Watermelon',45,1,11,0.2,'1 cup','tarbooz'),
+  mkFood('Papaya',55,0.9,14,0.2,'1 cup','papita'),
+  mkFood('Guava',45,1.6,11,0.6,'1 medium','amrood'),
+  mkFood('Pomegranate',105,2,26,1,'1 medium','anar'),
+  mkFood('Pineapple',80,0.9,21,0.2,'1 cup','ananas'),
+  mkFood('Chikoo',95,0.7,24,0.3,'1 medium','sapota|sapodilla'),
+  mkFood('Pear',100,0.6,27,0.2,'1 medium','nashpati'),
+  mkFood('Dates',60,0.5,16,0,'3 pc','khajoor'),
+  mkFood('Strawberries',50,1,12,0.5,'1 cup'),
+  /* ---- NUTS / DRY FRUITS ---- */
+  mkFood('Almonds',70,3,2,6,'10 pc','badam'),
+  mkFood('Cashew',90,3,5,7,'10 pc','kaju|cashews'),
+  mkFood('Walnuts',100,2.3,2,10,'4 halves','akhrot'),
+  mkFood('Peanuts',170,7,5,14,'30 g','moongfali|groundnut'),
+  mkFood('Peanut Butter',95,4,3,8,'1 tbsp'),
+  mkFood('Pistachios',80,3,4,6,'20 pc','pista'),
+  mkFood('Mixed Nuts',170,5,6,14,'30 g','trail mix'),
+  mkFood('Raisins',90,0.8,22,0.1,'30 g','kishmish'),
+  /* ---- WESTERN / FAST FOOD ---- */
+  mkFood('Pizza',285,12,36,10,'1 slice'),
+  mkFood('Chicken Burger',400,20,38,18,'1 pc'),
+  mkFood('Cheese Burger',400,18,38,19,'1 pc','cheeseburger'),
+  mkFood('Veg Burger',300,9,40,11,'1 pc','burger|aloo tikki burger'),
+  mkFood('French Fries',320,4,42,15,'1 medium','fries|finger chips'),
+  mkFood('Pasta',320,10,44,11,'1 plate','white sauce pasta|red sauce pasta|penne'),
+  mkFood('Mac and Cheese',350,12,40,15,'1 bowl','mac n cheese'),
+  mkFood('Garlic Bread',200,6,28,7,'2 pc'),
+  mkFood('Hot Dog',290,10,26,15,'1 pc'),
+  mkFood('Shawarma',350,18,35,14,'1 roll','shawerma|chicken shawarma'),
+  mkFood('Tacos',170,6,18,8,'1 pc','taco'),
+  mkFood('Nachos',350,7,38,18,'1 plate'),
+  mkFood('Pancakes',350,8,52,12,'2 pc','pancake'),
+  mkFood('Waffle',300,6,42,12,'1 pc'),
+  mkFood('Croissant',230,5,26,12,'1 pc'),
+  mkFood('Muffin',260,4,36,11,'1 pc'),
+  /* ---- SOUPS / SALADS ---- */
+  mkFood('Sweet Corn Soup',120,4,22,2,'1 bowl'),
+  mkFood('Manchow Soup',130,4,18,4,'1 bowl'),
+  mkFood('Chicken Soup',110,8,8,5,'1 bowl'),
+  mkFood('Tomato Soup',100,3,16,3,'1 bowl'),
+  mkFood('Veg Soup',90,3,14,2,'1 bowl','soup'),
+  mkFood('Caesar Salad',190,8,10,13,'1 bowl'),
+  mkFood('Fruit Salad',120,2,28,1,'1 bowl'),
+  mkFood('Green Salad',80,3,12,2,'1 bowl','salad|veg salad'),
+  /* ---- STAPLES / EXTRAS ---- */
+  mkFood('Paneer',130,9,2,9,'50 g','cottage cheese'),
+  mkFood('Tofu',80,9,2,5,'100 g'),
+  mkFood('Greek Yogurt',130,17,6,4,'1 cup'),
+  mkFood('Hung Curd',110,8,7,6,'1 katori'),
+  mkFood('Curd',95,5,7,5,'1 katori','dahi|yogurt|yoghurt|plain curd'),
+  mkFood('Cheese Slice',70,4,1,6,'1 slice','cheese'),
+  mkFood('Ghee',45,0,0,5,'1 tsp','clarified butter'),
+  mkFood('Butter',100,0.1,0,11,'1 tbsp','makhan'),
+  mkFood('Honey',64,0,17,0,'1 tbsp','shahad'),
+  mkFood('Jaggery',60,0,15,0,'1 tbsp','gur|gud'),
+  mkFood('Sugar',16,0,4,0,'1 tsp','chini'),
+  mkFood('Oil',40,0,0,4.5,'1 tsp','cooking oil'),
+  mkFood('Biscuit',50,0.7,7,2,'1 pc','cookie|cookies|biscuits'),
+  mkFood('Rusk',50,1,8,1.5,'1 pc','toast rusk'),
+  mkFood('Chips',160,2,15,10,'30 g pack','wafers|potato chips|lays'),
+  mkFood('Popcorn',130,3,20,5,'1 bowl'),
+  mkFood('Dark Chocolate',170,2,15,11,'30 g'),
+  mkFood('Chocolate',210,3,24,11,'40 g bar','chocolate bar|dairy milk'),
+  mkFood('Namkeen',160,4,16,9,'30 g','mixture|sev|bhujia|farsan'),
+  mkFood('Khakhra',50,2,8,1.5,'1 pc'),
+  mkFood('Murukku',75,1,8,4,'1 pc','chakli|chakali'),
 ];
 const ACTIVITY_FACTORS = {sedentary:1.2, light:1.375, moderate:1.55, active:1.725, veryactive:1.9};
 const ACTIVITY_LABELS = {sedentary:'Sedentary (little exercise)', light:'Light (1–3 days/wk)', moderate:'Moderate (3–5 days/wk)', active:'Active (6–7 days/wk)', veryactive:'Very active (hard training)'};
+/* Quantity / serving words the matcher will swallow before a food name, e.g. "2 plates idli". */
+const SERV_WORDS='x|times|nos?|no|pcs?|pieces?|plates?|bowls?|katoris?|cups?|glass|glasses|slices?|cans?|bottles?|packs?|packets?|scoops?|tbsp|tsp|spoons?|servings?|half|full';
+/* Scans free text, recognises every food it can (composites first), and SUMS calories + macros.
+   Returns {cal, p, c, f, found:[labels], items:[{n,qty,cal}]}. */
 function estimateCalories(text){
-  let s = ' '+String(text||'').toLowerCase().replace(/[^a-z0-9.\s]/g,' ').replace(/\s+/g,' ')+' ';
-  let total=0; const found=[];
-  FOOD_DB.forEach(f=>{ for(const kw of f.kw){ const esc0=kw.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
-      const re=new RegExp('(?:(\\d+(?:\\.\\d+)?)\\s*(?:x|\\*|nos?|pcs?)?\\s+)?'+esc0+'(?:s|es)?\\b');
-      const m=s.match(re); if(m){ const qty=m[1]?Math.min(20,parseFloat(m[1])):1; total+=Math.round(f.cal*qty); found.push((qty>1?qty+'× ':'')+kw); s=s.replace(m[0],' '); break; } } });
-  return {cal:total, found};
+  let s=' '+String(text||'').toLowerCase().replace(/[^a-z0-9.\s]/g,' ').replace(/\s+/g,' ')+' ';
+  let total=0,P=0,C=0,Fz=0; const found=[]; const items=[];
+  for(const f of FOOD_DB){
+    for(const kw of f.kw){
+      const esc0=kw.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+      const re=new RegExp('(?:(\\d+(?:\\.\\d+)?)\\s*(?:'+SERV_WORDS+')?\\s+(?:of\\s+)?)?\\b'+esc0+'(?:s|es)?\\b');
+      const m=s.match(re);
+      if(m){
+        const qty=m[1]?Math.min(30,parseFloat(m[1])):1;
+        const cal=Math.round(f.cal*qty);
+        total+=cal; P+=(f.p||0)*qty; C+=(f.c||0)*qty; Fz+=(f.f||0)*qty;
+        found.push((qty!==1?qty+'× ':'')+f.n);
+        items.push({n:f.n,qty,cal});
+        s=s.replace(m[0],' '); break;
+      }
+    }
+  }
+  return {cal:total, p:Math.round(P), c:Math.round(C), f:Math.round(Fz), found, items};
 }
 const fit = ()=> state.fitness || (state.fitness={sex:'',age:null,heightCm:null,activity:'moderate',targetWeight:null,targetDate:'',weightLog:[],food:[],burn:[]});
 function curWeight(){ const w=arr(fit().weightLog).slice().sort((a,b)=>a.date<b.date?-1:1); return w.length?w[w.length-1].kg:null; }
@@ -3485,7 +3770,9 @@ function openWeightModal(){ openModal(`<h3>Log weight</h3>
       <label class="fld"><span>Date</span><input class="inp" type="date" id="wl_date" value="${todayKey()}"></label></div>
     <div class="modal-foot"><button class="btn ghost" data-action="closemodal">Cancel</button><button class="btn primary" data-action="modal-submit">Save</button></div>`,
   ()=>{ const kg=parseFloat(el('wl_kg').value); if(!(kg>0)){ toast('Enter a weight'); return; } const dt=el('wl_date').value||todayKey(); const f=fit(); const ex=arr(f.weightLog).find(x=>x.date===dt); if(ex)ex.kg=kg; else f.weightLog.push({id:genId(),date:dt,kg}); save(); closeModal(); render(); toast('Weight logged'); }); }
-function runFoodEstimate(){ const ta=el('fd_text'); if(!ta) return; const r=estimateCalories(ta.value); const c=el('fd_cal'), h=el('fd_hint'); if(c) c.value=r.cal||''; if(h) h.innerHTML = r.found.length? ('Recognised: '+r.found.map(esc).join(', ')) : (ta.value.trim()?'Not in my food list — type the calories yourself.':''); }
+function runFoodEstimate(){ const ta=el('fd_text'); if(!ta) return; const r=estimateCalories(ta.value); const c=el('fd_cal'), h=el('fd_hint'); if(c) c.value=r.cal||'';
+  if(h){ if(r.found.length){ h.innerHTML = 'Recognised: '+r.found.map(esc).join(', ')+` <b>· ~${r.cal} kcal</b> · P${r.p} C${r.c} F${r.f}g`; }
+    else { h.innerHTML = ta.value.trim()?'Not in my food list — type the calories yourself.':''; } } }
 function openFoodModal(){
   openModal(`<h3>Log food</h3><div class="msub">Type what you ate — e.g. "2 roti, dal, rice" or "dosa and chai". I'll estimate the calories (edit if needed).</div>
     <div class="form-row"><label class="fld"><span>Meal</span><select class="inp" id="fd_meal">${['Breakfast','Lunch','Dinner','Snacks'].map(m=>`<option>${m}</option>`).join('')}</select></label>
@@ -3495,7 +3782,14 @@ function openFoodModal(){
       <label class="fld" style="align-self:end"><button class="btn" data-action="estcal" type="button">${ic('bolt')} Re-estimate</button></label></div>
     <div id="fd_hint" style="font-size:11.5px;color:var(--text-2);margin-top:2px"></div>
     <div class="modal-foot"><button class="btn ghost" data-action="closemodal">Cancel</button><button class="btn primary" data-action="modal-submit">Add</button></div>`,
-  ()=>{ const text=el('fd_text').value.trim(); if(!text){ toast('Type what you ate'); return; } let cal=parseInt(el('fd_cal').value); if(!(cal>=0)||el('fd_cal').value===''){ cal=estimateCalories(text).cal; } const f=fit(); f.food.push({id:genId(),date:el('fd_date').value||todayKey(),meal:el('fd_meal').value,text,cal:cal||0}); save(); closeModal(); render(); toast('Food logged'); });
+  ()=>{ const text=el('fd_text').value.trim(); if(!text){ toast('Type what you ate'); return; }
+    const est=estimateCalories(text); let cal=parseInt(el('fd_cal').value); const auto=(!(cal>=0)||el('fd_cal').value==='');
+    if(auto){ cal=est.cal; }
+    /* keep macros proportional to the final (possibly edited) calories so the breakdown stays honest */
+    const sc = (est.cal>0 && cal>0) ? cal/est.cal : (auto?1:0);
+    const f=fit(); f.food.push({id:genId(),date:el('fd_date').value||todayKey(),meal:el('fd_meal').value,text,cal:cal||0,
+      p:Math.round(est.p*sc), c:Math.round(est.c*sc), f:Math.round(est.f*sc)});
+    save(); closeModal(); render(); toast('Food logged'); });
   setTimeout(()=>{ const ta=el('fd_text'); if(ta) ta.addEventListener('input',runFoodEstimate); },40);
 }
 function openBurnModal(){ openModal(`<h3>Log workout / activity</h3><div class="msub">Roughly how many calories did you burn? (gym, run, sport…)</div>
